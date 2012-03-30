@@ -13,6 +13,7 @@ Things to do:
 =end
 
 require 'zmq'
+require File.expand_path('../session', __FILE__)
 
 class OutStream
   #A file like object that publishes the stream to a 0MQ PUB socket.
@@ -273,8 +274,8 @@ def main
 
   stdout = OutStream.new(session, pub_socket, 'stdout')
   stderr = OutStream.new(session, pub_socket, 'stderr')
-  sys.stdout = stdout
-  sys.stderr = stderr
+  $stdout = stdout
+  $stderr = stderr
 
   display_hook = new DisplayHook(session, pub_socket)
   sys.displayhook = display_hook
