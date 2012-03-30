@@ -1,1 +1,3 @@
-source 'rubygems'
+source :rubygems
+
+gem 'zmq'

@@ -1,0 +1,10 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    zmq (2.1.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  zmq
