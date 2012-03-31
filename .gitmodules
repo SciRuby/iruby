@@ -1,0 +1,6 @@
+[submodule "public/vendor/codemirror-ui"]
+	path = public/vendor/codemirror-ui
+	url = https://github.com/jagthedrummer/codemirror-ui.git
+[submodule "public/vendor/codemirror2"]
+	path = public/vendor/codemirror2
+	url = http://marijnhaverbeke.nl/git/codemirror2
