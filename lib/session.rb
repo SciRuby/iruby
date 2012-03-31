@@ -4,6 +4,7 @@
 
 require 'zmq'
 require 'uuid'
+require 'json'
 
 class Message
   # A simple message object that maps dict keys to attributes.
@@ -19,6 +20,10 @@ class Message
       end
       @dct[k] = v
     end
+  end
+
+  def method_missing(m, *args, &block)
+    @dct[m.to_s]
   end
 
   def self.msg_header(msg_id, username, session)
@@ -71,17 +76,18 @@ class Session
 
   def send(socket, msg_type, content=nil, parent=nil, ident=nil)
     msg = self.msg(msg_type, content, parent)
-    if ident.present?
+    if ident
       socket.send(ident, ZMQ::SNDMORE)
     end
-    socket.send_json(msg)
+    socket.send(msg.to_json)
     omsg = Message.new(msg)
     return omsg
   end
 
   def recv(socket, mode=ZMQ::NOBLOCK)
     begin
-      msg = socket.recv_json(mode)
+      msg = socket.recv(mode)
+      msg = JSON.parse(msg) unless msg.nil?
     rescue Exception => e
       if e.errno == ZMQ::EAGAIN
         # We can convert EAGAIN to None as we know in this case
@@ -91,6 +97,7 @@ class Session
         raise
       end
     end
+    return nil if msg.nil?
     return Message.new(msg)
   end
 end

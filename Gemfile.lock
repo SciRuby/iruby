@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    json (1.6.6)
     macaddr (1.5.0)
       systemu (>= 2.4.0)
     systemu (2.5.0)
@@ -12,5 +13,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  json
   uuid
   zmq

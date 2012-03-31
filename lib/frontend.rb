@@ -13,7 +13,8 @@
 
 # our own
 require 'zmq'
-#import session
+require 'irb'
+require File.expand_path('../session', __FILE__)
 #import completer
 
 #-----------------------------------------------------------------------------
@@ -21,13 +22,8 @@ require 'zmq'
 #-----------------------------------------------------------------------------
 
 class Console#(code.InteractiveConsole)
-
-  def initialize(locals=None, filename="<console>",
-    session = session,
-    request_socket=None,
-    sub_socket=None)
-
-    code.InteractiveConsole.new(locals, filename)
+  def initialize(locals=nil, filename="<console>", session = session, request_socket=nil, sub_socket=nil)
+    #code.InteractiveConsole.new(locals, filename)
     @session = session
     @request_socket = request_socket
     @sub_socket = sub_socket
@@ -35,36 +31,41 @@ class Console#(code.InteractiveConsole)
     @messages = {}
 
     # Set tab completion
-    @completer = completer.ClientCompleter(@session, request_socket)
-    readline.parse_and_bind('tab: complete')
-    readline.parse_and_bind('set show-all-if-ambiguous on')
-    readline.set_completer(@completer.complete)
+    #@completer = completer.ClientCompleter(@session, request_socket)
+    #readline.parse_and_bind('tab: complete')
+    #readline.parse_and_bind('set show-all-if-ambiguous on')
+    #readline.set_completer(@completer.complete)
 
     # Set system prompts
-    sys.ps1 = 'Py>>> '
-    sys.ps2 = '  ... '
-    sys.ps3 = 'Out : '
+    #sys.ps1 = 'Ru>>> '
+    #sys.ps2 = '  ... '
+    #sys.ps3 = 'Out : '
     # Build dict of handlers for message types
     @handlers = {}
     ['pyin', 'pyout', 'pyerr', 'stream'].each do |msg_type|
-      @handlers[msg_type] = getattr('handle_%s' % msg_type)
+      @handlers[msg_type] = "handle_#{msg_type}"
     end
   end
 
-    def handle_pyin(omsg)
-      if omsg.parent_header.session == @session.session
-        return
-      end
-      c = omsg.content.code.rstrip()
-      if c
-        print '[IN from %s]' % omsg.parent_header.username
-        print c
-      end
-   end
+  def interact
+    repl = -> prompt { print prompt; puts(" => %s" % runcode(gets.chomp!)) }
+    loop { repl[">> "] }
+  end
+
+  def handle_pyin(omsg)
+    if omsg.parent_header.session == @session
+      return
+    end
+    c = omsg.content.code.rstrip()
+    if c
+      #print '[IN from %s]' % omsg.parent_header.username
+      #print c
+    end
+ end
 
   def handle_pyout(omsg)
     #print omsg # dbg
-    if omsg.parent_header.session == @session.session
+    if omsg.parent_header.session == @session
       print sys.ps3, omsg.content.data
     else
       print omsg.parent_header.username
@@ -73,39 +74,39 @@ class Console#(code.InteractiveConsole)
   end
 
   def print_pyerr(err)
-    print >> sys.stderr#, err.etype,':', err.evalue
-    print >> sys.stderr# + ''.join(err.traceback)       
+    STDERR.puts "#{err.etype}:#{err.evalue}"
+    STDERR.puts err.traceback
   end
 
   def handle_pyerr(omsg)
-    if omsg.parent_header.session == @session.session
+    if omsg.parent_header.session == @session
       return
     end
-    print >> sys.stderr + omsg.parent_header.username
+    STDERR.puts omsg.parent_header.username
     print_pyerr(omsg.content)
   end
-      
+
   def handle_stream(omsg)
     if omsg.content.name == 'stdout'
-      outstream = sys.stdout
+      outstream = STDOUT
     else
-      outstream = sys.stderr
-      print >> outstream
+      outstream = STDERR
+      #print >> outstream
     end
-    print >> outstream + omsg.content.data
+    outstream.puts omsg.content.data
   end
 
   def handle_output(omsg)
-    handler = @handlers.get(omsg.msg_type, None)
-    if handler != None
-      handler(omsg)
+    handler = @handlers[omsg.msg_type]
+    if handler != nil
+      send(handler, omsg)
     end
   end
 
   def recv_output
     while true
       omsg = @session.recv(@sub_socket)
-      if omsg is None
+      if omsg.nil?
         break
       end
       handle_output(omsg)
@@ -116,19 +117,19 @@ class Console#(code.InteractiveConsole)
     # Handle any side effects on output channels
     recv_output
     # Now, dispatch on the possible reply types we must handle
-    if rep is None
+    if rep.nil?
       return
     end
     if rep.content.status == 'error'
-      print_pyerr(rep.content)            
+      print_pyerr(rep.content)
     elsif rep.content.status == 'aborted'
-      print >> sys.stderr << "ERROR: ABORTED"
+      STDERR.puts "ERROR: ABORTED"
       ab = @messages[rep.parent_header.msg_id].content
-      #if 'code' in ab
-      #  print >> sys.stderr, ab.code
-      #else
-      #  print >> sys.stderr, ab
-      #end
+      if ab.code
+        STDERR.puts ab.code
+      else
+        STDERR.puts ab
+      end
     end
   end
 
@@ -140,27 +141,28 @@ class Console#(code.InteractiveConsole)
 
   def runcode(code)
     # We can't pickle code objects, so fetch the actual source
-    src = '\n'.join(self.buffer)
+    #src = '\n'.join(self.buffer)
+    src = code
 
     # for non-background inputs, if we do have previoiusly backgrounded
     # jobs, check to see if they've produced results
-    if not src.endswith(';')
+    if not src[-1..-1] == ';'
       while @backgrounded > 0
         #print 'checking background'
         rep = recv_reply
         if rep
           @backgrounded -= 1
         end
-        time.sleep(0.05)
+        sleep(0.05)
       end
     end
 
     # Send code execution message to kernel
-    omsg = @session.send(@request_socket, 'execute_request', dict(code=src))
-    @messages[omsg.header.msg_id] = omsg
-    
+    omsg = @session.send(@request_socket, 'execute_request', {code:src})
+    #@messages[omsg.header.msg_id] = omsg
+
     # Fake asynchronicity by letting the user put ';' at the end of the line
-    if src.endswith(';')
+    if src[-1..-1] == ';'
       @backgrounded += 1
       return
     end
@@ -168,11 +170,11 @@ class Console#(code.InteractiveConsole)
     # For foreground jobs, wait for reply
     while true
       rep = recv_reply
-      if rep != None
+      if rep != nil
         break
       end
       recv_output
-      time.sleep(0.05)
+      sleep(0.05)
     #else
     #  # We exited without hearing back from the kernel!
     #  print >> sys.stderr, 'ERROR!!! kernel never got back to us!!!'
@@ -181,13 +183,12 @@ class Console#(code.InteractiveConsole)
 end
 
 class InteractiveClient#(object)
-
   def initialize(session, request_socket, sub_socket)
     @session = session
     @request_socket = request_socket
     @sub_socket = sub_socket
-    @console = Console.new(None, '<zmq-console>', @session, @request_socket, @sub_socket)
-  end 
+    @console = Console.new(nil, '<zmq-console>', @session, @request_socket, @sub_socket)
+  end
 
   def interact
     @console.interact
@@ -203,19 +204,19 @@ def main
   connection = ('tcp://%s' % ip) + ':%i'
   req_conn = connection % port_base
   sub_conn = connection % (port_base+1)
-  
+
   # Create initial sockets
-  c = zmq.Context()
-  request_socket = c.socket(zmq.XREQ)
+  c = ZMQ::Context.new
+  request_socket = c.socket(ZMQ::XREQ)
   request_socket.connect(req_conn)
-  
-  sub_socket = c.socket(zmq.SUB)
+
+  sub_socket = c.socket(ZMQ::SUB)
   sub_socket.connect(sub_conn)
-  sub_socket.setsockopt(zmq.SUBSCRIBE, '')
+  sub_socket.setsockopt(ZMQ::SUBSCRIBE, '')
 
   # Make session and user-facing client
-  sess = session.Session()
-  client = InteractiveClient(sess, request_socket, sub_socket)
+  sess = Session.new
+  client = InteractiveClient.new(sess, request_socket, sub_socket)
   client.interact()
 end
 

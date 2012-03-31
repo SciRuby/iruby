@@ -13,6 +13,8 @@ Things to do:
 =end
 
 require 'zmq'
+require 'json'
+require 'ostruct'
 require File.expand_path('../session', __FILE__)
 
 class OutStream
@@ -37,16 +39,15 @@ class OutStream
   end
 
   def flush
-    if self.pub_socket.nil?
+    if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else
       if @_buffer
-        data = ''.join(@_buffer)
+        data = @_buffer.join('')
         content = { name: @name, data: data }
-        msg = session.msg('stream', content, @parent_header)
+        msg = @session.msg('stream', content, @parent_header)
         # FIXME: Wha?
-        STDOUT.puts msg
-        @pub_socket.send_json(msg)
+        @pub_socket.send(msg.to_json)
         @_buffer_len = 0
         @_buffer = []
       end
@@ -70,19 +71,23 @@ class OutStream
     if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else
-      @_buffer.append(s)
-      @_buffer_len += len(s)
+      @_buffer << s
+      @_buffer_len += s.length
       _maybe_send
     end
   end
 
+  def puts str
+    write str
+  end
+
   def _maybe_send
-    if self._buffer[-1].include?('\n')
+    #if self._buffer[-1].include?('\n')
       flush
-    end
-    if @_buffer_len > @max_buffer
-      flush
-    end
+    #end
+    #if @_buffer_len > @max_buffer
+      #flush
+    #end
   end
 
   def writelines sequence
@@ -110,7 +115,7 @@ class DisplayHook
 
     __builtin__._ = obj
     msg = @session.msg('pyout', {data:repr(obj)}, @parent_header)
-    @pub_socket.send_json(msg)
+    @pub_socket.send(msg.to_json)
   end
 
   def set_parent parent
@@ -126,7 +131,7 @@ class RawInput
 
   def __call__ prompt=nil
     msg = @session.msg('raw_input')
-    @socket.send_json(msg)
+    @socket.send(msg.to_json)
     while true
       begin
         reply = @socket.recv_json(ZMQ::NOBLOCK)
@@ -144,42 +149,42 @@ class RawInput
 end
 
 class RKernel
+  attr_accessor :user_ns
+
   def initialize session, reply_socket, pub_socket
     @session = session
     @reply_socket = reply_socket
     @pub_socket = pub_socket
-    @user_ns = {}
+    @user_ns = OpenStruct.new.send(:binding)
     @history = []
-    @compiler = CommandCompiler()
-    @completer = KernelCompleter(self.user_ns)
+    #@compiler = CommandCompiler.new()
+    #@completer = KernelCompleter(@user_ns)
 
     # Build dict of handlers for message types
     @handlers = {}
     ['execute_request', 'complete_request'].each do |msg_type|
-      @handlers[msg_type] = getattr(msg_type)
+      @handlers[msg_type] = msg_type
     end
   end
 
   def abort_queue
     while true
-      begin
+      #begin
         ident = @reply_socket.recv(ZMQ::NOBLOCK)
-      rescue Exception => e
-        if e.errno == ZMQ::EAGAIN
-          break
-        else
-          assert self.reply_socket.rcvmore(), "Unexpected missing message part."
-          msg = self.reply_socket.recv_json()
-        end
-      end
-      STDOUT.puts "Aborting:"
-      STDOUT.puts msg
+      #rescue Exception => e
+        #if e.errno == ZMQ::EAGAIN
+          #break
+        #else
+          #assert self.reply_socket.rcvmore(), "Unexpected missing message part."
+          #msg = self.reply_socket.recv_json()
+        #end
+      #end
       msg_type = msg['msg_type']
       reply_type = msg_type.split('_')[0] + '_reply'
       reply_msg = @session.msg(reply_type, {status: 'aborted'}, msg)
-      STDOUT.puts reply_msg
+      $stderr.puts reply_msg
       @reply_socket.send(ident,ZMQ::SNDMORE)
-      @reply_socket.send_json(reply_msg)
+      @reply_socket.send(reply_msg.to_json)
       # We need to wait a bit for requests to come in. This can probably
       # be set shorter for true asynchronous clients.
       sleep(0.1)
@@ -195,31 +200,40 @@ class RKernel
       return
     end
     pyin_msg = @session.msg('pyin',{code: code}, parent=parent)
-    @pub_socket.send_json(pyin_msg)
+    $stderr.puts pyin_msg.to_json
+    @pub_socket.send(pyin_msg.to_json)
     begin
-      comp_code = compiler(code, '<zmq-kernel>')
-      sys.displayhook.set_parent(parent)
-      eval(comp_code,  @user_ns)
-    rescue
+      comp_code = code#compiler(code, '<zmq-kernel>')
+      #sys.displayhook.set_parent(parent)
+
+      foo = eval(comp_code, @user_ns)
+      $stderr.puts foo
+      $stdout.puts foo.inspect
+    rescue Exception => e
+      $stdout.puts e.inspect
       result = 'error'
-      etype, evalue, tb = sys.exc_info()
-      tb = traceback.format_exception(etype, evalue, tb)
+      #etype, evalue, tb = sys.exc_info()
+      etype, evalue, tb = 1, 2, 3
+      #tb = traceback.format_exception(etype, evalue, tb)
+      tb = "1, 2, 3"
       exc_content = {
           status: 'error',
           traceback: tb,
-          etype: unicode(etype),
-          evalue: unicode(evalue)
+          etype: etype,
+          evalue: evalue
       }
-      exc_msg = self.session.msg('pyerr', exc_content, parent)
-      self.pub_socket.send_json(exc_msg)
+      exc_msg = @session.msg('pyerr', exc_content, parent)
+      @pub_socket.send(exc_msg.to_json)
       reply_content = exc_content
     end
+    reply_content = {status: 'ok'}
     reply_msg = @session.msg('execute_reply', reply_content, parent)
-    STDOUT.puts reply_msg
+    #$stdout.puts reply_msg
+    $stderr.puts reply_msg
     @reply_socket.send(ident, ZMQ::SNDMORE)
-    @reply_socket.send_json(reply_msg)
+    @reply_socket.send(reply_msg.to_json)
     if reply_msg['content']['status'] == 'error'
-      @abort_queue
+      abort_queue
     end
   end
 
@@ -227,7 +241,7 @@ class RKernel
     matches = { matches: complete(parent), status: 'ok' }
     completion_msg = @session.send(@reply_socket, 'complete_reply',
                                        matches, parent, ident)
-    STDOUT.puts completion_msg
+    $stdout.puts completion_msg
   end
 
   def complete(msg)
@@ -235,18 +249,18 @@ class RKernel
     return @completer.complete(msg.content.line, msg.content.text)
   end
 
-  def start
+  def start(displayhook)
     while true
       ident = @reply_socket.recv()
-      assert @reply_socket.rcvmore(), "Unexpected missing message part."
-      msg = @reply_socket.recv_json()
+      #assert @reply_socket.rcvmore(), "Unexpected missing message part."
+      msg = @reply_socket.recv()
+      msg = JSON.parse(msg) if msg
       omsg = msg
-      STDOUT.puts omsg
-      handler = @handlers[omsg.msg_type]
+      handler = @handlers[omsg['msg_type']]
       if handler.nil?
-        STDERR.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
+        err.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
       else
-        handler(ident, omsg)
+        displayhook.__call__(send(handler, ident, omsg))
       end
     end
   end
@@ -261,8 +275,8 @@ def main
   rep_conn = connection % port_base
   pub_conn = connection % (port_base+1)
 
-  STDOUT.puts "Starting the kernel..."
-  STDOUT.puts "On:",rep_conn, pub_conn
+  $stdout.puts "Starting the kernel..."
+  $stdout.puts "On:",rep_conn, pub_conn
 
   session = Session.new('kernel')
 
@@ -274,21 +288,22 @@ def main
 
   stdout = OutStream.new(session, pub_socket, 'stdout')
   stderr = OutStream.new(session, pub_socket, 'stderr')
+  old_stdout = STDOUT
   $stdout = stdout
-  $stderr = stderr
+  #$stderr = stderr
 
-  display_hook = new DisplayHook(session, pub_socket)
-  sys.displayhook = display_hook
+  display_hook = DisplayHook.new(session, pub_socket)
+  #sys.displayhook = display_hook
 
   kernel = RKernel.new(session, reply_socket, pub_socket)
 
   # For debugging convenience, put sleep and a string in the namespace, so we
   # have them every time we start.
-  kernel.user_ns['sleep'] = time.sleep
-  kernel.user_ns['s'] = 'Test string'
+  #kernel.user_ns['sleep'] = sleep
+  #kernel.user_ns['s'] = 'Test string'
 
-  STDOUT.puts "Use Ctrl-\\ (NOT Ctrl-C!) to terminate."
-  kernel.start()
+  old_stdout.puts "Use Ctrl-\\ (NOT Ctrl-C!) to terminate."
+  kernel.start(display_hook)
 end
 
 
