@@ -1,29 +1,29 @@
 require 'zmq'
 require 'em-websocket'
 require 'stringio'
+require 'cgi'
 require File.expand_path('../console', __FILE__)
 require File.expand_path('../interactive_client', __FILE__)
 require File.expand_path('../session', __FILE__)
 
 EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
+  $ws = ws
+
   class BrowserIO < StringIO
-    def initialize(socket)
+    def initialize(session, socket, name)
+      @session = session
       @socket = socket
+      @name = name
     end
 
     def write s
-      @socket.send(s.dup)
+      content = { name: @name, data: s }
+      msg = @session.msg('stream', content, @parent_header) if @session
+      @socket.send(msg.to_json)
     end
     alias puts write
     alias print write
   end
-
-  @stdout = BrowserIO.new(ws)
-  #@stderr = BrowserIO.new(ws)
-
-  $stdout = @stdout
-  STDOUT = @stdout
-  #$stderr = @stderr
 
   def main
     ip = '127.0.0.1'
@@ -44,6 +44,13 @@ EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
 
     # Make session and user-facing client
     sess = Session.new
+
+    @stdout = BrowserIO.new(sess, $ws, 'stdout')
+    @stderr = BrowserIO.new(sess, $ws, 'stderr')
+
+    Object.const_set("STDOUT", @stdout)
+    Object.const_set("STDERR", @stderr)
+
     @client = InteractiveClient.new(sess, request_socket, sub_socket)
     #client.interact()
   end
@@ -54,10 +61,9 @@ EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
     @client.runcode(msg)
   end
 
-  ws.onopen { ws.send "Hello Client" }
+  ws.onopen { } #ws.send "Hello Client" }
   ws.onmessage do |msg|
-    out = handle_message(msg)
-    ws.send(out) unless out.nil?
+    handle_message(msg)
   end
   ws.onclose { puts "Websocket closed" }
 end

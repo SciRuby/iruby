@@ -99,7 +99,6 @@ class RKernel
       msg_type = msg['msg_type']
       reply_type = msg_type.split('_')[0] + '_reply'
       reply_msg = @session.msg(reply_type, {status: 'aborted'}, msg)
-      $stderr.puts reply_msg
       @reply_socket.send(ident,ZMQ::SNDMORE)
       @reply_socket.send(reply_msg.to_json)
       # We need to wait a bit for requests to come in. This can probably
@@ -117,25 +116,23 @@ class RKernel
       return
     end
     pyin_msg = @session.msg('pyin',{code: code}, parent=parent)
-    $stderr.puts pyin_msg.to_json
+    #$stderr.puts pyin_msg.to_json
     @pub_socket.send(pyin_msg.to_json)
     begin
       comp_code = code#compiler(code, '<zmq-kernel>')
       #sys.displayhook.set_parent(parent)
 
-      foo = eval(comp_code, @user_ns)
-      $stderr.puts foo
-      $stdout.puts foo.inspect
+      eval(comp_code, @user_ns)
     rescue Exception => e
-      $stdout.puts e.inspect
+      #$stderr.puts e.inspect
       result = 'error'
       #etype, evalue, tb = sys.exc_info()
-      etype, evalue, tb = 1, 2, 3
+      etype, evalue, tb = e.class.to_s, e.message, e.backtrace
       #tb = traceback.format_exception(etype, evalue, tb)
-      tb = "1, 2, 3"
+      #tb = "1, 2, 3"
       exc_content = {
           status: 'error',
-          traceback: tb,
+          traceback: tb.join("\n"),
           etype: etype,
           evalue: evalue
       }
@@ -146,7 +143,7 @@ class RKernel
     reply_content = {status: 'ok'}
     reply_msg = @session.msg('execute_reply', reply_content, parent)
     #$stdout.puts reply_msg
-    $stderr.puts reply_msg
+    #$stderr.puts reply_msg
     @reply_socket.send(ident, ZMQ::SNDMORE)
     @reply_socket.send(reply_msg.to_json)
     if reply_msg['content']['status'] == 'error'
@@ -207,7 +204,7 @@ def main
   stderr = OutStream.new(session, pub_socket, 'stderr')
   old_stdout = STDOUT
   $stdout = stdout
-  #$stderr = stderr
+  $stderr = stderr
 
   display_hook = DisplayHook.new(session, pub_socket)
   #sys.displayhook = display_hook

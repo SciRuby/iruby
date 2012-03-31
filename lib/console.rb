@@ -45,7 +45,7 @@ class Console#(code.InteractiveConsole)
     if omsg.parent_header.session == @session
       print sys.ps3, omsg.content.data
     else
-      print omsg.parent_header.username
+      #print omsg.parent_header.username
       print omsg.content.data
     end
   end
@@ -59,7 +59,7 @@ class Console#(code.InteractiveConsole)
     if omsg.parent_header.session == @session
       return
     end
-    STDERR.puts omsg.parent_header.username
+    #STDERR.puts omsg.parent_header.username
     print_pyerr(omsg.content)
   end
 

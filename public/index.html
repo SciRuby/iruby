@@ -4,42 +4,49 @@
     <script src="./vendor/codemirror2/lib/codemirror.js" type="text/javascript"></script>
     <link rel="stylesheet" href="./vendor/codemirror2/lib/codemirror.css">
     <script src="./vendor/codemirror2/mode/ruby/ruby.js"></script>
+    <style>
+      body{
+        background-color: #eee;
+      }
+      div.CodeMirror{
+        background-color: white;
+      }
+    </style>
 
-    <script src="./vendor/codemirror-ui/js/codemirror-ui.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="./vendor/codemirror-ui/css/codemirror-ui.css" type="text/css" media="screen" />
     <script>
       $(document).ready(function(){
         function debug(str){ $("#debug").append("<p>"+str+"</p>"); };
 
         ws = new WebSocket("ws://localhost:8123");
-        ws.onmessage = function(evt) { $("#msg").append("<p>"+evt.data+"</p>"); };
+        ws.onmessage = function(evt) {
+          console.log(evt);
+          data = $.parseJSON(evt.data);
+          escaped_response = $('<div />').text(data.content.data).html();
+          $("#msg").append("<pre>"+escaped_response+"</pre>");
+        };
         ws.onclose = function() { debug("socket closed"); };
         ws.onopen = function() {
           debug("connected...");
-          ws.send("puts 'foo'");
         };
       });
     </script>
   </head>
   <body>
     <div id="debug"></div>
-    <div id="msg"></div>
     <div id='code1'></div>
     <button id='submit'>run</button>
+    <div id="msg"></div>
 
     <script>
-      // CodeMirrorUI
-      //first set up some variables
       var textarea = document.getElementById('code1');
-      var uiOptions = { path : './vendor/codemirror-ui/js/', searchMode: 'popup' }
       var codeMirrorOptions = {
-          mode: "ruby" // all your normal CodeMirror options go here
+        mode: "ruby"
       }
 
       //then create the editor
-      var editor = new CodeMirrorUI(textarea,uiOptions,codeMirrorOptions); // lol global
+      var editor = CodeMirror.fromTextArea(textarea, codeMirrorOptions);
 
-      $('#submit').on('click', function(){ ws.send(editor.mirror.getValue()) })
+      $('#submit').on('click', function(){ ws.send(editor.getValue()) })
 
     </script>
   </body>
