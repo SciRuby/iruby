@@ -4,7 +4,14 @@ This begins life as a straight line for line port of the iPython repo stored her
 Ideally it becomes something more consequential later.
 
 ### Development
+This is meant to be run from the IPython notebook.  install the bundle and
+generate an rvm wrapper for this bundle with:
 
+    rvm wrapper 1.9.3#iruby iruby
+
+You'll have to use our ipython fork's `ruby_kernel` branch.  You'll also want to
+install ipython to point to your dev version with `sudo python setupegg.py
+develop`
 
 ### Building an in-browser REPL for Ruby (iRuby)
 Hey, I'm Josh Adams.  I'm a partner and CTO at isotope|eleven.  We alo host
