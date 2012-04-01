@@ -61,7 +61,7 @@ var IRuby = (function (IRuby) {
        );
        };
        */
-    this._handle_start_kernel({ kernel_id: 1, ws_url: 'ws://localhost:8123' }, callback);
+    this._handle_start_kernel({ kernel_id: 1, ws_url: 'ws://isotope11.selfip.com:3006' }, callback);
   };
 
 

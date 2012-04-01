@@ -32,7 +32,8 @@ class OutStream
         msg = @session.msg('stream', content, @parent_header) if @session
         # FIXME: Wha?
         STDERR.puts msg.to_json
-        @pub_socket.send(msg.to_json)
+        #@pub_socket.send(msg.to_json)
+        @session.send(@pub_socket, msg)
         @_buffer_len = 0
         @_buffer = []
       end

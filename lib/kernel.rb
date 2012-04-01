@@ -34,7 +34,8 @@ class DisplayHook
     STDERR.puts "displayhook call:"
     STDERR.puts @parent_header.inspect
     msg = @session.msg('pyout', {data:repr(obj)}, @parent_header)
-    @pub_socket.send(msg.to_json)
+    #@pub_socket.send(msg.to_json)
+    @session.send(@pub_socket, msg)
   end
 
   def set_parent parent
@@ -50,7 +51,7 @@ class RawInput
 
   def __call__ prompt=nil
     msg = @session.msg('raw_input')
-    @socket.send(msg.to_json)
+    @session.send(@socket, msg)
     while true
       begin
         reply = @socket.recv_json(ZMQ::NOBLOCK)
@@ -70,10 +71,11 @@ end
 class RKernel
   attr_accessor :user_ns
 
-  def initialize session, reply_socket, pub_socket
+  def initialize session, reply_socket, pub_socket, hb_socket
     @session = session
     @reply_socket = reply_socket
     @pub_socket = pub_socket
+    @hb_socket = hb_socket
     @user_ns = OpenStruct.new.send(:binding)
     @history = []
     #@compiler = CommandCompiler.new()
@@ -118,8 +120,7 @@ class RKernel
       return
     end
     pyin_msg = @session.msg('pyin',{code: code}, parent)
-    #$stderr.puts pyin_msg.to_json
-    @pub_socket.send(pyin_msg.to_json)
+    @session.send(@pub_socket, pyin_msg)
     begin
       STDERR.puts 'parent: '
       STDERR.puts parent.inspect
@@ -142,15 +143,16 @@ class RKernel
           evalue: evalue
       }
       exc_msg = @session.msg('pyerr', exc_content, parent)
-      @pub_socket.send(exc_msg.to_json)
+      @session.send(@pub_socket, exc_msg)
+
       reply_content = exc_content
     end
     reply_content = {status: 'ok'}
     reply_msg = @session.msg('execute_reply', reply_content, parent)
     #$stdout.puts reply_msg
     #$stderr.puts reply_msg
-    @reply_socket.send(ident, ZMQ::SNDMORE)
-    @reply_socket.send(reply_msg.to_json)
+    #@session.send(@reply_socket, ident + reply_msg)
+    @session.send(@reply_socket, reply_msg, nil, nil, ident)
     if reply_msg['content']['status'] == 'error'
       abort_queue
     end
@@ -172,38 +174,67 @@ class RKernel
     while true
       ident = @reply_socket.recv()
       #assert @reply_socket.rcvmore(), "Unexpected missing message part."
-      msg = @reply_socket.recv()
-      msg = JSON.parse(msg) if msg
-      omsg = msg
-      handler = @handlers[omsg['header']['msg_type']]
+      #msg = @reply_socket.recv()
+      msg = @session.recv(@reply_socket)
+      begin
+        msg = JSON.parse(msg) if msg
+        omsg = msg
+        handler = @handlers[omsg['header']['msg_type']]
+      rescue
+      end
       if handler.nil?
-        err.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
+        STDERR.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
       else
+        STDERR.puts 'handling ' + omsg.inspect
         displayhook.__call__(send(handler, ident, omsg))
       end
     end
   end
 end
 
-def main
+def main(configfile_path)
+  # read configfile
+  # get the following from it:
+  # - shell_port
+  # - iopub_port
+  # - stdin_port
+  # - hb_port
+  # - ip
+  # - key
+
+  configfile = File.read(configfile_path)
+  config = JSON.parse(configfile)
+
   c = ZMQ::Context.new
 
+  shell_port = config['shell_port']
+  pub_port = config['iopub_port']
+  hb_port = config['hb_port']
+
   ip = '127.0.0.1'
-  port_base = 5555
   connection = ('tcp://%s' % ip) + ':%i'
-  rep_conn = connection % port_base
-  pub_conn = connection % (port_base+1)
+  shell_conn = connection % shell_port
+  pub_conn = connection % pub_port
+  hb_conn = connection % hb_port
 
   $stdout.puts "Starting the kernel..."
-  $stdout.puts "On:",rep_conn, pub_conn
+  $stdout.puts "On:",shell_conn, pub_conn, hb_conn
 
   session = Session.new('kernel')
 
   reply_socket = c.socket(ZMQ::XREP)
-  reply_socket.bind(rep_conn)
+  reply_socket.bind(shell_conn)
 
   pub_socket = c.socket(ZMQ::PUB)
   pub_socket.bind(pub_conn)
+
+  hb_socket = c.socket(ZMQ::REP)
+  hb_socket.bind(hb_conn)
+  hb_thread = Thread.new do
+    while true
+      hb_socket.send(hb_socket.rcv())
+    end
+  end
 
   stdout = OutStream.new(session, pub_socket, 'stdout')
   #stderr = OutStream.new(session, pub_socket, 'stderr')
@@ -214,7 +245,7 @@ def main
   display_hook = DisplayHook.new(session, pub_socket)
   $displayhook = display_hook
 
-  kernel = RKernel.new(session, reply_socket, pub_socket)
+  kernel = RKernel.new(session, reply_socket, pub_socket, hb_socket)
 
   # For debugging convenience, put sleep and a string in the namespace, so we
   # have them every time we start.
@@ -227,5 +258,5 @@ end
 
 
 if __FILE__ == $0
-  main()
+  main(ARGV[0])
 end
