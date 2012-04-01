@@ -31,12 +31,14 @@ class DisplayHook
     end
 
     __builtin__._ = obj
+    STDERR.puts "displayhook call:"
+    STDERR.puts @parent_header.inspect
     msg = @session.msg('pyout', {data:repr(obj)}, @parent_header)
     @pub_socket.send(msg.to_json)
   end
 
   def set_parent parent
-    @parent_header = extract_header(parent)
+    @parent_header = Message.extract_header(parent)
   end
 end
 
@@ -96,7 +98,7 @@ class RKernel
           #msg = self.reply_socket.recv_json()
         #end
       #end
-      msg_type = msg['msg_type']
+      msg_type = msg['header']['msg_type']
       reply_type = msg_type.split('_')[0] + '_reply'
       reply_msg = @session.msg(reply_type, {status: 'aborted'}, msg)
       @reply_socket.send(ident,ZMQ::SNDMORE)
@@ -115,12 +117,15 @@ class RKernel
       STDERR.puts parent
       return
     end
-    pyin_msg = @session.msg('pyin',{code: code}, parent=parent)
+    pyin_msg = @session.msg('pyin',{code: code}, parent)
     #$stderr.puts pyin_msg.to_json
     @pub_socket.send(pyin_msg.to_json)
     begin
+      STDERR.puts 'parent: '
+      STDERR.puts parent.inspect
       comp_code = code#compiler(code, '<zmq-kernel>')
-      #sys.displayhook.set_parent(parent)
+      $displayhook.set_parent(parent)
+      $stdout.set_parent(parent)
 
       eval(comp_code, @user_ns)
     rescue Exception => e
@@ -170,7 +175,7 @@ class RKernel
       msg = @reply_socket.recv()
       msg = JSON.parse(msg) if msg
       omsg = msg
-      handler = @handlers[omsg['msg_type']]
+      handler = @handlers[omsg['header']['msg_type']]
       if handler.nil?
         err.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
       else
@@ -201,13 +206,13 @@ def main
   pub_socket.bind(pub_conn)
 
   stdout = OutStream.new(session, pub_socket, 'stdout')
-  stderr = OutStream.new(session, pub_socket, 'stderr')
+  #stderr = OutStream.new(session, pub_socket, 'stderr')
   old_stdout = STDOUT
   $stdout = stdout
-  $stderr = stderr
+  #$stderr = stderr
 
   display_hook = DisplayHook.new(session, pub_socket)
-  #sys.displayhook = display_hook
+  $displayhook = display_hook
 
   kernel = RKernel.new(session, reply_socket, pub_socket)
 

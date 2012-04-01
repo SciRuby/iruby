@@ -14,13 +14,21 @@ EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
       @session = session
       @socket = socket
       @name = name
+      @parent_header = {}
     end
 
     def write s
       content = { name: @name, data: s }
       msg = @session.msg('stream', content, @parent_header) if @session
+      STDERR.puts msg.to_json
       @socket.send(msg.to_json)
     end
+
+    def set_parent parent
+      header = Message.extract_header(parent)
+      @parent_header = header
+    end
+
     alias puts write
     alias print write
   end
@@ -46,10 +54,10 @@ EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
     sess = Session.new
 
     @stdout = BrowserIO.new(sess, $ws, 'stdout')
-    @stderr = BrowserIO.new(sess, $ws, 'stderr')
+    #@stderr = BrowserIO.new(sess, $ws, 'stderr')
 
     Object.const_set("STDOUT", @stdout)
-    Object.const_set("STDERR", @stderr)
+    #Object.const_set("STDERR", @stderr)
 
     @client = InteractiveClient.new(sess, request_socket, sub_socket)
     #client.interact()
@@ -58,7 +66,15 @@ EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8123) do |ws|
   main() # LOL GLOBALS
 
   def handle_message(msg)
-    @client.runcode(msg)
+    begin
+      msg = JSON.parse(msg)
+    rescue
+    end
+    STDERR.puts msg
+    STDOUT.set_parent(msg)
+    if msg['content']
+      @client.runcode(msg['content']['code'])
+    end
   end
 
   ws.onopen { } #ws.send "Hello Client" }

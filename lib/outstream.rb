@@ -12,7 +12,8 @@ class OutStream
   end
 
   def set_parent parent
-    @parent_header = extract_header(parent)
+    header = Message.extract_header(parent)
+    @parent_header = header
   end
 
   def close
@@ -20,6 +21,8 @@ class OutStream
   end
 
   def flush
+    STDERR.puts("flushing, parent to follow")
+    STDERR.puts @parent_header.inspect
     if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else
@@ -28,6 +31,7 @@ class OutStream
         content = { name: @name, data: data }
         msg = @session.msg('stream', content, @parent_header) if @session
         # FIXME: Wha?
+        STDERR.puts msg.to_json
         @pub_socket.send(msg.to_json)
         @_buffer_len = 0
         @_buffer = []

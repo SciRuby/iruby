@@ -30,10 +30,11 @@ class Console#(code.InteractiveConsole)
   end
 
   def handle_pyin(omsg)
-    if omsg.parent_header.session == @session
+    STDERR.puts omsg.inspect
+    if omsg['parent_header']['session'] == @session
       return
     end
-    c = omsg.content.code.rstrip()
+    c = omsg['content']['code'].rstrip()
     if c
       #print '[IN from %s]' % omsg.parent_header.username
       #print c
@@ -42,39 +43,40 @@ class Console#(code.InteractiveConsole)
 
   def handle_pyout(omsg)
     #print omsg # dbg
-    if omsg.parent_header.session == @session
-      print sys.ps3, omsg.content.data
+    if omsg['parent_header']['session'] == @session
+      print sys.ps3, omsg['content']['data']
     else
       #print omsg.parent_header.username
-      print omsg.content.data
+      print omsg['content']['data']
     end
   end
 
   def print_pyerr(err)
-    STDERR.puts "#{err.etype}:#{err.evalue}"
-    STDERR.puts err.traceback
+    STDERR.puts "#{err['etype']}:#{err['evalue']}"
+    STDERR.puts err['traceback']
   end
 
   def handle_pyerr(omsg)
-    if omsg.parent_header.session == @session
+    if omsg['parent_header']['session'] == @session
       return
     end
-    #STDERR.puts omsg.parent_header.username
-    print_pyerr(omsg.content)
+    print_pyerr(omsg['content'])
   end
 
   def handle_stream(omsg)
-    if omsg.content.name == 'stdout'
+    if omsg['content']['name'] == 'stdout'
       outstream = STDOUT
     else
       outstream = STDERR
       #print >> outstream
     end
-    outstream.puts omsg.content.data
+    outstream.puts omsg['content']['data']
   end
 
   def handle_output(omsg)
-    handler = @handlers[omsg.msg_type]
+    STDERR.puts 'handle_output'
+    handler = @handlers[omsg['header']['msg_type']]
+    STDERR.puts handler.inspect
     if handler != nil
       send(handler, omsg)
     end
@@ -97,11 +99,11 @@ class Console#(code.InteractiveConsole)
     if rep.nil?
       return
     end
-    if rep.content.status == 'error'
-      print_pyerr(rep.content)
-    elsif rep.content.status == 'aborted'
+    if rep['content']['status'] == 'error'
+      print_pyerr(rep['content'])
+    elsif rep['content']['status'] == 'aborted'
       STDERR.puts "ERROR: ABORTED"
-      ab = @messages[rep.parent_header.msg_id].content
+      ab = @messages[rep['parent_header']['msg_id']]['content']
       if ab.code
         STDERR.puts ab.code
       else
@@ -136,7 +138,7 @@ class Console#(code.InteractiveConsole)
 
     # Send code execution message to kernel
     omsg = @session.send(@request_socket, 'execute_request', {code:src})
-    #@messages[omsg.header.msg_id] = omsg
+    @messages[omsg['header']['msg_id']] = omsg
 
     # Fake asynchronicity by letting the user put ';' at the end of the line
     if src[-1..-1] == ';'

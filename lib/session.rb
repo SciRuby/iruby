@@ -35,19 +35,20 @@ class Message
   end
 
   def self.extract_header(msg_or_header)
+    STDERR.puts "extracting header for:"
+    STDERR.puts msg_or_header.inspect
     # Given a message or header, return the header.
     if msg_or_header.nil?
       return {}
     end
-    begin
-      # See if msg_or_header is the entire message.
-      h = msg_or_header['header']
-    rescue
-      # See if msg_or_header is just the header
-      h = msg_or_header['msg_id']
-      h ||= msg_or_header
-    end
+    # See if msg_or_header is the entire message.
+    h = msg_or_header['header']
+    # See if msg_or_header is just the header
+    #h ||= msg_or_header['msg_id']
+    h ||= msg_or_header
 
+    STDERR.puts "extracted:"
+    STDERR.puts h.inspect
     return h
   end
 end
@@ -69,7 +70,7 @@ class Session
     msg = {}
     msg['header'] = msg_header()
     msg['parent_header'] = parent.nil? ? {} : Message.extract_header(parent)
-    msg['msg_type'] = msg_type
+    msg['header']['msg_type'] = msg_type
     msg['content'] = content || {}
     return msg
   end
@@ -80,7 +81,7 @@ class Session
       socket.send(ident, ZMQ::SNDMORE)
     end
     socket.send(msg.to_json)
-    omsg = Message.new(msg)
+    omsg = msg
     return omsg
   end
 
@@ -98,7 +99,7 @@ class Session
       end
     end
     return nil if msg.nil?
-    return Message.new(msg)
+    return msg
   end
 end
 
