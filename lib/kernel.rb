@@ -138,7 +138,7 @@ class RKernel
       #tb = "1, 2, 3"
       exc_content = {
           status: 'error',
-          traceback: tb.join("\n"),
+          traceback: tb,
           etype: etype,
           evalue: evalue
       }

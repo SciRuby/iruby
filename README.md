@@ -13,6 +13,10 @@ You'll have to use our ipython fork's `ruby_kernel` branch.  You'll also want to
 install ipython to point to your dev version with `sudo python setupegg.py
 develop`
 
+Then you just run the IPython notebook web server with `ipython notebook
+--Session.key=''`  That will execute the server and open your web browser to the
+notebooks index page.
+
 ### Building an in-browser REPL for Ruby (iRuby)
 Hey, I'm Josh Adams.  I'm a partner and CTO at isotope|eleven.  We alo host
 Birmingham, AL's Open Source Software meetup - BOSS.
