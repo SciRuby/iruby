@@ -232,7 +232,7 @@ def main(configfile_path)
   hb_socket.bind(hb_conn)
   hb_thread = Thread.new do
     while true
-      hb_socket.send(hb_socket.rcv())
+      hb_socket.send(hb_socket.recv())
     end
   end
 
