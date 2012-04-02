@@ -1,5 +1,5 @@
 ## iRuby
-This begins life as a straight line for line port of the iPython repo stored here: https://github.com/fperez/zmq-pykernel/
+This begins life as a straight line for line port of the IPython repo stored here: https://github.com/fperez/zmq-pykernel/
 
 Ideally it becomes something more consequential later.
 
@@ -22,11 +22,11 @@ Hey, I'm Josh Adams.  I'm a partner and CTO at isotope|eleven.  We alo host
 Birmingham, AL's Open Source Software meetup - BOSS.
 
 At one of these sessions in early 2012, Tom Brander did a presentation and used
-iPython in his browser to manage it (there was much code and it was executed
-live).  This was the first time I'd seen iPython in the browser where it
+IPython in his browser to manage it (there was much code and it was executed
+live).  This was the first time I'd seen IPython in the browser where it
 actually worked like it was supposed to, and I was extremely impressed.
 
-If you've not seen iPython, it looks like this <* Insert Screenshot Here *> in
+If you've not seen IPython, it looks like this <* Insert Screenshot Here *> in
 its web-browser mode.  It also manages a lot of console-basd REPLs.
 
 Anyway, it has notebooks that you can save out to execute later, and you can
@@ -35,11 +35,11 @@ very impressive.
 
 But I'm primarily a Rubyist, and I'm happy that way :)  I couldn't sit by while
 Python had this awesome tool that we lacked.  I looked around for a bit, and
-there was nothing like iPython in our ecosystem.  There were, however, quite a
+there was nothing like IPython in our ecosystem.  There were, however, quite a
 few people asking about it.  So I figured I'd do something about it.
 
 #### The Architecture
-So the iPython guys did a great job explaining their core architecture, both in
+So the IPython guys did a great job explaining their core architecture, both in
 words and in pared-down code, in a blog post they wrote concerning it.  In
 general, it works like this <* Diagram *>
 

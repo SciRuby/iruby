@@ -128,7 +128,8 @@ class RKernel
       $displayhook.set_parent(parent)
       $stdout.set_parent(parent)
 
-      eval(comp_code, @user_ns)
+      output = eval(comp_code, @user_ns)
+      $stdout.puts(output.inspect) if output
     rescue Exception => e
       #$stderr.puts e.inspect
       result = 'error'
