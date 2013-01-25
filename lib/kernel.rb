@@ -33,9 +33,8 @@ class DisplayHook
     __builtin__._ = obj
     STDERR.puts "displayhook call:"
     STDERR.puts @parent_header.inspect
-    msg = @session.msg('pyout', {data:repr(obj)}, @parent_header)
     #@pub_socket.send(msg.to_json)
-    @session.send(@pub_socket, msg)
+    @session.send(@pub_socket, 'pyout', {data:repr(obj)}, @parent_header)
   end
 
   def set_parent parent
@@ -50,8 +49,7 @@ class RawInput
   end
 
   def __call__ prompt=nil
-    msg = @session.msg('raw_input')
-    @session.send(@socket, msg)
+    @session.send(@socket, 'raw_input', {}, @parent_header)
     while true
       begin
         reply = @socket.recv_json(ZMQ::NOBLOCK)
@@ -78,6 +76,7 @@ class RKernel
     @hb_socket = hb_socket
     @user_ns = OpenStruct.new.send(:binding)
     @history = []
+    @execution_count = 0
     #@compiler = CommandCompiler.new()
     #@completer = KernelCompleter(@user_ns)
 
@@ -102,9 +101,10 @@ class RKernel
       #end
       msg_type = msg['header']['msg_type']
       reply_type = msg_type.split('_')[0] + '_reply'
-      reply_msg = @session.msg(reply_type, {status: 'aborted'}, msg)
-      @reply_socket.send(ident,ZMQ::SNDMORE)
-      @reply_socket.send(reply_msg.to_json)
+      @session.send(@reply_socket, reply_type, {status: 'aborted'}, msg)
+      # reply_msg = @session.msg(reply_type, {status: 'aborted'}, msg)
+      # @reply_socket.send(ident,ZMQ::SNDMORE)
+      # @reply_socket.send(reply_msg.to_json)
       # We need to wait a bit for requests to come in. This can probably
       # be set shorter for true asynchronous clients.
       sleep(0.1)
@@ -119,8 +119,8 @@ class RKernel
       STDERR.puts parent
       return
     end
-    pyin_msg = @session.msg('pyin',{code: code}, parent)
-    @session.send(@pub_socket, pyin_msg)
+    # pyin_msg = @session.msg()
+    @session.send(@pub_socket, 'pyin', {code: code}, parent)
     begin
       STDERR.puts 'parent: '
       STDERR.puts parent.inspect
@@ -141,19 +141,26 @@ class RKernel
           status: 'error',
           traceback: tb,
           etype: etype,
-          evalue: evalue
+          evalue: evalue,
       }
-      exc_msg = @session.msg('pyerr', exc_content, parent)
-      @session.send(@pub_socket, exc_msg)
+      @session.send(@pub_socket, 'pyerr', exc_content, parent)
 
       reply_content = exc_content
     end
-    reply_content = {status: 'ok'}
-    reply_msg = @session.msg('execute_reply', reply_content, parent)
+    reply_content = {status: 'ok',
+        payload: [],
+        user_variables: {},
+        user_expressions: {},
+        execution_count: @execution_count,
+      }
+    if ! parent['content'].fetch('silent', false)
+      @execution_count += 1
+    end
+    # reply_msg = @session.msg('execute_reply', reply_content, parent)
     #$stdout.puts reply_msg
     #$stderr.puts reply_msg
     #@session.send(@reply_socket, ident + reply_msg)
-    @session.send(@reply_socket, reply_msg, nil, nil, ident)
+    reply_msg = @session.send(@reply_socket, 'execute_reply', reply_content, parent, ident)
     if reply_msg['content']['status'] == 'error'
       abort_queue
     end

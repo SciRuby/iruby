@@ -96,6 +96,7 @@ class Session
     msg = {}
     msg['header'] = msg_header()
     msg['parent_header'] = parent.nil? ? {} : Message.extract_header(parent)
+    msg['metadata'] = {}
     msg['header']['msg_type'] = msg_type
     msg['content'] = content || {}
     return msg
@@ -155,7 +156,11 @@ class Session
       raise "stream must be Socket or ZMQSocket, not %r"%stream.class
     end
 
-    msg = msg_or_type
+    if msg_or_type.is_a?(Hash)
+      msg = msg_or_type
+    else
+      msg = self.msg(msg_or_type, content, parent)
+    end
 
     buffers ||= []
     to_send = self.serialize(msg, ident)
@@ -185,6 +190,12 @@ class Session
         stream.send(part, flag)
       end
     end
+    # STDOUT.puts '-'*30
+    # STDOUT.puts "SENDING"
+    # STDOUT.puts to_send
+    # STDOUT.puts to_send.length
+    # STDOUT.puts '-'*30
+    
     #buffers.each do |b|
       #stream.send(b, flag, copy=False)
     #end
@@ -233,7 +244,7 @@ class Session
     return unserialize(msg_list)
   end
 
-  def serialize(msg, ident=null)
+  def serialize(msg, ident=nil)
     """Serialize the message components to bytes.
 
     This is roughly the inverse of unserialize. The serialize/unserialize
@@ -271,7 +282,9 @@ class Session
 
     real_message = [self.pack(msg['header']),
                     self.pack(msg['parent_header']),
-                    content]
+                    self.pack(msg['metadata']),
+                    self.pack(msg['content']),
+                  ]
 
     to_send = []
 
@@ -287,6 +300,8 @@ class Session
     to_send << signature
 
     to_send += real_message
+    # STDOUT.puts to_send
+    # STDOUT.puts to_send.length
 
     return to_send
   end
@@ -316,7 +331,7 @@ class Session
             The nested message dict with top-level keys [header, parent_header,
             content, buffers].
 =end
-    minlen = 4
+    minlen = 5
     message = {}
     unless copy
       minlen.times do |i|
@@ -332,10 +347,11 @@ class Session
     message['msg_id'] = header['msg_id']
     message['msg_type'] = header['msg_type']
     message['parent_header'] = JSON.parse(msg_list[2])
+    message['metadata'] = JSON.parse(msg_list[3])
     if content
-      message['content'] = JSON.parse(msg_list[3])
+      message['content'] = JSON.parse(msg_list[4])
     else
-      message['content'] = msg_list[3]
+      message['content'] = msg_list[4]
     end
 
     message['buffers'] = msg_list[4..-1]
