@@ -19,7 +19,8 @@ require File.expand_path('../session', __FILE__)
 require File.expand_path('../outstream', __FILE__)
 
 class DisplayHook
-  def initialize session, pub_socket
+  def initialize kernel, session, pub_socket
+    @kernel = kernel
     @session = session
     @pub_socket = pub_socket
     @parent_header = {}
@@ -29,12 +30,15 @@ class DisplayHook
     if obj.nil?
       return
     end
-
-    __builtin__._ = obj
+    # STDERR.puts @kernel.user_ns
+    # @user_ns._ = obj
     # STDERR.puts "displayhook call:"
     # STDERR.puts @parent_header.inspect
     #@pub_socket.send(msg.to_json)
-    @session.send(@pub_socket, 'pyout', {data:repr(obj)}, @parent_header)
+    data = {}
+    data['text/plain'] = obj.to_s
+    content = {data: data, execution_count: @kernel.execution_count}
+    @session.send(@pub_socket, 'pyout', content, @parent_header)
   end
 
   def set_parent parent
@@ -68,6 +72,9 @@ end
 
 class RKernel
   attr_accessor :user_ns
+  def execution_count
+    @execution_count
+  end
 
   def initialize session, reply_socket, pub_socket, hb_socket
     @session = session
@@ -120,18 +127,26 @@ class RKernel
       return
     end
     # pyin_msg = @session.msg()
+    if ! parent['content'].fetch('silent', false)
+      @execution_count += 1
+    end
     @session.send(@pub_socket, 'pyin', {code: code}, parent)
+    reply_content = {status: 'ok',
+        payload: [],
+        user_variables: {},
+        user_expressions: {},
+      }
     begin
-      STDERR.puts 'parent: '
-      STDERR.puts parent.inspect
+      # STDERR.puts 'parent: '
+      # STDERR.puts parent.inspect
       comp_code = code#compiler(code, '<zmq-kernel>')
       $displayhook.set_parent(parent)
       $stdout.set_parent(parent)
 
       output = eval(comp_code, @user_ns)
-      $stdout.puts(output.inspect) if output
+      # $stdout.puts(output.inspect) if output
     rescue Exception => e
-      #$stderr.puts e.inspect
+      # $stderr.puts e.inspect
       result = 'error'
       #etype, evalue, tb = sys.exc_info()
       etype, evalue, tb = e.class.to_s, e.message, e.backtrace
@@ -143,19 +158,13 @@ class RKernel
           etype: etype,
           evalue: evalue,
       }
+      # STDERR.puts exc_content
       @session.send(@pub_socket, 'pyerr', exc_content, parent)
 
       reply_content = exc_content
     end
-    reply_content = {status: 'ok',
-        payload: [],
-        user_variables: {},
-        user_expressions: {},
-        execution_count: @execution_count,
-      }
-    if ! parent['content'].fetch('silent', false)
-      @execution_count += 1
-    end
+    reply_content['execution_count'] = @execution_count
+    
     # reply_msg = @session.msg('execute_reply', reply_content, parent)
     #$stdout.puts reply_msg
     #$stderr.puts reply_msg
@@ -163,6 +172,9 @@ class RKernel
     reply_msg = @session.send(@reply_socket, 'execute_reply', reply_content, parent, ident)
     if reply_msg['content']['status'] == 'error'
       abort_queue
+    end
+    if ! parent['content']['silent']
+      return output
     end
   end
 
@@ -183,6 +195,8 @@ class RKernel
       ident = @reply_socket.recv()
       #assert @reply_socket.rcvmore(), "Unexpected missing message part."
       #msg = @reply_socket.recv()
+      omsg = nil
+      handler = nil
       msg = @session.recv(@reply_socket)
       begin
         msg = JSON.parse(msg) if msg
@@ -250,10 +264,10 @@ def main(configfile_path)
   $stdout = stdout
   #$stderr = stderr
 
-  display_hook = DisplayHook.new(session, pub_socket)
-  $displayhook = display_hook
 
   kernel = RKernel.new(session, reply_socket, pub_socket, hb_socket)
+  display_hook = DisplayHook.new(kernel, session, pub_socket)
+  $displayhook = display_hook
 
   # For debugging convenience, put sleep and a string in the namespace, so we
   # have them every time we start.
