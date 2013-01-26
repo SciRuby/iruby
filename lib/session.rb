@@ -2,7 +2,7 @@
 #import uuid
 #import pprint
 
-require 'zmq'
+require 'ffi-rzmq'
 require 'uuid'
 require 'json'
 
@@ -170,20 +170,20 @@ class Session
     if track
       to_send.each_with_index do |part, i|
         if i == to_send.length - 1
-          flag = nil
+          flag = 0
         else
           flag = ZMQ::SNDMORE
         end
-        stream.send(part, flag)
+        stream.send_string(part, flag)
       end
     else
       to_send.each_with_index do |part, i|
         if i == to_send.length - 1
-          flag = nil
+          flag = 0
         else
           flag = ZMQ::SNDMORE
         end
-        stream.send(part, flag)
+        stream.send_string(part, flag)
       end
     end
     # STDOUT.puts '-'*30
@@ -215,29 +215,32 @@ class Session
   def recv(socket, mode=ZMQ::NOBLOCK)
     begin
       msg = []
-      msg << socket.recv(mode)
-      while socket.getsockopt(ZMQ::RCVMORE)
+      frame = ""
+      rc = socket.recv_string(frame, mode)
+      if ! ZMQ::Util.resultcode_ok? rc
+        if ZMQ::Util.errno == ZMQ::EAGAIN
+          return nil, nil
+        else
+          raise IOError("ZMQ Error #{ZMQ::Util.error_string}")
+        end
+      end
+      
+      msg << frame
+      while socket.more_parts?
         begin
-          msg << socket.recv(mode)
+          frame = ""
+          rc = socket.recv_string(frame, mode)
+          msg << frame
         rescue
         end
       end
       # Skip everything before DELIM, then munge the three json objects into the
       # one the rest of my code expects
       i = msg.index(DELIM)
-      idents = msg[0..i]
+      idents = msg[0..i-1]
       msg_list = msg[i+1..-1]
-    rescue Exception => e
-      if e.errno == ZMQ::EAGAIN
-        # We can convert EAGAIN to None as we know in this case
-        # recv_json won't return None.
-        return nil
-      else
-        raise
-      end
     end
-    return nil if msg.nil?
-    return unserialize(msg_list)
+    return idents, unserialize(msg_list)
   end
 
   def serialize(msg, ident=nil)
@@ -351,7 +354,7 @@ class Session
     end
 
     message['buffers'] = msg_list[4..-1]
-    return message.to_json
+    return message
   end
 end
 

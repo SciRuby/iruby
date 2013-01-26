@@ -12,7 +12,7 @@
 #import uuid
 
 # our own
-require 'zmq'
+require 'ffi-rzmq'
 require 'irb'
 require File.expand_path('../session', __FILE__)
 require File.expand_path('../console', __FILE__)

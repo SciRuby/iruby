@@ -12,7 +12,7 @@ Things to do:
 * Implement event loop and poll version.
 =end
 
-require 'zmq'
+require 'ffi-rzmq'
 require 'json'
 require 'ostruct'
 require File.expand_path('../session', __FILE__)
@@ -76,11 +76,10 @@ class RKernel
     @execution_count
   end
 
-  def initialize session, reply_socket, pub_socket, hb_socket
+  def initialize session, reply_socket, pub_socket
     @session = session
     @reply_socket = reply_socket
     @pub_socket = pub_socket
-    @hb_socket = hb_socket
     @user_ns = OpenStruct.new.send(:binding)
     @history = []
     @execution_count = 0
@@ -192,23 +191,17 @@ class RKernel
 
   def start(displayhook)
     while true
-      ident = @reply_socket.recv()
-      #assert @reply_socket.rcvmore(), "Unexpected missing message part."
-      #msg = @reply_socket.recv()
-      omsg = nil
-      handler = nil
-      msg = @session.recv(@reply_socket)
+      ident, msg = @session.recv(@reply_socket, 0)
       begin
-        msg = JSON.parse(msg) if msg
-        omsg = msg
-        handler = @handlers[omsg['header']['msg_type']]
+        handler = @handlers[msg['header']['msg_type']]
       rescue
+        handler = nil
       end
       if handler.nil?
-        STDERR.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
+        STDERR.puts "UNKNOWN MESSAGE TYPE: #{msg}"
       else
         # STDERR.puts 'handling ' + omsg.inspect
-        displayhook.__call__(send(handler, ident, omsg))
+        displayhook.__call__(send(handler, ident, msg))
       end
     end
   end
@@ -250,12 +243,10 @@ def main(configfile_path)
   pub_socket = c.socket(ZMQ::PUB)
   pub_socket.bind(pub_conn)
 
-  hb_socket = c.socket(ZMQ::REP)
-  hb_socket.bind(hb_conn)
   hb_thread = Thread.new do
-    while true
-      hb_socket.send(hb_socket.recv())
-    end
+    hb_socket = c.socket(ZMQ::REP)
+    hb_socket.bind(hb_conn)
+    ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
   end
 
   stdout = OutStream.new(session, pub_socket, 'stdout')
@@ -265,7 +256,7 @@ def main(configfile_path)
   #$stderr = stderr
 
 
-  kernel = RKernel.new(session, reply_socket, pub_socket, hb_socket)
+  kernel = RKernel.new(session, reply_socket, pub_socket)
   display_hook = DisplayHook.new(kernel, session, pub_socket)
   $displayhook = display_hook
 
