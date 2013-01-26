@@ -21,8 +21,8 @@ class OutStream
   end
 
   def flush
-    STDERR.puts("flushing, parent to follow")
-    STDERR.puts @parent_header.inspect
+    # STDERR.puts("flushing, parent to follow")
+    # STDERR.puts @parent_header.inspect
     if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else

@@ -31,8 +31,8 @@ class DisplayHook
     end
 
     __builtin__._ = obj
-    STDERR.puts "displayhook call:"
-    STDERR.puts @parent_header.inspect
+    # STDERR.puts "displayhook call:"
+    # STDERR.puts @parent_header.inspect
     #@pub_socket.send(msg.to_json)
     @session.send(@pub_socket, 'pyout', {data:repr(obj)}, @parent_header)
   end
@@ -193,7 +193,7 @@ class RKernel
       if handler.nil?
         STDERR.puts "UNKNOWN MESSAGE TYPE: #{omsg}"
       else
-        STDERR.puts 'handling ' + omsg.inspect
+        # STDERR.puts 'handling ' + omsg.inspect
         displayhook.__call__(send(handler, ident, omsg))
       end
     end

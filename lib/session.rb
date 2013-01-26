@@ -35,8 +35,6 @@ class Message
   end
 
   def self.extract_header(msg_or_header)
-    STDERR.puts "extracting header for:"
-    STDERR.puts msg_or_header.inspect
     # Given a message or header, return the header.
     if msg_or_header.nil?
       return {}
@@ -47,8 +45,6 @@ class Message
     #h ||= msg_or_header['msg_id']
     h ||= msg_or_header
 
-    STDERR.puts "extracted:"
-    STDERR.puts h.inspect
     return h
   end
 end
@@ -341,7 +337,7 @@ class Session
     unless msg_list.length >= minlen
       raise Exception "malformed message, must have at least %i elements"%minlen
     end
-    STDERR.puts msg_list.inspect
+    # STDERR.puts msg_list.inspect
     header = msg_list[1]
     message['header'] = JSON.parse(header)
     message['msg_id'] = header['msg_id']
