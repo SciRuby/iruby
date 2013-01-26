@@ -217,19 +217,14 @@ class Session
       msg = []
       frame = ""
       rc = socket.recv_string(frame, mode)
-      if ! ZMQ::Util.resultcode_ok? rc
-        if ZMQ::Util.errno == ZMQ::EAGAIN
-          return nil, nil
-        else
-          raise IOError("ZMQ Error #{ZMQ::Util.error_string}")
-        end
-      end
+      ZMQ::Util.error_check("zmq_msg_send", rc)
       
       msg << frame
       while socket.more_parts?
         begin
           frame = ""
           rc = socket.recv_string(frame, mode)
+          ZMQ::Util.error_check("zmq_msg_send", rc)
           msg << frame
         rescue
         end
