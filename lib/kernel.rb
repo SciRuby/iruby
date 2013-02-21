@@ -27,7 +27,7 @@ class DisplayHook
   end
 
   def __call__(obj)
-    if obj.nil?
+    if obj.nil? || obj == []
       return
     end
     # STDERR.puts @kernel.user_ns
