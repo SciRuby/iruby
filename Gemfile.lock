@@ -20,6 +20,9 @@ GEM
       slop (>= 2.4.4, < 3)
     slop (2.4.4)
     systemu (2.5.0)
+    term-ansicolor (1.2.2)
+      tins (~> 0.8)
+    tins (0.8.2)
     uuid (2.3.5)
       macaddr (~> 1.0)
 
@@ -31,4 +34,5 @@ DEPENDENCIES
   ffi-rzmq
   json
   pry
+  term-ansicolor
   uuid
