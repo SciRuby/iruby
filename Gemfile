@@ -1,7 +1,7 @@
 source :rubygems
 
 gem 'pry'
-gem 'zmq'
+gem 'ffi-rzmq'
 gem 'uuid'
 gem 'json'
 gem 'em-websocket'

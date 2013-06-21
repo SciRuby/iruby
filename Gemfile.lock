@@ -7,6 +7,9 @@ GEM
       addressable (>= 2.1.1)
       eventmachine (>= 0.12.9)
     eventmachine (0.12.10)
+    ffi (1.9.0)
+    ffi-rzmq (1.0.1)
+      ffi
     json (1.6.6)
     macaddr (1.5.0)
       systemu (>= 2.4.0)
@@ -19,14 +22,13 @@ GEM
     systemu (2.5.0)
     uuid (2.3.5)
       macaddr (~> 1.0)
-    zmq (2.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   em-websocket
+  ffi-rzmq
   json
   pry
   uuid
-  zmq
