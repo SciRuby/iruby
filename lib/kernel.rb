@@ -15,8 +15,13 @@ Things to do:
 require 'ffi-rzmq'
 require 'json'
 require 'ostruct'
+require 'term/ansicolor'
 require File.expand_path('../session', __FILE__)
 require File.expand_path('../outstream', __FILE__)
+
+class String
+  include Term::ANSIColor
+end
 
 class DisplayHook
   def initialize kernel, session, pub_socket
@@ -148,14 +153,15 @@ class RKernel
       # $stderr.puts e.inspect
       result = 'error'
       #etype, evalue, tb = sys.exc_info()
-      etype, evalue, tb = e.class.to_s, e.message, e.backtrace
-      #tb = traceback.format_exception(etype, evalue, tb)
+      ename, evalue, tb = e.class.to_s, e.message, e.backtrace
+      tb = format_exception(ename, evalue, tb)
       #tb = "1, 2, 3"
       exc_content = {
-          status: 'error',
-          traceback: tb,
-          etype: etype,
-          evalue: evalue,
+        ename: ename,
+        evalue: evalue,
+        traceback: tb,
+        #etype: etype,
+        #status: 'error',
       }
       # STDERR.puts exc_content
       @session.send(@pub_socket, 'pyerr', exc_content, parent)
@@ -204,6 +210,14 @@ class RKernel
         displayhook.__call__(send(handler, ident, msg))
       end
     end
+  end
+
+private
+  def format_exception(name, value, backtrace)
+    tb = []
+    tb << "#{name.red}: #{value}"
+    tb.concat(backtrace.map { |l| l.dark.white })
+    tb
   end
 end
 
