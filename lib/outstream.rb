@@ -21,19 +21,22 @@ class OutStream
   end
 
   def flush
-    STDERR.puts("flushing, parent to follow")
-    STDERR.puts @parent_header.inspect
+    # STDERR.puts("flushing, parent to follow")
+    # STDERR.puts @parent_header.inspect
     if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else
       if @_buffer
         data = @_buffer.join('')
         content = { name: @name, data: data }
-        msg = @session.msg('stream', content, @parent_header) if @session
+        if ! @session
+          return
+        end
+        # msg = @session.msg('stream', content, @parent_header) if @session
         # FIXME: Wha?
-        STDERR.puts msg.to_json
+        # STDERR.puts msg.to_json
         #@pub_socket.send(msg.to_json)
-        @session.send(@pub_socket, msg)
+        @session.send(@pub_socket, 'stream', content, @parent_header)
         @_buffer_len = 0
         @_buffer = []
       end
@@ -57,6 +60,7 @@ class OutStream
     if @pub_socket.nil?
       raise 'I/O operation on closed file'
     else
+      s = s.to_s
       @_buffer << s
       @_buffer_len += s.length
       _maybe_send

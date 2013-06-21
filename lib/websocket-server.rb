@@ -1,4 +1,4 @@
-require 'zmq'
+require 'ffi-rzmq'
 require 'em-websocket'
 require 'stringio'
 require 'cgi'
