@@ -37,7 +37,7 @@ class DisplayHook
     #@pub_socket.send(msg.to_json)
     data = {}
     data['text/plain'] = obj.to_s
-    content = {data: data, execution_count: @kernel.execution_count}
+    content = {data: data, metadata: {}, execution_count: @kernel.execution_count}
     @session.send(@pub_socket, 'pyout', content, @parent_header)
   end
 
