@@ -1,9 +1,26 @@
-## iRuby
+# IRuby Notebook
+
+## About this fork
+
+This version of IRuby allows the user to create a custom IPython profile that
+runs on the IRuby kernel.  This profile also customizes the HTML frontend,
+specially for syntax highlighting.
+
+The old frontend files were removed as they are not used. The idea is to
+provide a Ruby backed kernel and let IPython do the rest.
+
+Also some fixes from [MinKR's fork]() were merged.
+
+
+## IRuby (original README)
+
 This begins life as a straight line for line port of the IPython repo stored here: https://github.com/fperez/zmq-pykernel/
 
 Ideally it becomes something more consequential later.
 
+
 ### Development
+
 This is meant to be run from the IPython notebook.  install the bundle and
 generate an rvm wrapper for this bundle with:
 
@@ -17,7 +34,8 @@ Then you just run the IPython notebook web server with `ipython notebook
 --Session.key=''`  That will execute the server and open your web browser to the
 notebooks index page.
 
-### Building an in-browser REPL for Ruby (iRuby)
+### Building an in-browser REPL for Ruby (IRuby)
+
 Hey, I'm Josh Adams.  I'm a partner and CTO at isotope|eleven.  We alo host
 Birmingham, AL's Open Source Software meetup - BOSS.
 
@@ -39,6 +57,7 @@ there was nothing like IPython in our ecosystem.  There were, however, quite a
 few people asking about it.  So I figured I'd do something about it.
 
 #### The Architecture
+
 So the IPython guys did a great job explaining their core architecture, both in
 words and in pared-down code, in a blog post they wrote concerning it.  In
 general, it works like this <* Diagram *>
