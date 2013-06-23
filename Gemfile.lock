@@ -2,7 +2,6 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.7)
-    coderay (1.0.5)
     em-websocket (0.3.6)
       addressable (>= 2.1.1)
       eventmachine (>= 0.12.9)
@@ -13,12 +12,6 @@ GEM
     json (1.6.6)
     macaddr (1.5.0)
       systemu (>= 2.4.0)
-    method_source (0.7.1)
-    pry (0.9.8.4)
-      coderay (~> 1.0.5)
-      method_source (~> 0.7.1)
-      slop (>= 2.4.4, < 3)
-    slop (2.4.4)
     systemu (2.5.0)
     term-ansicolor (1.2.2)
       tins (~> 0.8)
@@ -33,6 +26,5 @@ DEPENDENCIES
   em-websocket
   ffi-rzmq
   json
-  pry
   term-ansicolor
   uuid
