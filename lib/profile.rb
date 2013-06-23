@@ -7,10 +7,10 @@ class Profile
   # FIXME These should be stored as ERB files
   PROFILE_CONFIG = {}
   PROFILE_CONFIG['ipython_notebook_config.py'] = <<-PYTHON
-  ## IRuby custom configuration
-  iruby_kernel_path = '#{File.absolute_path(File.join(File.dirname(__FILE__), 'kernel.rb'))}'
-  c.KernelManager.kernel_cmd = ['ruby', iruby_kernel_path, '{connection_file}']
-  c.Session.key = ''
+## IRuby custom configuration
+iruby_kernel_path = '#{File.absolute_path(File.join(File.dirname(__FILE__), 'kernel.rb'))}'
+c.KernelManager.kernel_cmd = ['ruby', iruby_kernel_path, '{connection_file}']
+c.Session.key = ''
   PYTHON
 
   STATIC_DIR = File.join(File.dirname(__FILE__), '..', 'static')
