@@ -216,7 +216,7 @@ private
   def format_exception(name, value, backtrace)
     tb = []
     tb << "#{name.red}: #{value}"
-    tb.concat(backtrace.map { |l| l.dark.white })
+    tb.concat(backtrace.map { |l| l.white })
     tb
   end
 end
