@@ -9,7 +9,7 @@ specially for syntax highlighting.
 The old frontend files were removed as they are not used. The idea is to
 provide a Ruby backed kernel and let IPython do the rest.
 
-Also some fixes from [MinKR's fork]() were merged.
+Also some fixes from [minrk's fork](https://github.com/minrk/iruby) were merged.
 
 
 ## IRuby (original README)
