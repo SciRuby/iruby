@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    bond (0.4.3)
     ffi (1.9.0)
     ffi-rzmq (1.0.1)
       ffi
@@ -19,6 +20,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bond
   ffi-rzmq
   json
   term-ansicolor
