@@ -13,6 +13,8 @@ class Profile
   c.Session.key = ''
   PYTHON
 
+  STATIC_DIR = File.join(File.dirname(__FILE__), '..', 'static')
+
   def initialize(iruby_name='default')
     @iruby_name = iruby_name
   end
@@ -39,7 +41,7 @@ private
   end
 
   def apply_patches!
-    # TODO only append if needed!
+    # FIXME only append if needed!
     PROFILE_CONFIG.each do |file, config|
       file_path = File.join(path, file)
       puts "=> Append extra configuration to #{file_path}"
@@ -50,7 +52,10 @@ private
   end
 
   def create_static_symlink!
-    puts "TODO: symbolic link to static files"
-    #File.symlink(
+    src, dst = File.join(STATIC_DIR), File.join(path, 'static')
+    if not File.exists?(dst)
+      puts "=> Symlink #{src} to #{dst}"
+      File.symlink(src, dst)
+    end
   end
 end
