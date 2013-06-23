@@ -11,6 +11,16 @@ provide a Ruby backed kernel and let IPython do the rest.
 
 Also some fixes from [minrk's fork](https://github.com/minrk/iruby) were merged.
 
+### Usage
+
+Clone this repository and run `bin/iruby` to create the profile, then use
+IPython as usual:
+
+```bash
+    $ git clone git://github.com/munshkr/iruby
+    $ iruby/bin/iruby --create
+    $ ipython notebook --profile=iruby_default
+```
 
 ## IRuby (original README)
 

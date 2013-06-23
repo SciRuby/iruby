@@ -16,6 +16,7 @@ GEM
     term-ansicolor (1.2.2)
       tins (~> 0.8)
     tins (0.8.2)
+    trollop (2.0)
     uuid (2.3.5)
       macaddr (~> 1.0)
 
@@ -27,4 +28,5 @@ DEPENDENCIES
   ffi-rzmq
   json
   term-ansicolor
+  trollop
   uuid
