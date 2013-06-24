@@ -90,4 +90,3 @@ class OutStream
     end
   end
 end
-

@@ -1,103 +1,23 @@
 #!/usr/bin/env ruby
-=begin
-A simple interactive kernel that talks to a frontend over 0MQ.
-
-Things to do:
-
-* Finish implementing `raw_input`.
-* Implement `set_parent` logic. Right before doing exec, the Kernel should
-  call set_parent on all the PUB objects with the message about to be executed.
-* Implement random port and security key logic.
-* Implement control messages.
-* Implement event loop and poll version.
-=end
 
 require 'ffi-rzmq'
 require 'json'
 require 'ostruct'
 require 'term/ansicolor'
-require 'bond'
+
+require File.expand_path('../kernel_completer', __FILE__)
 require File.expand_path('../session', __FILE__)
-require File.expand_path('../outstream', __FILE__)
+require File.expand_path('../out_stream', __FILE__)
+require File.expand_path('../display_hook', __FILE__)
+
 
 class String
   include Term::ANSIColor
 end
 
-class DisplayHook
-  def initialize kernel, session, pub_socket
-    @kernel = kernel
-    @session = session
-    @pub_socket = pub_socket
-    @parent_header = {}
-  end
-
-  def __call__(obj)
-    if obj.nil? || obj == []
-      return
-    end
-    # STDERR.puts @kernel.user_ns
-    # @user_ns._ = obj
-    # STDERR.puts "displayhook call:"
-    # STDERR.puts @parent_header.inspect
-    #@pub_socket.send(msg.to_json)
-    data = {}
-    data['text/plain'] = obj.inspect
-    content = {data: data, metadata: {}, execution_count: @kernel.execution_count}
-    @session.send(@pub_socket, 'pyout', content, @parent_header)
-  end
-
-  def set_parent parent
-    @parent_header = Message.extract_header(parent)
-  end
-end
-
-class RawInput
-  def initialize session, socket
-    @session = session
-    @socket = socket
-  end
-
-  def __call__ prompt=nil
-    @session.send(@socket, 'raw_input', {}, @parent_header)
-    while true
-      begin
-        reply = @socket.recv_json(ZMQ::NOBLOCK)
-      rescue Exception => e
-        if e.errno == ZMQ::EAGAIN
-          pass
-        else
-          raise
-        end
-      end
-    end
-
-    return reply['content']['data']
-  end
-end
-
-class KernelCompleter
-  FakeReadline = Class.new { def self.setup(arg); end; def self.line_buffer; @line_buffer; end }
-
-  def initialize(ns)
-    @ns = ns
-    Bond.start(readline: FakeReadline, debug: true)
-  end
-
-  def complete(line, text)
-    tab(line)
-  end
-
-private
-  def tab(full_line, last_word=full_line)
-    # TODO use @ns as binding
-    Bond.agent.weapon.instance_variable_set('@line_buffer', full_line)
-    Bond.agent.call(last_word)
-  end
-end
-
 class RKernel
   attr_accessor :user_ns
+
   def execution_count
     @execution_count
   end
