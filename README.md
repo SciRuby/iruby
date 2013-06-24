@@ -13,12 +13,12 @@ Also some fixes from [minrk's fork](https://github.com/minrk/iruby) were merged.
 
 ### Usage
 
-Clone this repository and run `bin/iruby` to create the profile, then use
-IPython as usual:
+Clone this repository and run `bin/iruby_profile` to create the profile, then
+use IPython as usual:
 
 ```bash
     $ git clone git://github.com/munshkr/iruby
-    $ iruby/bin/iruby --create
+    $ iruby/bin/iruby_profile --create
     $ ipython notebook --profile=iruby_default
 ```
 
