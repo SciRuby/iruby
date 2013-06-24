@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+
+USAGE = <<-EOS
+This script is not intended to be used manually.
+
+To start an IPython Notebook server with IRuby, first create a profile with
+`iruby_profile`, then use `ipython notebook` to start the server:
+
+    $ iruby_profile --create
+    $ ipython notebook --profile=iruby_default
+
+Read more at http://ipython.org/ipython-doc/stable/interactive/htmlnotebook.html
+
+EOS
+
+def start_kernel!(config_path, boot_file=nil)
+  #ENV["BUNDLE_GEM"] = "/home/munshkr/overol-parsers/Gemfile"
+  #ENV["APP_ROOT"] = "/home/munshkr/overol-parsers"
+
+  require boot_file if boot_file
+  require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kernel.rb'))
+
+  configfile = File.read(config_path)
+  config = JSON.parse(configfile)
+
+  c = ZMQ::Context.new
+
+  shell_port = config['shell_port']
+  pub_port = config['iopub_port']
+  hb_port = config['hb_port']
+
+  ip = '127.0.0.1'
+  connection = ('tcp://%s' % ip) + ':%i'
+  shell_conn = connection % shell_port
+  pub_conn = connection % pub_port
+  hb_conn = connection % hb_port
+
+  $stdout.puts "Starting the kernel..."
+  $stdout.puts "On:",shell_conn, pub_conn, hb_conn
+
+  session = Session.new('kernel')
+
+  reply_socket = c.socket(ZMQ::XREP)
+  reply_socket.bind(shell_conn)
+
+  pub_socket = c.socket(ZMQ::PUB)
+  pub_socket.bind(pub_conn)
+
+  hb_thread = Thread.new do
+    hb_socket = c.socket(ZMQ::REP)
+    hb_socket.bind(hb_conn)
+    ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
+  end
+
+  stdout = OutStream.new(session, pub_socket, 'stdout')
+  #stderr = OutStream.new(session, pub_socket, 'stderr')
+  old_stdout = STDOUT
+  $stdout = stdout
+  #$stderr = stderr
+
+
+  kernel = RKernel.new(session, reply_socket, pub_socket)
+  display_hook = DisplayHook.new(kernel, session, pub_socket)
+  $displayhook = display_hook
+
+  # For debugging convenience, put sleep and a string in the namespace, so we
+  # have them every time we start.
+  #kernel.user_ns['sleep'] = sleep
+  #kernel.user_ns['s'] = 'Test string'
+
+  old_stdout.puts "Use Ctrl-\\ (NOT Ctrl-C!) to terminate."
+  kernel.start(display_hook)
+end
+
+def main
+  if ARGV.size == 0 || ARGV.size > 2
+    puts USAGE
+    exit(1)
+  end
+  config_path, boot_file = ARGV
+
+  if !File.exists?(config_path)
+    puts "Config file '#{config_path}' does not exist"
+    exit(2)
+  end
+
+  if boot_file && !File.exists?(boot_file)
+    puts "File '#{boot_file}' does not exist"
+    exit(3)
+  end
+
+  start_kernel!(config_path, boot_file)
+end
+
+
+main if __FILE__ == $0

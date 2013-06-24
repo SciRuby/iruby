@@ -2,14 +2,15 @@ class Profile
   attr_accessor :iruby_name
 
   NAME_PREFIX = "iruby_"
+  IRUBY_KERNEL_PATH = File.join(File.dirname(__FILE__), '..', 'bin', 'iruby_kernel')
   IPYTHON_PROFILE_PATH = File.join(Dir.home, '.config', 'ipython')
 
   # FIXME These should be stored as ERB files
   PROFILE_CONFIG = {}
   PROFILE_CONFIG['ipython_notebook_config.py'] = <<-PYTHON
 ## IRuby custom configuration
-iruby_kernel_path = '#{File.absolute_path(File.join(File.dirname(__FILE__), 'kernel.rb'))}'
-c.KernelManager.kernel_cmd = ['ruby', iruby_kernel_path, '{connection_file}']
+iruby_kernel_path = '#{File.expand_path(IRUBY_KERNEL_PATH)}'
+c.KernelManager.kernel_cmd = [iruby_kernel_path, '{connection_file}']
 c.Session.key = ''
   PYTHON
 

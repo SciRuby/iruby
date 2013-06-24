@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 require 'ffi-rzmq'
 require 'json'
 require 'ostruct'
@@ -159,71 +157,4 @@ private
     tb.concat(backtrace.map { |l| l.white })
     tb
   end
-end
-
-def main(configfile_path)
-  # read configfile
-  # get the following from it:
-  # - shell_port
-  # - iopub_port
-  # - stdin_port
-  # - hb_port
-  # - ip
-  # - key
-
-  configfile = File.read(configfile_path)
-  config = JSON.parse(configfile)
-
-  c = ZMQ::Context.new
-
-  shell_port = config['shell_port']
-  pub_port = config['iopub_port']
-  hb_port = config['hb_port']
-
-  ip = '127.0.0.1'
-  connection = ('tcp://%s' % ip) + ':%i'
-  shell_conn = connection % shell_port
-  pub_conn = connection % pub_port
-  hb_conn = connection % hb_port
-
-  $stdout.puts "Starting the kernel..."
-  $stdout.puts "On:",shell_conn, pub_conn, hb_conn
-
-  session = Session.new('kernel')
-
-  reply_socket = c.socket(ZMQ::XREP)
-  reply_socket.bind(shell_conn)
-
-  pub_socket = c.socket(ZMQ::PUB)
-  pub_socket.bind(pub_conn)
-
-  hb_thread = Thread.new do
-    hb_socket = c.socket(ZMQ::REP)
-    hb_socket.bind(hb_conn)
-    ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
-  end
-
-  stdout = OutStream.new(session, pub_socket, 'stdout')
-  #stderr = OutStream.new(session, pub_socket, 'stderr')
-  old_stdout = STDOUT
-  $stdout = stdout
-  #$stderr = stderr
-
-
-  kernel = RKernel.new(session, reply_socket, pub_socket)
-  display_hook = DisplayHook.new(kernel, session, pub_socket)
-  $displayhook = display_hook
-
-  # For debugging convenience, put sleep and a string in the namespace, so we
-  # have them every time we start.
-  #kernel.user_ns['sleep'] = sleep
-  #kernel.user_ns['s'] = 'Test string'
-
-  old_stdout.puts "Use Ctrl-\\ (NOT Ctrl-C!) to terminate."
-  kernel.start(display_hook)
-end
-
-
-if __FILE__ == $0
-  main(ARGV[0])
 end
