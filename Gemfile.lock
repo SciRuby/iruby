@@ -1,11 +1,6 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.2.7)
-    em-websocket (0.3.6)
-      addressable (>= 2.1.1)
-      eventmachine (>= 0.12.9)
-    eventmachine (0.12.10)
     ffi (1.9.0)
     ffi-rzmq (1.0.1)
       ffi
@@ -24,7 +19,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  em-websocket
   ffi-rzmq
   json
   term-ansicolor
