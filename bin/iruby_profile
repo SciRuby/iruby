@@ -1,18 +1,17 @@
 #!/usr/bin/env ruby
 require 'trollop'
-require File.expand_path('../../lib/profile', __FILE__)
 
 opts = Trollop::options do
   banner <<-EOS
-`iruby --create` creates an IPython profile already customized for using the
+`iruby_profile` creates an IPython profile already customized for using the
 IRuby kernel.  You can specify a custom name with --name, the real name will
 have 'iruby_' prepended.
 
 Examples:
-  $ iruby --create
+  $ iruby_profile --create
   # creates profile at ~/.config/ipython/profile_iruby_default
 
-  $ iruby --create --name='special'
+  $ iruby_profile --create --name='special'
   # creates profile at ~/.config/ipython/profile_iruby_special
 
 To use the profile, use IPython as usual:
@@ -31,6 +30,8 @@ if not opts[:create_given]
 end
 
 if opts[:create]
+  require File.expand_path('../../lib/profile', __FILE__)
+
   p = Profile.new(opts[:name])
   p.create!
 end
