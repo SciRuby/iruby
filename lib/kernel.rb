@@ -16,6 +16,7 @@ require 'ffi-rzmq'
 require 'json'
 require 'ostruct'
 require 'term/ansicolor'
+require 'bond'
 require File.expand_path('../session', __FILE__)
 require File.expand_path('../outstream', __FILE__)
 
@@ -75,6 +76,26 @@ class RawInput
   end
 end
 
+class KernelCompleter
+  FakeReadline = Class.new { def self.setup(arg); end; def self.line_buffer; @line_buffer; end }
+
+  def initialize(ns)
+    @ns = ns
+    Bond.start(readline: FakeReadline, debug: true)
+  end
+
+  def complete(line, text)
+    tab(line)
+  end
+
+private
+  def tab(full_line, last_word=full_line)
+    # TODO use @ns as binding
+    Bond.agent.weapon.instance_variable_set('@line_buffer', full_line)
+    Bond.agent.call(last_word)
+  end
+end
+
 class RKernel
   attr_accessor :user_ns
   def execution_count
@@ -89,7 +110,7 @@ class RKernel
     @history = []
     @execution_count = 0
     #@compiler = CommandCompiler.new()
-    #@completer = KernelCompleter(@user_ns)
+    @completer = KernelCompleter.new(@user_ns)
 
     # Build dict of handlers for message types
     @handlers = {}
@@ -184,15 +205,13 @@ class RKernel
   end
 
   def complete_request(ident, parent)
-    matches = { matches: complete(parent), status: 'ok' }
+    matches = {
+      matches: @completer.complete(parent['content']['line'], parent['content']['text']),
+      status: 'ok',
+      matched_text: parent['content']['line'],
+    }
     completion_msg = @session.send(@reply_socket, 'complete_reply',
-                                       matches, parent, ident)
-    $stdout.puts completion_msg
-  end
-
-  def complete(msg)
-    raise 'no completion, lol'
-    return @completer.complete(msg.content.line, msg.content.text)
+                                   matches, parent, ident)
   end
 
   def start(displayhook)
