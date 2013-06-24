@@ -212,6 +212,7 @@ class RKernel
     }
     completion_msg = @session.send(@reply_socket, 'complete_reply',
                                    matches, parent, ident)
+    return nil
   end
 
   def start(displayhook)
