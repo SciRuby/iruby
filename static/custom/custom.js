@@ -1,5 +1,7 @@
 /* Placeholder for custom JS */
 $(function() {
   console.log("IRuby profile loaded")
-  //$.getScript('/static/custom/example.js');
+
+  // load CodeMirror mode for Ruby
+  $.getScript('/static/components/codemirror/mode/ruby/ruby.js');
 });
