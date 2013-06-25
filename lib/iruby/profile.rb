@@ -9,9 +9,18 @@ module IRuby
     # FIXME These should be stored as ERB files
     PROFILE_CONFIG = {}
     PROFILE_CONFIG['ipython_notebook_config.py'] = <<-PYTHON
-## IRuby custom configuration
-iruby_kernel_path = '#{File.expand_path(IRUBY_KERNEL_PATH)}'
-c.KernelManager.kernel_cmd = [iruby_kernel_path, '{connection_file}']
+### IRuby custom configuration ###
+
+c.KernelManager.kernel_cmd = ['iruby_kernel', '{connection_file}']
+#
+## to autorequire a Ruby file (for loading another project's environment),
+## add absolute path as third parameter:
+#c.KernelManager.kernel_cmd = ['iruby_kernel', '{connection_file}', '~/my_project/config/boot.rb']
+#
+## if using Bundler, prepend "bundle exec"
+## (remember to add 'iruby' to your projects Gemfile)
+#c.KernelManager.kernel_cmd = ['bundle', 'exec', 'iruby_kernel', '{connection_file}', '~/my_project/config/boot.rb']
+
 c.Session.key = ''
     PYTHON
 
