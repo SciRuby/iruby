@@ -1,8 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
-gem 'ffi-rzmq'
-gem 'uuid'
-gem 'json'
-gem 'term-ansicolor'
-gem 'trollop'
-gem 'bond'
+# Specify your gem's dependencies in iruby.gemspec
+gemspec
