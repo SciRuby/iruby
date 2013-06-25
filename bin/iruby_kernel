@@ -59,7 +59,7 @@ def start_kernel!(config_path, boot_file=nil)
   #$stderr = stderr
 
 
-  kernel = IRuby::RKernel.new(session, reply_socket, pub_socket)
+  kernel = IRuby::Kernel.new(session, reply_socket, pub_socket)
   display_hook = IRuby::DisplayHook.new(kernel, session, pub_socket)
   $displayhook = display_hook
 

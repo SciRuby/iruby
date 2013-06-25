@@ -14,7 +14,7 @@ class String
 end
 
 module IRuby
-  class RKernel
+  class Kernel
     attr_accessor :user_ns
 
     def execution_count
