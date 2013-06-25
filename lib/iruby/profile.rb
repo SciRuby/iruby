@@ -15,7 +15,7 @@ c.KernelManager.kernel_cmd = [iruby_kernel_path, '{connection_file}']
 c.Session.key = ''
     PYTHON
 
-    STATIC_DIR = File.join(File.dirname(__FILE__), '..', 'static')
+    STATIC_DIR = File.join(File.dirname(__FILE__), '..', '..', 'static')
 
     def initialize(iruby_name='default')
       @iruby_name = iruby_name
