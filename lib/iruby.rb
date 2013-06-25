@@ -1,5 +1,4 @@
-require "iruby/version"
+require 'iruby/version'
 
-module Iruby
-  # Your code goes here...
+module IRuby
 end

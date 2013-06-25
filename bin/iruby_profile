@@ -30,8 +30,8 @@ if not opts[:create_given]
 end
 
 if opts[:create]
-  require File.expand_path('../../lib/profile', __FILE__)
+  require 'iruby/profile'
 
-  p = Profile.new(opts[:name])
+  p = IRuby::Profile.new(opts[:name])
   p.create!
 end

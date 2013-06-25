@@ -5,7 +5,7 @@ require 'iruby/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "iruby"
-  spec.version       = Iruby::VERSION
+  spec.version       = IRuby::VERSION
   spec.authors       = ["Damián Silvani"]
   spec.email         = ["munshkr@gmail.com"]
   spec.description   = %q{IPython Notebook for Ruby}

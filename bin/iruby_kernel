@@ -18,7 +18,7 @@ def start_kernel!(config_path, boot_file=nil)
   #ENV["APP_ROOT"] = "/home/munshkr/overol-parsers"
 
   require boot_file if boot_file
-  require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kernel.rb'))
+  require 'iruby/kernel'
 
   configfile = File.read(config_path)
   config = JSON.parse(configfile)
@@ -38,7 +38,7 @@ def start_kernel!(config_path, boot_file=nil)
   $stdout.puts "Starting the kernel..."
   $stdout.puts "On:",shell_conn, pub_conn, hb_conn
 
-  session = Session.new('kernel')
+  session = IRuby::Session.new('kernel')
 
   reply_socket = c.socket(ZMQ::XREP)
   reply_socket.bind(shell_conn)
@@ -52,15 +52,15 @@ def start_kernel!(config_path, boot_file=nil)
     ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
   end
 
-  stdout = OutStream.new(session, pub_socket, 'stdout')
+  stdout = IRuby::OutStream.new(session, pub_socket, 'stdout')
   #stderr = OutStream.new(session, pub_socket, 'stderr')
   old_stdout = STDOUT
   $stdout = stdout
   #$stderr = stderr
 
 
-  kernel = RKernel.new(session, reply_socket, pub_socket)
-  display_hook = DisplayHook.new(kernel, session, pub_socket)
+  kernel = IRuby::RKernel.new(session, reply_socket, pub_socket)
+  display_hook = IRuby::DisplayHook.new(kernel, session, pub_socket)
   $displayhook = display_hook
 
   # For debugging convenience, put sleep and a string in the namespace, so we
@@ -72,25 +72,21 @@ def start_kernel!(config_path, boot_file=nil)
   kernel.start(display_hook)
 end
 
-def main
-  if ARGV.size == 0 || ARGV.size > 2
-    puts USAGE
-    exit(1)
-  end
-  config_path, boot_file = ARGV
 
-  if !File.exists?(config_path)
-    puts "Config file '#{config_path}' does not exist"
-    exit(2)
-  end
+if ARGV.size == 0 || ARGV.size > 2
+  puts USAGE
+  exit(1)
+end
+config_path, boot_file = ARGV
 
-  if boot_file && !File.exists?(boot_file)
-    puts "File '#{boot_file}' does not exist"
-    exit(3)
-  end
-
-  start_kernel!(config_path, boot_file)
+if !File.exists?(config_path)
+  puts "Config file '#{config_path}' does not exist"
+  exit(2)
 end
 
+if boot_file && !File.exists?(boot_file)
+  puts "File '#{boot_file}' does not exist"
+  exit(3)
+end
 
-main if __FILE__ == $0
+start_kernel!(config_path, boot_file)
