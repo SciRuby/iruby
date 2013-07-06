@@ -7,6 +7,7 @@ require 'iruby/kernel_completer'
 require 'iruby/session'
 require 'iruby/out_stream'
 require 'iruby/display_hook'
+require 'iruby/output/html'
 
 
 class String
@@ -14,18 +15,52 @@ class String
 end
 
 module IRuby
+
+  class ResponseWithMime
+    def initialize(response, mime)
+      @response = response
+      @mime = mime
+    end
+    attr_reader :mime
+    def inspect
+      @response.inspect
+    end
+    def to_s
+      @response.to_s
+    end
+  end
+
+  class BindingWithMime < OpenStruct
+    def mime_type=(v)
+      @mime_type = v
+    end
+    def mime_type
+      @mime_type || 'text/plain'
+    end
+  end
+
+
   class Kernel
     attr_accessor :user_ns
 
+    def self.html(s)
+      @output_mime = "text/html"
+      s
+    end
+
     def execution_count
       @execution_count
+    end
+
+    def output_mime
+      @output_mime
     end
 
     def initialize session, reply_socket, pub_socket
       @session = session
       @reply_socket = reply_socket
       @pub_socket = pub_socket
-      @user_ns = OpenStruct.new.send(:binding)
+      @user_ns = BindingWithMime.new.send(:binding)
       @history = []
       @execution_count = 0
       #@compiler = CommandCompiler.new()
@@ -87,11 +122,13 @@ module IRuby
         $displayhook.set_parent(parent)
         $stdout.set_parent(parent)
 
-        output = eval(comp_code, @user_ns)
+        eval("@mime_type=nil",@user_ns)
+        response = eval(comp_code, @user_ns)
+        output = ResponseWithMime.new(response, eval("@mime_type",@user_ns))
+
         # $stdout.puts(output.inspect) if output
       rescue Exception => e
         # $stderr.puts e.inspect
-        result = 'error'
         #etype, evalue, tb = sys.exc_info()
         ename, evalue, tb = e.class.to_s, e.message, e.backtrace
         tb = format_exception(ename, evalue, tb)

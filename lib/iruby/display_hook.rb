@@ -19,7 +19,9 @@ module IRuby
       # STDERR.puts @parent_header.inspect
       #@pub_socket.send(msg.to_json)
       data = {}
-      data['text/plain'] = obj.inspect
+      output = obj
+      data['text/plain'] = output 
+      data[obj.mime] =  output
       content = {data: data, metadata: {}, execution_count: @kernel.execution_count}
       @session.send(@pub_socket, 'pyout', content, @parent_header)
     end
