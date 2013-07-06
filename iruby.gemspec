@@ -27,4 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "term-ansicolor"
   spec.add_runtime_dependency "trollop"
   spec.add_runtime_dependency "uuid"
+  spec.add_runtime_dependency "gruff"
+  spec.add_runtime_dependency "rmagick"
 end
