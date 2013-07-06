@@ -60,6 +60,37 @@ module IRuby
         image(g.to_blob)
 
       end
+
+      #stolen from https://github.com/Bantik/heatmap/blob/master/lib/heatmap.rb
+      module Heatmap
+
+        def self.heatmap(histogram={})
+          html = %{<div class="heatmap">}
+          histogram.keys.sort{|a,b| histogram[a] <=> histogram[b]}.reverse.each do |k|
+            next if histogram[k] < 1
+            _max = histogram_max(histogram) * 2
+            _size = element_size(histogram, k)
+            _heat = element_heat(histogram[k], _max)
+            html << %{
+        <span class="heatmap_element" style="color: ##{_heat}#{_heat}#{_heat}; font-size: #{_size}px;">#{k}</span>
+      }
+          end
+          html << %{<br style="clear: both;" /></div>}
+        end
+
+        def self.histogram_max(histogram)
+          histogram.map{|k,v| histogram[k]}.max
+        end
+
+        def self.element_size(histogram, key)
+          (((histogram[key] / histogram.map{|k,v| histogram[k]}.reduce(&:+).to_f) * 100) + 5).to_i
+        end
+
+        def self.element_heat(val, max)
+          sprintf("%02x" % (200 - ((200.0 / max) * val)))
+        end
+
+      end
     end
   end
 end
