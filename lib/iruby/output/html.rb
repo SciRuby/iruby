@@ -61,18 +61,80 @@ module IRuby
 
       end
 
-      #stolen from https://github.com/Bantik/heatmap/blob/master/lib/heatmap.rb
-      module Heatmap
+      module Gmaps
+        def self.points2latlng(points)
+          "[" + points.reject{|p| not p.lat or not p.lon}.map{|p| 
+            "  {location: new google.maps.LatLng(#{p.lat.to_f}, #{p.lon.to_f}) #{", weight: #{p.weight.to_i}" if p.respond_to?(:weight) and p.weight} } "
+          }.join(',') + "]"
+        end
+        def self.heatmap(o)
+          data = o.delete(:points)
+          raise "Missing :points parameter" if not data
 
-        def self.heatmap(histogram={})
-          html = %{<div class="heatmap">}
+          points = points2latlng(data)
+          zoom = o.delete(:zoom)
+          center = o.delete(:center)
+          map_type = o.delete(:map_type)
+r = <<E
+<div id='map-canvas' style='width: 500px; height: 500px;'></div>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization&callback=initialize"></script>
+
+<script>
+  function initialize() {
+    var points = #{points};
+    var latlngbounds = new google.maps.LatLngBounds();
+    var zoom = #{zoom.to_json};
+    var center = #{center.to_json};
+    var map_type = #{map_type.to_json} || google.maps.MapTypeId.SATELLITE;
+
+    var mapOptions = { 
+      mapTypeId: map_type
+    };
+
+    if (zoom){
+      mapOptions.zoom = zoom
+    }
+    if (center){
+      mapOptions.center = new google.maps.LatLng(center.lat, center.lon)
+    }
+
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+    if (! zoom){
+      for (var i = 0; i < points.length; i++) {
+        latlngbounds.extend(points[i].location);
+     }
+     map.fitBounds(latlngbounds);
+    }
+
+
+    var pointArray = new google.maps.MVCArray(points);
+
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: pointArray
+    });
+
+    heatmap.setMap(map);
+  }
+  console.log("finished pre- init!")
+</script>
+E
+        STDERR.write("#{r}\n\n")
+        r
+        end
+      end
+      #stolen from https://github.com/Bantik/heatmap/blob/master/lib/heatmap.rb
+      module WordCloud
+
+        def self.wordcloud(histogram={})
+          html = %{<div class="wordcloud">}
           histogram.keys.sort{|a,b| histogram[a] <=> histogram[b]}.reverse.each do |k|
             next if histogram[k] < 1
             _max = histogram_max(histogram) * 2
             _size = element_size(histogram, k)
             _heat = element_heat(histogram[k], _max)
             html << %{
-        <span class="heatmap_element" style="color: ##{_heat}#{_heat}#{_heat}; font-size: #{_size}px;">#{k}</span>
+        <span class="wordcloud_element" style="color: ##{_heat}#{_heat}#{_heat}; font-size: #{_size}px;">#{k}</span>
       }
           end
           html << %{<br style="clear: both;" /></div>}
