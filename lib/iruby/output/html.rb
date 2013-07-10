@@ -52,7 +52,17 @@ module IRuby
         data=o.delete(:data)
         title=o.delete(:title)
         size=o.delete(:size) || 300
-        g = Gruff::Bar.new(size)
+
+        klass = o.delete(:stacked) ? Gruff::StackedBar : Gruff::Bar
+        g = klass.new(size)
+
+        if labels=o.delete(:labels)
+          if ! labels.respond_to?(:keys)
+            labels = Hash[labels.map.with_index{|v,k| [k,v]}]
+          end
+          g.labels = labels
+        end
+
         g.title = title if title
         data.each do |data|
           g.data(data[0], data[1])
