@@ -179,7 +179,7 @@ module IRuby
         abort_queue
       end
       if ! parent['content']['silent']
-        $displayhook.__call__(output)
+        $displayhook.display(output)
       end
       self.send_status("idle", parent)
     end

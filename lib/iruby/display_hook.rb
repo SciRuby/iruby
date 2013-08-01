@@ -9,7 +9,7 @@ module IRuby
       @parent_header = {}
     end
 
-    def __call__(obj)
+    def display(obj)
       if obj.nil? || obj == []
         return
       end
