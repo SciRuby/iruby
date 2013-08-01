@@ -195,7 +195,7 @@ module IRuby
       return nil
     end
 
-    def start(displayhook)
+    def start()
       self.send_status("starting", nil)
       while true
         ident, msg = @session.recv(@reply_socket, 0)
