@@ -7,9 +7,9 @@ To start an IPython Notebook server with IRuby, first create a profile with
 `iruby_profile`, then use `ipython notebook` to start the server:
 
     $ iruby_profile --create
-    $ ipython notebook --profile=iruby_default
+    $ ipython notebook --profile=ruby
 
-Read more at http://ipython.org/ipython-doc/stable/interactive/htmlnotebook.html
+Read more at http://ipython.org/ipython-doc/dev/interactive/notebook.html
 
 EOS
 
@@ -69,7 +69,7 @@ def start_kernel!(config_path, boot_file=nil)
   #kernel.user_ns['s'] = 'Test string'
 
   old_stdout.puts "Use Ctrl-\\ (NOT Ctrl-C!) to terminate."
-  kernel.start(display_hook)
+  kernel.start()
 end
 
 
