@@ -40,6 +40,7 @@ module IRuby
           @session.send(@pub_socket, 'stream', content, @parent_header)
           @_buffer_len = 0
           @_buffer = []
+          nil
         end
       end
     end
