@@ -2,13 +2,11 @@ module IRuby
   class Profile
     attr_accessor :iruby_name
 
-    NAME_PREFIX = "iruby_"
-    IRUBY_KERNEL_PATH = File.join(File.dirname(__FILE__), '..', '..', 'bin', 'iruby_kernel')
-    IPYTHON_PROFILE_PATH = File.join(Dir.home, '.config', 'ipython')
+    IPYTHON_DIR = `ipython locate`.strip
 
     # FIXME These should be stored as ERB files
     PROFILE_CONFIG = {}
-    PROFILE_CONFIG['ipython_notebook_config.py'] = <<-PYTHON
+    PROFILE_CONFIG['ipython_config.py'] = <<-PYTHON
 ### IRuby custom configuration ###
 
 c.KernelManager.kernel_cmd = ['iruby_kernel', '{connection_file}']
@@ -26,16 +24,16 @@ c.Session.key = ''
 
     STATIC_DIR = File.join(File.dirname(__FILE__), '..', '..', 'static')
 
-    def initialize(iruby_name='default')
+    def initialize(iruby_name='ruby')
       @iruby_name = iruby_name
     end
 
     def name
-      "#{NAME_PREFIX}#{@iruby_name}"
+      "#{@iruby_name}"
     end
 
     def path
-      File.join(IPYTHON_PROFILE_PATH, "profile_#{name}")
+      File.join(IPYTHON_DIR, "profile_#{name}")
     end
 
     def create!

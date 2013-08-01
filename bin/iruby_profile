@@ -9,19 +9,19 @@ have 'iruby_' prepended.
 
 Examples:
   $ iruby_profile --create
-  # creates profile at ~/.config/ipython/profile_iruby_default
+  # creates profile at $(ipython locate profile ruby)
 
   $ iruby_profile --create --name='special'
-  # creates profile at ~/.config/ipython/profile_iruby_special
+  # creates profile at $(ipython locate profile special)
 
-To use the profile, use IPython as usual:
-  $ ipython notebook --profile='iruby_default'
+To use the profile, start IPython as usual:
+  $ ipython notebook --profile='ruby'
 
 Options:
 EOS
 
   opt :create, 'Create a profile', default: false
-  opt :name,   'Profile name', type: :string, default: 'default'
+  opt :name,   'Profile name', type: :string, default: 'ruby'
 end
 
 if not opts[:create_given]
