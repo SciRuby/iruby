@@ -68,7 +68,7 @@ module IRuby
 
       # Build dict of handlers for message types
       @handlers = {}
-      ['execute_request', 'complete_request'].each do |msg_type|
+      ['execute_request', 'complete_request', 'kernel_info_request'].each do |msg_type|
         @handlers[msg_type] = msg_type
       end
     end
@@ -97,6 +97,28 @@ module IRuby
       end
     end
 
+    def kernel_info_request(ident, parent)
+      reply_content = {
+        protocol_version: [4, 0],
+
+        # Language version number (mandatory).
+        # It is Python version number (e.g., [2, 7, 3]) for the kernel
+        # included in IPython.
+        language_version: RUBY_VERSION.split('.').map { |x| x.to_i },
+
+        # Programming language in which kernel is implemented (mandatory).
+        # Kernel included in IPython returns 'python'.
+        language: "ruby"
+      }
+      reply_msg = @session.send(@reply_socket, 'kernel_info_reply',
+            reply_content, parent, ident
+      )
+    end
+    
+    def send_status(status, parent)
+      @session.send(@pub_socket, "status", {execution_state: status}, parent)
+    end
+
     def execute_request(ident, parent)
       begin
         code = parent['content']['code']
@@ -109,6 +131,7 @@ module IRuby
       if ! parent['content'].fetch('silent', false)
         @execution_count += 1
       end
+      self.send_status("busy", parent)
       @session.send(@pub_socket, 'pyin', {code: code}, parent)
       reply_content = {status: 'ok',
           payload: [],
@@ -156,8 +179,9 @@ module IRuby
         abort_queue
       end
       if ! parent['content']['silent']
-        return output
+        $displayhook.__call__(output)
       end
+      self.send_status("idle", parent)
     end
 
     def complete_request(ident, parent)
@@ -172,6 +196,7 @@ module IRuby
     end
 
     def start(displayhook)
+      self.send_status("starting", nil)
       while true
         ident, msg = @session.recv(@reply_socket, 0)
         begin
@@ -180,10 +205,10 @@ module IRuby
           handler = nil
         end
         if handler.nil?
-          STDERR.puts "UNKNOWN MESSAGE TYPE: #{msg}"
+          STDERR.puts "UNKNOWN MESSAGE TYPE: #{msg['header']['msg_type']} #{msg}"
         else
           # STDERR.puts 'handling ' + omsg.inspect
-          displayhook.__call__(send(handler, ident, msg))
+          send(handler, ident, msg)
         end
       end
     end
