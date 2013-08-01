@@ -10,7 +10,7 @@ module IRuby
     end
 
     def display(obj)
-      if obj.nil? || obj == []
+      if obj.nil?
         return
       end
       # STDERR.puts @kernel.user_ns
@@ -20,7 +20,7 @@ module IRuby
       #@pub_socket.send(msg.to_json)
       data = {}
       output = obj
-      data['text/plain'] = output 
+      data['text/plain'] = output
       data[obj.mime] =  output
       content = {data: data, metadata: {}, execution_count: @kernel.execution_count}
       @session.send(@pub_socket, 'pyout', content, @parent_header)

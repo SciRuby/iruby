@@ -138,18 +138,13 @@ module IRuby
           user_variables: {},
           user_expressions: {},
         }
+      result = nil
       begin
-        # STDERR.puts 'parent: '
-        # STDERR.puts parent.inspect
-        comp_code = code#compiler(code, '<zmq-kernel>')
         $displayhook.set_parent(parent)
         $stdout.set_parent(parent)
 
         eval("@mime_type=nil",@user_ns)
-        response = eval(comp_code, @user_ns)
-        output = ResponseWithMime.new(response, eval("@mime_type",@user_ns))
-
-        # $stdout.puts(output.inspect) if output
+        result = eval(code, @user_ns)
       rescue Exception => e
         # $stderr.puts e.inspect
         #etype, evalue, tb = sys.exc_info()
@@ -178,7 +173,8 @@ module IRuby
       if reply_msg['content']['status'] == 'error'
         abort_queue
       end
-      if ! parent['content']['silent']
+      if ! result.nil? and ! parent['content']['silent']
+        output = ResponseWithMime.new(result, eval("@mime_type",@user_ns))
         $displayhook.display(output)
       end
       self.send_status("idle", parent)
