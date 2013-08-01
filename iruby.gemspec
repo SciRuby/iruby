@@ -6,11 +6,11 @@ require 'iruby/version'
 Gem::Specification.new do |spec|
   spec.name          = "iruby"
   spec.version       = IRuby::VERSION
-  spec.authors       = ["Damián Silvani"]
-  spec.email         = ["munshkr@gmail.com"]
-  spec.description   = %q{IPython Notebook for Ruby}
-  spec.summary       = %q{Create an IPython Notebook profile for using Ruby as kernel}
-  spec.homepage      = ""
+  spec.authors       = ["Damián Silvani", "Min RK", "martin sarsale", "Josh Adams"]
+  spec.email         = ["benjaminrk@gmail.com"]
+  spec.description   = %q{Ruby Kernel for IPython}
+  spec.summary       = %q{A Ruby kernel for IPython frontends (notebook console, etc.)}
+  spec.homepage      = "https://github.com/minrk/iruby"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -28,5 +28,4 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "trollop"
   spec.add_runtime_dependency "uuid"
   spec.add_runtime_dependency "gruff"
-  spec.add_runtime_dependency "rmagick"
 end

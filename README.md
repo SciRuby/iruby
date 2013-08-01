@@ -1,15 +1,10 @@
-# IRuby Notebook
+# IRuby
 
-## About this fork
+This is a Ruby kernel for IPython.
 
-This version of IRuby allows the user to create a custom IPython profile that
-runs on the IRuby kernel.  This profile also customizes the HTML frontend,
-specially for syntax highlighting.
-
-The old frontend files were removed as they are not used. The idea is to
-provide a Ruby backed kernel and let IPython do the rest.
-
-Also some fixes from [minrk's fork](https://github.com/minrk/iruby) were merged.
+It adds a special `iruby_profile` command for staging some customization
+that enables the Ruby kernel by default, and sets syntax-highlighting in the notebook
+to Ruby mode.
 
 ### Usage
 
@@ -17,32 +12,18 @@ Clone this repository and run `bin/iruby_profile` to create the profile, then
 use IPython as usual:
 
 ```bash
-    $ git clone git://github.com/munshkr/iruby
-    $ iruby/bin/iruby_profile --create
-    $ ipython notebook --profile=iruby_default
+git clone git://github.com/minrk/iruby
+cd iruby
+# build and install IRuby
+gem build iruby.gemspec
+$ gem install iruby-*.gem
+# Create an IPython profile with default config
+$ iruby_profile --create
+$ ipython notebook --profile=ruby
 ```
 
-## IRuby (original README)
 
-This begins life as a straight line for line port of the IPython repo stored here: https://github.com/fperez/zmq-pykernel/
-
-Ideally it becomes something more consequential later.
-
-
-### Development
-
-This is meant to be run from the IPython notebook.  install the bundle and
-generate an rvm wrapper for this bundle with:
-
-    rvm wrapper 1.9.3#iruby iruby
-
-You'll have to use our ipython fork's `ruby_kernel` branch.  You'll also want to
-install ipython to point to your dev version with `sudo python setupegg.py
-develop`
-
-Then you just run the IPython notebook web server with `ipython notebook
---Session.key=''`  That will execute the server and open your web browser to the
-notebooks index page.
+## Background
 
 ### Building an in-browser REPL for Ruby (IRuby)
 
