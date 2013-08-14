@@ -85,6 +85,7 @@ module IRuby
           zoom = o.delete(:zoom)
           center = o.delete(:center)
           map_type = o.delete(:map_type)
+          radius = o.delete(:radius)
 r = <<E
 <div id='map-canvas' style='width: 500px; height: 500px;'></div>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization&callback=initialize"></script>
@@ -121,12 +122,12 @@ r = <<E
     var pointArray = new google.maps.MVCArray(points);
 
     heatmap = new google.maps.visualization.HeatmapLayer({
+      radius: #{radius.to_json} || 10,
       data: pointArray
     });
 
     heatmap.setMap(map);
   }
-  console.log("finished pre- init!")
 </script>
 E
         STDERR.write("#{r}\n\n")
