@@ -1,3 +1,4 @@
+require "json"
 module IRuby
   module Output
     module HTML
@@ -74,25 +75,24 @@ module IRuby
       module Gmaps
         def self.points2latlng(points)
           "[" + points.reject{|p| not p.lat or not p.lon}.map{|p| 
-            "  {location: new google.maps.LatLng(#{p.lat.to_f}, #{p.lon.to_f}) #{", weight: #{p.weight.to_i}" if p.respond_to?(:weight) and p.weight} } "
+            "{" + [ 
+              "location: new google.maps.LatLng(#{p.lat.to_f}, #{p.lon.to_f})",
+               p.respond_to?(:weight) && p.weight && "weight: #{p.weight.to_i} ",
+               p.respond_to?(:label)  && "label: #{p.label.to_json}",
+            ].reject{|x| ! x}
+             .join(",") + "}"
           }.join(',') + "]"
         end
-        def self.heatmap(o)
-          data = o.delete(:points)
-          raise "Missing :points parameter" if not data
-
-          points = points2latlng(data)
+        def self.base_map(o)
           zoom = o.delete(:zoom)
           center = o.delete(:center)
           map_type = o.delete(:map_type)
-          radius = o.delete(:radius)
 r = <<E
 <div id='map-canvas' style='width: 500px; height: 500px;'></div>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization&callback=initialize"></script>
 
 <script>
   function initialize() {
-    var points = #{points};
     var latlngbounds = new google.maps.LatLngBounds();
     var zoom = #{zoom.to_json};
     var center = #{center.to_json};
@@ -111,6 +111,20 @@ r = <<E
 
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
+#{yield}
+  }
+</script>
+E
+        r
+
+        end
+        def self.heatmap(o)
+          data = o.delete(:points)
+          points = points2latlng(data)
+          radius = o.delete(:radius)
+          raise "Missing :points parameter" if not data
+          base_map(o){<<E
+    var points = #{points};
     if (! zoom){
       for (var i = 0; i < points.length; i++) {
         latlngbounds.extend(points[i].location);
@@ -127,11 +141,35 @@ r = <<E
     });
 
     heatmap.setMap(map);
-  }
-</script>
 E
-        STDERR.write("#{r}\n\n")
-        r
+          }
+
+        end
+        def self.markers(o)
+          data = o.delete(:points)
+          points = points2latlng(data)
+          radius = o.delete(:radius)
+          raise "Missing :points parameter" if not data
+          base_map(o){<<E
+    var points = #{points};
+    if (! zoom){
+      for (var i = 0; i < points.length; i++) {
+        latlngbounds.extend(points[i].location);
+     }
+     map.fitBounds(latlngbounds);
+    }
+
+    for (var i=0; i<points.length; i++){
+       var marker = new google.maps.Marker({
+          position: points[i].location,
+          map: map,
+          title: points[i].label
+      });
+    }
+
+E
+          }
+
         end
       end
       #stolen from https://github.com/Bantik/heatmap/blob/master/lib/heatmap.rb
