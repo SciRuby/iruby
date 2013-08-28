@@ -75,10 +75,15 @@ module IRuby
       module Gmaps
         def self.points2latlng(points)
           "[" + points.reject{|p| not p.lat or not p.lon}.map{|p| 
+            icon_url = nil
+            icon_url = p.icon_url if p.respond_to?(:icon_url)
+            icon_url = "http://www.google.com/intl/en_us/mapfiles/ms/micons/#{p.icon}-dot.png"if p.respond_to?(:icon)
             "{" + [ 
               "location: new google.maps.LatLng(#{p.lat.to_f}, #{p.lon.to_f})",
                p.respond_to?(:weight) && p.weight && "weight: #{p.weight.to_i} ",
-               p.respond_to?(:label)  && "label: #{p.label.to_json}",
+               p.respond_to?(:label)  && "label: #{p.label.to_s.to_json}",
+               p.respond_to?(:z_index)  && "z_index: #{p.z_index.to_json}",
+               icon_url  && "icon_url: #{icon_url.to_json}",
             ].reject{|x| ! x}
              .join(",") + "}"
           }.join(',') + "]"
@@ -87,8 +92,10 @@ module IRuby
           zoom = o.delete(:zoom)
           center = o.delete(:center)
           map_type = o.delete(:map_type)
+          width = o.delete(:width) || "500px"
+          height = o.delete(:height) || "500px"
 r = <<E
-<div id='map-canvas' style='width: 500px; height: 500px;'></div>
+<div id='map-canvas' style='width: #{width}; height: #{height};'></div>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization&callback=initialize"></script>
 
 <script>
@@ -163,6 +170,8 @@ E
        var marker = new google.maps.Marker({
           position: points[i].location,
           map: map,
+          icon: points[i].icon_url,
+          zIndex: points[i].z_index,
           title: points[i].label
       });
     }
