@@ -73,11 +73,11 @@ def start_kernel!(config_path, boot_file=nil)
 end
 
 
-if ARGV.size == 0 || ARGV.size > 2
+if ARGV.size == 0 || ARGV.size > 3
   puts USAGE
   exit(1)
 end
-config_path, boot_file = ARGV
+config_path, boot_file, working_dir = ARGV
 
 if !File.exists?(config_path)
   puts "Config file '#{config_path}' does not exist"
@@ -89,4 +89,5 @@ if boot_file && !File.exists?(boot_file)
   exit(3)
 end
 
+Dir.chdir(working_dir) if working_dir
 start_kernel!(config_path, boot_file)
