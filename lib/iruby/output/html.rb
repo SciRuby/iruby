@@ -44,7 +44,9 @@ module IRuby
         g = Gruff::Pie.new(size)
         g.title = title if title
         data.each do |data|
-          g.data(data[0], data[1])
+          label = data[0].strip
+          label = "?" if label == ''
+          g.data(label, data[1])
         end
         image(g.to_blob)
       end
