@@ -17,14 +17,16 @@ module IRuby
         r = "<table>"
         if d.respond_to?(:keys) # hash
           columns = [0,1]
-        else
+        elsif d.first.respond_to?(:keys) # array of hashes
           columns = d.first.keys
-          r << "<tr>#{columns.map{|c| "<th>#{c}</th>"}.join("\n")}</tr>"
+          r << "<tr>#{columns.map{|c| "<th>#{c.to_s}</th>"}.join}</tr>"
+        else # array
+          columns = (0 .. d.first.length)
         end
         d.each{|row|
           r << "<tr>"
           columns.each{|column|
-            r << "<td>#{row[column]}</td>"
+            r << "<td>#{row[column].to_s}</td>"
           }
           r << "</tr>"
         }
