@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'iruby/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "iruby"
+  spec.name          = "jnv-iruby"
   spec.version       = IRuby::VERSION
   spec.authors       = ["Damián Silvani", "Min RK", "martin sarsale", "Josh Adams"]
   spec.email         = ["benjaminrk@gmail.com"]
