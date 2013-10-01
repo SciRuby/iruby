@@ -70,7 +70,7 @@ module IRuby
     end
 
     def puts str
-      write str
+      write "#{str}\n"
     end
 
     def _maybe_send
