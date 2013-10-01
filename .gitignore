@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 *.gem
 *.rbc
+*.log
 .bundle
 .config
 .yardoc

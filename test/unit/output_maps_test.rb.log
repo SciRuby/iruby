@@ -1,9 +1,0 @@
-Run options: --name "/(?i:heatmap)/" --seed 10939
-
-# Running tests:
-
-.
-
-Finished tests in 0.001312s, 762.0621 tests/s, 762.0621 assertions/s.
-
-1 tests, 1 assertions, 0 failures, 0 errors, 0 skips

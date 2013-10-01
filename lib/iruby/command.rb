@@ -1,0 +1,72 @@
+require 'shellwords'
+
+module IRuby
+  class Command
+    IRUBYDIR = '~/.config/iruby'
+
+    def initialize(args)
+      @args = args
+    end
+
+    def run
+      raise 'Use --iruby-dir instead of --ipython-dir!' unless @args.grep(/\A--ipython-dir=.*\Z/).empty?
+
+      if @args.first == 'kernel'
+        run_kernel
+      else
+        run_ipython
+      end
+    end
+
+    private
+
+    def run_kernel
+      config_file, boot_file, working_dir = @args[1..-1]
+      Dir.chdir(working_dir) if working_dir
+      require boot_file if boot_file
+      require 'iruby'
+      $iruby_kernel = Kernel.new(config_file)
+      $iruby_kernel.run
+    end
+
+    def run_ipython
+      dir = @args.grep(/\A--iruby-dir=.*\Z/)
+      @args -= dir
+      dir = dir.last.to_s.sub(/\A--profile=/, '')
+      dir = ENV['IRUBYDIR'] || IRUBYDIR if dir.empty?
+      dir = File.expand_path(dir)
+      ENV['IPYTHONDIR'] = dir
+
+      if @args.size == 3 && @args[0] == 'profile' && @args[1] == 'create'
+        profile = @args[2]
+      else
+        profile = @args.grep(/\A--profile=.*\Z/).last.to_s.sub(/\A--profile=/, '')
+        profile = 'default' if profile.empty?
+      end
+
+      create_profile(dir, profile)
+      Kernel.exec('ipython', *@args)
+    end
+
+    def create_profile(dir, profile)
+      profile_dir = File.join(dir, "profile_#{profile}")
+      unless File.directory?(profile_dir)
+        puts "Creating profile directory #{profile_dir}"
+        system("ipython profile create #{Shellwords.escape profile}")
+      end
+
+      kernel_cmd = "c.KernelManager.kernel_cmd = ['#{File.expand_path $0}', 'kernel', '{connection_file}']"
+      Dir[File.join(profile_dir, '*_config.py')].each do |path|
+        File.open(path, 'r+') do |f|
+          content = f.read
+          content << kernel_cmd unless content.gsub!(/^c\.KernelManager\.kernel_cmd.*$/, kernel_cmd)
+          f.pos = 0
+          f.write(content)
+        end
+      end
+
+      static_dir = File.join(profile_dir, 'static')
+      File.symlink(File.join(File.dirname(__FILE__), '..', '..', 'static'), static_dir) unless File.exists?(static_dir)
+    end
+  end
+end

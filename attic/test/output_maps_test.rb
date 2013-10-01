@@ -1,11 +1,11 @@
-require "test_config"
-require "iruby/output/html"
+require 'helper'
+
 class TestOutputMaps < Minitest::Unit::TestCase
   def test_heatmap
     points=[
-      OpenStruct.new({lat: 33.1, lon: 34.1}), 
-      OpenStruct.new({lat: 33.2, lon: 34.2}), 
-      OpenStruct.new({lat: 33.3, lon: 34.3}), 
+      OpenStruct.new({lat: 33.1, lon: 34.1}),
+      OpenStruct.new({lat: 33.2, lon: 34.2}),
+      OpenStruct.new({lat: 33.3, lon: 34.3}),
     ]
    expected = <<Z
 <div id='map-canvas' style='width: 500px; height: 500px;'></div>
@@ -18,7 +18,7 @@ class TestOutputMaps < Minitest::Unit::TestCase
     var center = null;
     var map_type = null || google.maps.MapTypeId.SATELLITE;
 
-    var mapOptions = { 
+    var mapOptions = {
       mapTypeId: map_type
     };
 
@@ -56,9 +56,9 @@ Z
   end
   def test_markers
     points=[
-      OpenStruct.new({lat: 33.1, lon: 34.1, label: "f1"}), 
-      OpenStruct.new({lat: 33.2, lon: 34.2, label: "f2"}), 
-      OpenStruct.new({lat: 33.3, lon: 34.3, label: "f3"}), 
+      OpenStruct.new({lat: 33.1, lon: 34.1, label: "f1"}),
+      OpenStruct.new({lat: 33.2, lon: 34.2, label: "f2"}),
+      OpenStruct.new({lat: 33.3, lon: 34.3, label: "f3"}),
     ]
    expected = <<Z
 <div id='map-canvas' style='width: 500px; height: 500px;'></div>
@@ -71,7 +71,7 @@ Z
     var center = null;
     var map_type = null || google.maps.MapTypeId.SATELLITE;
 
-    var mapOptions = { 
+    var mapOptions = {
       mapTypeId: map_type
     };
 

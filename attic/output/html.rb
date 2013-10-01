@@ -1,9 +1,6 @@
-require "json"
 module IRuby
   module Output
     module HTML
-      require "gruff"
-      require "base64"
       def self.table(data)
         #
         # data = {a: 1, b:2}
