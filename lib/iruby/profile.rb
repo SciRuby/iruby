@@ -19,6 +19,15 @@ c.KernelManager.kernel_cmd = ['iruby_kernel', '{connection_file}']
 ## (remember to add 'iruby' to your projects Gemfile)
 #c.KernelManager.kernel_cmd = ['bundle', 'exec', 'iruby_kernel', '{connection_file}', '~/my_project/config/boot.rb']
 
+## if you need to chdir to the APP_ROOT dir first
+#
+#c.KernelManager.kernel_cmd = ['bundle', 'exec', 'iruby_kernel', '{connection_file}', '~/my_project/config/boot.rb',"~/"]
+#
+## if you need to chdir to the APP_ROOT dir first and set the Gemfile location
+# import os
+# os.environ['BUNDLE_GEMFILE']='/var/www/overol/current/Gemfile'
+# c.KernelManager.kernel_cmd = ['bundle', 'exec', 'iruby_kernel', '{connection_file}', '/var/www/overol/current/config/boot.rb', '/var/www/overol/current/']
+#
 c.Session.key = ''
     PYTHON
 
