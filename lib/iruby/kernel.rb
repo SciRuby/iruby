@@ -32,7 +32,12 @@ module IRuby
       $stderr = OStream.new(@session, @pub_socket, 'stderr')
 
       @execution_count = 0
-      @completer = Completer.new
+      begin
+        require 'pry'
+        @backend = PryBackend.new
+      rescue LoadError
+        @backend = PlainBackend.new
+      end
     end
 
     def run
@@ -88,15 +93,10 @@ module IRuby
       @execution_count += 1 unless msg[:content].fetch('silent', false)
       send_status('busy')
       @session.send(@pub_socket, 'pyin', code: code)
-      content = {
-        status: 'ok',
-        payload: [],
-        user_variables: {},
-        user_expressions: {},
-      }
+
       result = nil
       begin
-        result = TOPLEVEL_BINDING.eval(code)
+        result = @backend.eval(code)
       rescue Exception => e
         content = {
           ename: e.class.to_s,
@@ -104,19 +104,27 @@ module IRuby
           etype: e.class.to_s,
           status: 'error',
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
+          execution_count: @execution_count
         }
         @session.send(@pub_socket, 'pyerr', content)
       end
-      content[:execution_count] = @execution_count
 
+      content = {
+        status: 'ok',
+        payload: [],
+        user_variables: {},
+        user_expressions: {},
+        execution_count: @execution_count
+      }
       @session.send(@reply_socket, 'execute_reply', content, ident)
+
       display(result) if result && !msg[:content]['silent']
       send_status('idle')
     end
 
     def complete_request(ident, msg)
       content = {
-        matches: @completer.complete(msg[:content]['line'], msg[:content]['text']),
+        matches: @backend.complete(msg[:content]['line'], msg[:content]['text']),
         status: 'ok',
         matched_text: msg[:content]['line'],
       }
