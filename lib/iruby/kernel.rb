@@ -7,8 +7,9 @@ module IRuby
     def initialize(config_file)
       config = MultiJson.load(File.read(config_file))
 
-      puts 'Starting the kernel'
-      puts config
+      #puts 'Starting the kernel'
+      #puts config
+      #puts 'Use Ctrl-\\ (NOT Ctrl-C!) to terminate.'
 
       c = ZMQ::Context.new
 
@@ -24,8 +25,6 @@ module IRuby
         hb_socket.bind(connection % config['hb_port'])
         ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
       end
-
-      puts 'Use Ctrl-\\ (NOT Ctrl-C!) to terminate.'
 
       @session = Session.new('kernel', config['key'], config['signature_scheme'])
 
