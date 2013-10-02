@@ -103,6 +103,7 @@ module IRuby
           ename: e.class.to_s,
           evalue: e.message,
           etype: e.class.to_s,
+          status: 'error',
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
         }
         @session.send(@pub_socket, 'pyerr', content)
