@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name          = 'iruby'
   s.date          = Date.today.to_s
   s.version       = IRuby::VERSION
-  s.authors       = ['Damián Silvani', 'Min RK', 'martin sarsale', 'Josh Adams', 'Daniel Mendler']
+  s.authors       = ['Damián Silvani', 'Min RK', 'Martin Sarsale', 'Josh Adams', 'Daniel Mendler']
   s.email         = ['benjaminrk@gmail.com']
   s.description   = 'Ruby Kernel for IPython'
   s.summary       = 'A Ruby kernel for IPython frontends (notebook console, etc.)'
@@ -17,6 +17,10 @@ Gem::Specification.new do |s|
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w(lib)
+
+  m = "Consider installing the optional dependencies to get additional functionality:\n"
+  File.read('Gemfile').scan(/gem\s+'(.*?)'/) { m << "  * #{$1}\n" }
+  s.post_install_message = m << "\n"
 
   s.add_development_dependency 'rake'
 
