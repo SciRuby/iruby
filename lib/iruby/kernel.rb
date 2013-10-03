@@ -68,26 +68,6 @@ module IRuby
       nil
     end
 
-    def display_handler(obj, options)
-      if options[:mime]
-        [options[:mime], obj.to_s]
-      elsif obj.respond_to?(:to_iruby)
-        obj.to_iruby
-      elsif (defined?(Gruff::Base) && Gruff::Base === obj) ||
-          (defined?(Magick::Image) && Magick::Image === obj)
-        ['image/png', [obj.to_blob].pack('m0')]
-      elsif obj.respond_to?(:path) && File.readable?(obj.path)
-        mime = MimeMagic.by_path(obj.path).to_s
-        if %w(image/png image/jpeg text/html).include?(mime)
-          [mime, [File.read(obj.path)].pack('m0')]
-        else
-          ['text/plain', obj.to_s]
-        end
-      else
-        ['text/plain', obj.to_s]
-      end
-    end
-
     def kernel_info_request(ident, msg)
       content = {
         protocol_version: [4, 0],
@@ -199,6 +179,34 @@ module IRuby
         found: false
       }
       @session.send(@reply_socket, 'object_info_reply', content, ident)
+    end
+
+    private
+
+    def base64(s)
+      [s].pack('m0')
+    end
+
+    def display_handler(obj, options)
+      if options[:mime]
+        [options[:mime], obj.to_s]
+      elsif obj.respond_to?(:to_iruby)
+        obj.to_iruby
+      elsif defined?(Gruff::Base) && Gruff::Base === obj
+        ['image/png', base64(obj.to_blob)]
+      elsif (defined?(Magick::Image) && Magick::Image === obj) ||
+           (defined?(MiniMagick::Image) && MiniMagick::Image === obj)
+        [obj.format == 'PNG' ? 'image/png' : 'image/jpeg', base64(obj.to_blob)]
+      elsif obj.respond_to?(:path) && File.readable?(obj.path)
+        mime = MimeMagic.by_path(obj.path).to_s
+        if %w(image/png image/jpeg text/html).include?(mime)
+          [mime, base64(File.read(obj.path))]
+        else
+          ['text/plain', obj.to_s]
+        end
+      else
+        ['text/plain', obj.to_s]
+      end
     end
   end
 end
