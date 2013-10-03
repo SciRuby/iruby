@@ -61,8 +61,7 @@ module IRuby
 
     def display(obj, options={})
       if obj
-        mime, data = display_handler(obj, options)
-        content = { data: { mime => data }, metadata: {}, execution_count: @execution_count }
+        content = { data: Display.new(obj, options).data, metadata: {}, execution_count: @execution_count }
         @session.send(@pub_socket, 'pyout', content)
       end
       nil
@@ -179,45 +178,6 @@ module IRuby
         found: false
       }
       @session.send(@reply_socket, 'object_info_reply', content, ident)
-    end
-
-    private
-
-    def base64(s)
-      [s].pack('m0')
-    end
-
-    def display_handler(obj, options)
-      if options[:mime]
-        [options[:mime], obj.to_s]
-      elsif obj.respond_to?(:to_iruby)
-        obj.to_iruby
-      elsif defined?(Gruff::Base) && Gruff::Base === obj
-        ['image/png', base64(obj.to_blob)]
-      elsif (defined?(Magick::Image) && Magick::Image === obj) ||
-           (defined?(MiniMagick::Image) && MiniMagick::Image === obj)
-        [obj.format == 'PNG' ? 'image/png' : 'image/jpeg', base64(obj.to_blob)]
-      elsif obj.respond_to?(:path) && File.readable?(obj.path)
-        mime = MimeMagic.by_path(obj.path)
-        if %w(image/png image/jpeg text/html image/svg+xml).include?(mime.to_s)
-          content = File.read(obj.path)
-          [mime.to_s, mime.text? ? content : base64(content)]
-        else
-          ['text/plain', obj.to_s]
-        end
-      elsif defined?(Gnuplot::Plot) && Gnuplot::Plot === obj
-        Tempfile.open('plot') do |f|
-          obj.terminal 'svg enhanced'
-          obj.output f.path
-          Gnuplot.open do |io|
-            io << obj.to_gplot
-            io << obj.store_datasets
-          end
-          ['image/svg+xml', File.read(f.path)]
-        end
-      else
-        ['text/plain', obj.to_s]
-      end
     end
   end
 end
