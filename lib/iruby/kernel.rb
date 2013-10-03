@@ -199,7 +199,7 @@ module IRuby
         [obj.format == 'PNG' ? 'image/png' : 'image/jpeg', base64(obj.to_blob)]
       elsif obj.respond_to?(:path) && File.readable?(obj.path)
         mime = MimeMagic.by_path(obj.path).to_s
-        if %w(image/png image/jpeg text/html).include?(mime)
+        if %w(image/png image/jpeg text/html image/svg+xml).include?(mime)
           [mime, base64(File.read(obj.path))]
         else
           ['text/plain', obj.to_s]
