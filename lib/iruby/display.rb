@@ -2,7 +2,15 @@ module IRuby
   class Display
     attr_reader :data
 
-    SUPPORTED_MIMES = %w(image/png image/jpeg text/html image/svg+xml)
+    SUPPORTED_MIMES = %w(
+    text/plain
+    text/html
+    text/latex
+    application/json
+    application/javascript
+    image/png
+    image/jpeg
+    image/svg+xml)
 
     def initialize(obj, options)
       @data = { 'text/plain' => obj.inspect }
