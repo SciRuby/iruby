@@ -18,6 +18,10 @@ module IRuby
         add(options[:mime], obj)
       elsif obj.respond_to?(:to_iruby)
         add(*obj.to_iruby)
+      elsif obj.respond_to?(:to_html)
+        add('text/html', obj.to_html)
+      elsif obj.respond_to?(:to_latex)
+        add('text/latex', obj.to_latex)
       elsif defined?(Gruff::Base) && Gruff::Base === obj
         add('image/png', obj.to_blob)
       elsif (defined?(Magick::Image) && Magick::Image === obj) ||
