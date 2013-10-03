@@ -61,19 +61,24 @@ module IRuby
 
     def display(obj, options={})
       if obj
-        data = {}
-        if obj.respond_to?(:to_iruby)
-          #mime, blob = obj.to_iruby
-          #data[mime] = [blob].pack('m0')
-        elsif options[:mime]
-          data[options[:mime]] = obj.to_s
-        else
-          data['text/plain'] = obj.to_s
-        end
-        content = { data: data, metadata: {}, execution_count: @execution_count }
+        mime, data = display_handler(obj, options)
+        content = { data: { mime => data }, metadata: {}, execution_count: @execution_count }
         @session.send(@pub_socket, 'pyout', content)
       end
       nil
+    end
+
+    def display_handler(obj, options)
+      if options[:mime]
+        [options[:mime], obj.to_s]
+      elsif obj.respond_to?(:to_iruby)
+        obj.to_iruby
+      elsif (defined?(Gruff::Base) && Gruff::Base === obj) ||
+          (defined?(Magick::Image) && Magick::Image === obj)
+        ['image/png', [obj.to_blob].pack('m0')]
+      else
+        ['text/plain', obj.to_s]
+      end
     end
 
     def kernel_info_request(ident, msg)
