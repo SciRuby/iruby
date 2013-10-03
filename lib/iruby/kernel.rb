@@ -60,7 +60,7 @@ module IRuby
     end
 
     def display(obj, options={})
-      if obj
+      unless obj.nil?
         content = { data: Display.new(obj, options).data, metadata: {}, execution_count: @execution_count }
         @session.send(@pub_socket, 'pyout', content)
       end
@@ -122,7 +122,7 @@ module IRuby
       }
       @session.send(@reply_socket, 'execute_reply', content, ident)
 
-      display(result) if result && !msg[:content]['silent']
+      display(result) unless msg[:content]['silent']
       send_status('idle')
     end
 
