@@ -1,13 +1,14 @@
 module IRuby
-  class IRubyObject
-    attr_reader :data, :mime
+  class MimeString < String
+    attr_reader :mime
 
     def initialize(mime, data)
-      @mime, @data = mime, data
+      super(data.to_s)
+      @mime = mime
     end
 
     def to_iruby
-      [@mime, @data]
+      [@mime, self]
     end
   end
 
@@ -56,14 +57,14 @@ module IRuby
   end
 
   def self.latex(s)
-    IRubyObject.new('text/latex', s)
+    MimeString.new('text/latex', s)
   end
 
   def self.math(s)
-    IRubyObject.new('text/latex', "$$#{s}$$")
+    MimeString.new('text/latex', "$$#{s}$$")
   end
 
   def self.html(s)
-    IRubyObject.new('text/html', s)
+    MimeString.new('text/html', s)
   end
 end
