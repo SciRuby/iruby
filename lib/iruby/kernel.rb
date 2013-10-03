@@ -76,6 +76,13 @@ module IRuby
       elsif (defined?(Gruff::Base) && Gruff::Base === obj) ||
           (defined?(Magick::Image) && Magick::Image === obj)
         ['image/png', [obj.to_blob].pack('m0')]
+      elsif obj.respond_to?(:path) && File.readable?(obj.path)
+        mime = MimeMagic.by_path(obj.path).to_s
+        if %w(image/png image/jpeg text/html).include?(mime)
+          [mime, [File.read(obj.path)].pack('m0')]
+        else
+          ['text/plain', obj.to_s]
+        end
       else
         ['text/plain', obj.to_s]
       end
