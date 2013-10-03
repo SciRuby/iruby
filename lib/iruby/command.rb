@@ -69,7 +69,11 @@ module IRuby
       end
 
       static_dir = File.join(profile_dir, 'static')
-      File.symlink(File.join(File.dirname(__FILE__), 'static'), static_dir) unless File.exists?(static_dir)
+      target_dir = File.join(File.dirname(__FILE__), 'static')
+      unless (File.readlink(static_dir) rescue nil) == target_dir
+        File.unlink(static_dir)
+        File.symlink(target_dir, static_dir)
+      end
     end
   end
 end
