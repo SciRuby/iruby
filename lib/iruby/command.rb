@@ -61,12 +61,9 @@ module IRuby
 
       kernel_cmd = "c.KernelManager.kernel_cmd = ['#{File.expand_path $0}', 'kernel', '{connection_file}']"
       Dir[File.join(profile_dir, '*_config.py')].each do |path|
-        File.open(path, 'r+') do |f|
-          content = f.read
-          content << kernel_cmd unless content.gsub!(/^c\.KernelManager\.kernel_cmd.*$/, kernel_cmd)
-          f.pos = 0
-          f.write(content)
-        end
+        content = File.read(path)
+        content << kernel_cmd unless content.gsub!(/^c\.KernelManager\.kernel_cmd.*$/, kernel_cmd)
+        File.open(path, 'w') {|f| f.write(content) }
       end
 
       static_dir = File.join(profile_dir, 'static')
