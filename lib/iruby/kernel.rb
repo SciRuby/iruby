@@ -56,7 +56,14 @@ module IRuby
     def display(obj, options={})
       if obj
         data = {}
-        data[obj.respond_to?(:mime) ? obj.mime : (options[:mime] || 'text/plain')] = obj.to_s
+        if obj.respond_to?(:to_iruby)
+          mime, blob = obj.to_iruby
+          data[mime] = [blob].pack('m0')
+        elsif options[:mime]
+          data[options[:mime]] = obj.to_s
+        else
+          data['text/plain'] = obj.to_s
+        end
         content = { data: data, metadata: {}, execution_count: @execution_count }
         @session.send(@pub_socket, 'pyout', content)
       end
