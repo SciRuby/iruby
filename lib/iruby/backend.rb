@@ -22,11 +22,14 @@ module IRuby
           Bond.agent.call(input, input)
         end
       end
-      Pry.pager = false
-      @pry = Pry.new(output: File.open(File::NULL, 'w'), target: TOPLEVEL_BINDING)
+      Pry.pager = false # Don't use the pager
+      Pry.print = proc {|output, value|} # No result printing
+      Pry.exception_handler = proc {|output, exception, _| }
+      @pry = Pry.new(output: $stdout, target: TOPLEVEL_BINDING)
     end
 
     def eval(code)
+      @pry.last_result = nil
       @pry.eval(code)
       raise @pry.last_exception if @pry.last_result_is_exception?
       @pry.last_result
