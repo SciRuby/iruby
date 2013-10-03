@@ -5,7 +5,7 @@ module IRuby
     SUPPORTED_MIMES = %w(image/png image/jpeg text/html image/svg+xml)
 
     def initialize(obj, options)
-      @data = { 'text/plain' => obj.to_s }
+      @data = { 'text/plain' => obj.inspect }
       if options[:mime]
         add(options[:mime], obj)
       elsif obj.respond_to?(:to_iruby)
