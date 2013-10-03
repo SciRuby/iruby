@@ -18,3 +18,7 @@ end
 group :gnuplot do
   gem 'gnuplot'
 end
+
+group :rubyvis do
+  gem 'rubyvis'
+end

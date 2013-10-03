@@ -20,6 +20,9 @@ module IRuby
         add(*obj.to_iruby)
       elsif obj.respond_to?(:to_html)
         add('text/html', obj.to_html)
+      elsif obj.respond_to?(:to_svg)
+        obj.render if defined?(Rubyvis) && Rubyvis::Mark === obj
+        add('image/svg+xml', obj.to_svg)
       elsif obj.respond_to?(:to_latex)
         add('text/latex', obj.to_latex)
       elsif defined?(Gruff::Base) && Gruff::Base === obj
