@@ -14,7 +14,8 @@ module IRuby
         add('image/png', obj.to_blob)
       elsif (defined?(Magick::Image) && Magick::Image === obj) ||
            (defined?(MiniMagick::Image) && MiniMagick::Image === obj)
-        add(obj.format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob)
+        format = obj.format || 'PNG'
+        add(format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob {|i| i.format = format })
       elsif obj.respond_to?(:path) && File.readable?(obj.path)
         mime = MimeMagic.by_path(obj.path).to_s
         add(mime, File.read(obj.path)) if SUPPORTED_MIMES.include?(mime)
