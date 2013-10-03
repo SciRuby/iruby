@@ -101,6 +101,13 @@ module IRuby
       result = nil
       begin
         result = @backend.eval(code)
+        content = {
+          status: 'ok',
+          payload: [],
+          user_variables: {},
+          user_expressions: {},
+          execution_count: @execution_count
+        }
       rescue Exception => e
         content = {
           ename: e.class.to_s,
@@ -112,16 +119,7 @@ module IRuby
         }
         @session.send(@pub_socket, 'pyerr', content)
       end
-
-      content = {
-        status: 'ok',
-        payload: [],
-        user_variables: {},
-        user_expressions: {},
-        execution_count: @execution_count
-      }
       @session.send(@reply_socket, 'execute_reply', content, ident)
-
       display(result) unless msg[:content]['silent']
       send_status('idle')
     end
