@@ -2,13 +2,13 @@ module IRuby
   class Session
     DELIM = '<IDS|MSG>'
 
-    def initialize(username, key, sign_scheme)
+    def initialize(username, config)
       @username = username
       @session = SecureRandom.uuid
       @msg_id = 0
-      if key && sign_scheme
-        raise 'Unknown signature scheme' unless sign_scheme =~ /\Ahmac-(.*)\Z/
-        @hmac = OpenSSL::HMAC.new(key, OpenSSL::Digest::Digest.new($1))
+      if config['key'] && config['signature_scheme']
+        raise 'Unknown signature scheme' unless config['signature_scheme'] =~ /\Ahmac-(.*)\Z/
+        @hmac = OpenSSL::HMAC.new(config['key'], OpenSSL::Digest::Digest.new($1))
       end
     end
 

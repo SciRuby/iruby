@@ -9,7 +9,7 @@ module IRuby
     end
 
     def initialize(config_file)
-      config = MultiJson.load(File.read(config_file))
+      @config = MultiJson.load(File.read(config_file))
 
       #puts 'Starting the kernel'
       #puts config
@@ -19,20 +19,20 @@ module IRuby
 
       c = ZMQ::Context.new
 
-      connection = "#{config['transport']}://#{config['ip']}:%d"
+      connection = "#{@config['transport']}://#{@config['ip']}:%d"
       @reply_socket = c.socket(ZMQ::XREP)
-      @reply_socket.bind(connection % config['shell_port'])
+      @reply_socket.bind(connection % @config['shell_port'])
 
       @pub_socket = c.socket(ZMQ::PUB)
-      @pub_socket.bind(connection % config['iopub_port'])
+      @pub_socket.bind(connection % @config['iopub_port'])
 
-      @hb_thread = Thread.new do
+      Thread.new do
         hb_socket = c.socket(ZMQ::REP)
-        hb_socket.bind(connection % config['hb_port'])
+        hb_socket.bind(connection % @config['hb_port'])
         ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
       end
 
-      @session = Session.new('kernel', config['key'], config['signature_scheme'])
+      @session = Session.new('kernel', @config)
 
       $stdout = OStream.new(@session, @pub_socket, 'stdout')
       $stderr = OStream.new(@session, @pub_socket, 'stderr')
@@ -147,6 +147,51 @@ module IRuby
         matched_text: msg[:content]['line'],
       }
       @session.send(@reply_socket, 'complete_reply', content, ident)
+    end
+
+    def connect_request(ident, msg)
+      content = {
+        shell_port: config['shell_port'],
+        iopub_port: config['iopub_port'],
+        stdin_port: config['stdin_port'],
+        hb_port:    config['hb_port']
+      }
+      @session.send(@reply_socket, 'connect_reply', content, ident)
+    end
+
+    def shutdown_request(ident, msg)
+      @session.send(@reply_socket, 'shutdown_reply', msg[:content], ident)
+    end
+
+    def history_request(ident, msg)
+      # we will just send back empty history for now, pending clarification
+      # as requested in ipython/ipython#3806
+      content = {
+        history: []
+      }
+      @session.send(@reply_socket, 'history_reply', content, ident)
+    end
+
+    def object_info_request(ident, msg)
+      o = @backend.eval(msg[:content]['oname'])
+      content = {
+        oname: msg[:content]['oname'],
+        found: true,
+        ismagic: false,
+        isalias: false,
+        docstring: '', # TODO
+        type_class: o.class.to_s,
+        type_class: o.class.superclass.to_s,
+        string_form: o.inspect
+      }
+      content[:length] = o.length if o.respond_to?(:length)
+      @session.send(@reply_socket, 'object_info_reply', content, ident)
+    rescue Exception
+      content = {
+        oname: msg[:content]['oname'],
+        found: false
+      }
+      @session.send(@reply_socket, 'object_info_reply', content, ident)
     end
   end
 end
