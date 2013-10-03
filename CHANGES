@@ -1,3 +1,10 @@
+0.1.3
+
+  * Implement missing request handlers
+  * Detect if Bundler is running and set kernel_cmd appropriately
+  * Improve Pry integration
+  * Add support for the gems gnuplot, gruff, rmagick and mini_magick
+
 0.1.2
 
   * Support for Pry added
