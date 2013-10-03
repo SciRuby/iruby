@@ -1,3 +1,8 @@
+0.1.5
+
+  * Implement a rich display system
+  * Fix error output
+
 0.1.4
 
   * Extract display handler from kernel
