@@ -10,3 +10,8 @@ group :pry do
   gem 'awesome_print'
   gem 'hirb'
 end
+
+group :gruff do
+  gem 'gruff'
+  gem 'rmagick', github: 'bricef/rmagick'
+end

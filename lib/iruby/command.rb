@@ -25,8 +25,7 @@ module IRuby
       Dir.chdir(working_dir) if working_dir
       require boot_file if boot_file
       require 'iruby'
-      $iruby_kernel = Kernel.new(config_file)
-      $iruby_kernel.run
+      Kernel.new(config_file).run
     end
 
     def run_ipython

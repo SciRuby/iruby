@@ -4,12 +4,18 @@ module IRuby
     WHITE = "\e[37m"
     RESET = "\e[0m"
 
+    class<< self
+      attr_accessor :instance
+    end
+
     def initialize(config_file)
       config = MultiJson.load(File.read(config_file))
 
       #puts 'Starting the kernel'
       #puts config
       #puts 'Use Ctrl-\\ (NOT Ctrl-C!) to terminate.'
+
+      Kernel.instance = self
 
       c = ZMQ::Context.new
 
@@ -57,8 +63,8 @@ module IRuby
       if obj
         data = {}
         if obj.respond_to?(:to_iruby)
-          mime, blob = obj.to_iruby
-          data[mime] = [blob].pack('m0')
+          #mime, blob = obj.to_iruby
+          #data[mime] = [blob].pack('m0')
         elsif options[:mime]
           data[options[:mime]] = obj.to_s
         else
@@ -138,12 +144,4 @@ module IRuby
       @session.send(@reply_socket, 'complete_reply', content, ident)
     end
   end
-
-  module Hooks
-    def display(obj, options={})
-      $iruby_kernel.display(obj, options)
-    end
-  end
 end
-
-include IRuby::Hooks
