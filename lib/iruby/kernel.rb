@@ -198,21 +198,22 @@ module IRuby
            (defined?(MiniMagick::Image) && MiniMagick::Image === obj)
         [obj.format == 'PNG' ? 'image/png' : 'image/jpeg', base64(obj.to_blob)]
       elsif obj.respond_to?(:path) && File.readable?(obj.path)
-        mime = MimeMagic.by_path(obj.path).to_s
-        if %w(image/png image/jpeg text/html image/svg+xml).include?(mime)
-          [mime, base64(File.read(obj.path))]
+        mime = MimeMagic.by_path(obj.path)
+        if %w(image/png image/jpeg text/html image/svg+xml).include?(mime.to_s)
+          content = File.read(obj.path)
+          [mime.to_s, mime.text? ? content : base64(content)]
         else
           ['text/plain', obj.to_s]
         end
       elsif defined?(Gnuplot::Plot) && Gnuplot::Plot === obj
-        Tempfile.open('plot.png') do |f|
-          obj.terminal 'pngcairo'
+        Tempfile.open('plot') do |f|
+          obj.terminal 'svg enhanced'
           obj.output f.path
           Gnuplot.open do |io|
             io << obj.to_gplot
             io << obj.store_datasets
           end
-          ['image/png', base64(File.read(f.path))]
+          ['image/svg+xml', File.read(f.path)]
         end
       else
         ['text/plain', obj.to_s]
