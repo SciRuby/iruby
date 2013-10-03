@@ -16,3 +16,7 @@ group :gruff do
   gem 'gruff'
   gem 'rmagick', github: 'bricef/rmagick'
 end
+
+group :gnuplot do
+  gem 'gnuplot'
+end

@@ -204,6 +204,16 @@ module IRuby
         else
           ['text/plain', obj.to_s]
         end
+      elsif defined?(Gnuplot::Plot) && Gnuplot::Plot === obj
+        Tempfile.open('plot.png') do |f|
+          obj.terminal 'pngcairo'
+          obj.output f.path
+          Gnuplot.open do |io|
+            io << obj.to_gplot
+            io << obj.store_datasets
+          end
+          ['image/png', base64(File.read(f.path))]
+        end
       else
         ['text/plain', obj.to_s]
       end
