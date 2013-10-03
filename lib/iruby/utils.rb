@@ -27,9 +27,9 @@ module IRuby
         # Array of Hashes
         keys ||= Set.new
         keys.merge(row.keys)
-      elsif row.respond_to?(:size)
+      elsif row.respond_to?(:map)
         # Array of Arrays
-        size = row.size if size > row.size
+        size = row.size if size < row.size
       end
       rows << row
     end
@@ -37,21 +37,22 @@ module IRuby
     if keys
       keys.merge(0...size)
       table << '<tr>' << keys.map {|k| "<th>#{k}</th>"}.join << '</tr>'
-      rows.each do |row|
-        if row.respond_to?(:map)
-          table << '<tr>' << keys.map {|k| "<td>#{row[k] rescue nil}</td>" }.join << '</tr>'
-        else
-          table << "<tr><td colspan='#{keys.size}'>#{row}</td></tr>"
-        end
-      end
     else
-      rows.each do |row|
-        if row.respond_to?(:map)
-          table << '<tr>' << row.map {|i| "<td>#{i}</td>" }.join << '</tr>'
+      keys = 0...size
+    end
+    rows.each do |row|
+      table << '<tr>'
+      if row.respond_to?(:map)
+        row = keys.map {|k| "<td>#{row[k] rescue nil}</td>" }
+        if row.empty?
+          table << "<td#{keys.size > 1 ? " colspan='#{keys.size}'" : ''}></td>"
         else
-          table << "<tr><td colspan='#{size}'>#{row}</td></tr>"
+          table << row.join
         end
+      else
+        table << "<td#{keys.size > 1 ? " colspan='#{keys.size}'" : ''}>#{row}</td>"
       end
+      table << '</tr>'
     end
     html(table << '</table>')
   end
