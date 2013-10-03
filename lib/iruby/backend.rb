@@ -22,7 +22,8 @@ module IRuby
           Bond.agent.call(input, input)
         end
       end
-      @pry = Pry.new(output: File.open(File::NULL, 'w'), target: TOPLEVEL_BINDING, commands: Pry.commands)
+      Pry.pager = false
+      @pry = Pry.new(output: File.open(File::NULL, 'w'), target: TOPLEVEL_BINDING)
     end
 
     def eval(code)
