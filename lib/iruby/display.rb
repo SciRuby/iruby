@@ -44,10 +44,38 @@ module IRuby
           end
           add('image/svg+xml', File.read(f.path))
         end
+      elsif defined?(Matrix) && Matrix === obj
+        add('text/latex', format_matrix(obj, obj.row_count, obj.column_count))
+      elsif defined?(GSL::Matrix) && GSL::Matrix === obj
+        add('text/latex', format_matrix(obj, obj.size1, obj.size2))
+      elsif defined?(GSL::Vector) && GSL::Vector === obj
+        add('text/latex', format_vector(obj.to_a))
+      elsif defined?(GSL::Complex) && GSL::Complex === obj
+        add('text/latex', "$#{obj.re}+#{obj.im}i$")
+      elsif defined?(NArray) && NArray === obj
+        add('text/latex', obj.dim == 2 ?
+            format_matrix(obj.transpose, obj.shape[1], obj.shape[0]) :
+            format_vector(obj.to_a))
       end
     end
 
     private
+
+    def format_vector(v)
+      "$$\\left(\\begin{array}{#{'c' * v.size}} #{v.map(&:to_s).join(' & ')} \\end{array}\\right)$$"
+    end
+
+    def format_matrix(m, row_count, column_count)
+      s = "$$\\left(\\begin{array}{#{'c' * column_count}}\n"
+      (0...row_count).each do |i|
+        s << '  ' << m[i,0].to_s
+        (1...column_count).each do |j|
+          s << '&' << m[i,j].to_s
+        end
+        s << "\\\\\n"
+      end
+      s << "\\end{array}\\right)$$"
+    end
 
     def add(mime, data)
       @data[mime] = MimeMagic.new(mime).text? ? data.to_s : [data.to_s].pack('m0')

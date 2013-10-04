@@ -10,15 +10,10 @@ group :pry do
   gem 'awesome_print'
 end
 
-group :gruff do
+group :plot do
   gem 'gruff'
   gem 'rmagick', github: 'bricef/rmagick'
-end
-
-group :gnuplot do
   gem 'gnuplot'
-end
-
-group :rubyvis do
   gem 'rubyvis'
 end
+

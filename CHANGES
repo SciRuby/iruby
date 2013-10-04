@@ -1,3 +1,7 @@
+master
+
+  * Print Matrix and GSL::Matrix as LaTeX
+
 0.1.5
 
   * Implement a rich display system
