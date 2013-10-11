@@ -1,6 +1,7 @@
-master
+0.1.6
 
   * Print Matrix and GSL::Matrix as LaTeX
+  * Add check for Pry version
 
 0.1.5
 
