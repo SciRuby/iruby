@@ -38,12 +38,14 @@ module IRuby
       $stderr = OStream.new(@session, @pub_socket, 'stderr')
 
       @execution_count = 0
-      begin
-        require 'pry'
-        @backend = PryBackend.new
-      rescue LoadError
-        @backend = PlainBackend.new
-      end
+      @backend = create_backend
+    end
+
+    def create_backend
+      PryBackend.new
+    rescue Exception => ex
+      STDERR.puts ex.message unless LoadError === ex
+      PlainBackend.new
     end
 
     def run
