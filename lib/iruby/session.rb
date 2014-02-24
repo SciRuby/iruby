@@ -8,7 +8,7 @@ module IRuby
       @msg_id = 0
       if config['key'] && config['signature_scheme']
         raise 'Unknown signature scheme' unless config['signature_scheme'] =~ /\Ahmac-(.*)\Z/
-        @hmac = OpenSSL::HMAC.new(config['key'], OpenSSL::Digest::Digest.new($1))
+        @hmac = OpenSSL::HMAC.new(config['key'], OpenSSL::Digest.new($1))
       end
     end
 
