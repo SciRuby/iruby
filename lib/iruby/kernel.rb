@@ -43,6 +43,7 @@ module IRuby
 
       @execution_count = 0
       @backend = create_backend
+      @running = true
     end
 
     def create_backend
@@ -54,7 +55,7 @@ module IRuby
 
     def run
       send_status('starting')
-      while true
+      while @running
         ident, msg = @session.recv(@reply_socket, 0)
         type = msg[:header]['msg_type']
         if type =~ /_request\Z/ && respond_to?(type)
@@ -151,6 +152,7 @@ module IRuby
 
     def shutdown_request(ident, msg)
       @session.send(@reply_socket, 'shutdown_reply', msg[:content], ident)
+      @running = false
     end
 
     def history_request(ident, msg)
