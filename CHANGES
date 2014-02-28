@@ -1,3 +1,7 @@
+0.1.7/0.1.8
+
+  * Bugfixes #11, #12, #13
+
 0.1.6
 
   * Print Matrix and GSL::Matrix as LaTeX
