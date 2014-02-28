@@ -21,6 +21,7 @@ module IRuby
     private
 
     def run_kernel
+      raise(ArgumentError, 'Not enough arguments to the kernel') if @args.size < 2 || @args.size > 4
       config_file, boot_file, working_dir = @args[1..-1]
       Dir.chdir(working_dir) if working_dir
       require boot_file if boot_file
