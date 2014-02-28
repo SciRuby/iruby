@@ -27,9 +27,13 @@ module IRuby
       @pub_socket.bind(connection % @config['iopub_port'])
 
       Thread.new do
-        hb_socket = c.socket(ZMQ::REP)
-        hb_socket.bind(connection % @config['hb_port'])
-        ZMQ::Device.new(ZMQ::FORWARDER, hb_socket, hb_socket)
+        begin
+          hb_socket = c.socket(ZMQ::REP)
+          hb_socket.bind(connection % @config['hb_port'])
+          ZMQ::Device.new(hb_socket, hb_socket)
+        rescue Exception => ex
+          STDERR.puts "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
+        end
       end
 
       @session = Session.new('kernel', @config)

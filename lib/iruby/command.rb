@@ -28,7 +28,7 @@ module IRuby
       require 'iruby'
       Kernel.new(config_file).run
     rescue Exception => ex
-      File.open(File.expand_path('~/iruby.crash.log'), 'a') {|f| f.puts "#{ex.message}\n#{ex.backtrace.join("\n")}" }
+      STDERR.puts "Kernel died: #{ex.message}\n#{ex.backtrace.join("\n")}"
       raise
     end
 
