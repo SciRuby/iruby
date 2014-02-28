@@ -27,6 +27,9 @@ module IRuby
       require boot_file if boot_file
       require 'iruby'
       Kernel.new(config_file).run
+    rescue Exception => ex
+      File.open(File.expand_path('~/iruby.crash.log'), 'a') {|f| f.puts "#{ex.message}\n#{ex.backtrace.join("\n")}" }
+      raise
     end
 
     def run_ipython
