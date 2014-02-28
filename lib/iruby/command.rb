@@ -56,7 +56,7 @@ module IRuby
       profile_dir = File.join(dir, "profile_#{profile}")
       unless File.directory?(profile_dir)
         puts "Creating profile directory #{profile_dir}"
-        system("ipython profile create #{Shellwords.escape profile}")
+        `ipython profile create #{Shellwords.escape profile}`
       end
 
       kernel_cmd = []
