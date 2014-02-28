@@ -32,7 +32,18 @@ module IRuby
       raise
     end
 
+    def check_version
+      required = '1.2.0'
+      version = `ipython --version`.chomp
+      if version < required
+        STDERR.puts "Your IPython version #{version} is too old, at least #{required} is required"
+        exit 1
+      end
+    end
+
     def run_ipython
+      check_version
+
       dir = @args.grep(/\A--iruby-dir=.*\Z/)
       @args -= dir
       dir = dir.last.to_s.sub(/\A--profile=/, '')
