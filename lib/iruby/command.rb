@@ -50,7 +50,7 @@ module IRuby
       create_profile(dir, profile)
 
       # We must use the console to launch the whole 0MQ-client-server stack
-      @args << 'console' << '--no-banner' if @args.empty?
+      @args = %w(console --no-banner) + @args if @args.first.to_s !~ /\A\w+\Z/
 
       Kernel.exec('ipython', *@args)
     end
