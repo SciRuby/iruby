@@ -17,19 +17,20 @@ module IRuby
     def isatty
       false
     end
-    alias tty? isatty
+    alias_method :tty?, :isatty
 
     def read(*args)
       raise IOError, 'not opened for reading'
     end
-    alias next read
-    alias readline read
+    alias_method :next, :read
+    alias_method :readline, :read
 
     def write(s)
       raise 'I/O operation on closed file' unless @socket
       @session.send(@socket, 'stream', { name: @name, data: s.to_s })
       nil
     end
+    alias_method :<<, :write
 
     def puts(s)
       write "#{s}\n"

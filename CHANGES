@@ -1,3 +1,7 @@
+master
+
+  * Fix #19 (pp)
+
 0.1.9
 
   * Check IPython version
