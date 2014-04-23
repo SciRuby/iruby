@@ -27,7 +27,7 @@ module IRuby
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
       @pry = Pry.new(output: $stdout, target: TOPLEVEL_BINDING)
-      raise 'Falling back to plain backend since your version of Pry is too old (The Pry instance doesn\'t support #eval).' unless @pry.respond_to?(:eval)
+      raise 'Falling back to plain backend since your version of Pry is too old (the Pry instance doesn\'t support #eval). You may need to install the pry gem with --pre enabled.' unless @pry.respond_to?(:eval)
     end
 
     def eval(code)
