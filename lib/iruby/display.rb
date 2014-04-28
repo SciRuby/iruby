@@ -56,6 +56,10 @@ module IRuby
         add('text/latex', obj.dim == 2 ?
             format_matrix(obj.transpose, obj.shape[1], obj.shape[0]) :
             format_vector(obj.to_a))
+      elsif defined?(NMatrix) && NMatrix === obj
+        add('text/latex', obj.dim == 2 ?
+            format_matrix(obj, obj.shape[0], obj.shape[1]) :
+            format_vector(obj.to_a))
       end
     end
 
