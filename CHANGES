@@ -1,7 +1,8 @@
-master
+0.1.10
 
   * Fix #19 (pp)
   * Handle exception when symlink cannot be created
+  * Fix dependencies and Pry backend
 
 0.1.9
 

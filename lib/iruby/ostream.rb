@@ -31,6 +31,7 @@ module IRuby
       nil
     end
     alias_method :<<, :write
+    alias_method :print, :write
 
     def puts(s)
       write "#{s}\n"

@@ -24,8 +24,8 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake'
 
-  s.add_runtime_dependency 'bond'
-  s.add_runtime_dependency 'ffi-rzmq'
-  s.add_runtime_dependency 'multi_json'
-  s.add_runtime_dependency 'mimemagic'
+  s.add_runtime_dependency 'bond', '~> 0.5.0'
+  s.add_runtime_dependency 'ffi-rzmq', '~> 2.0'
+  s.add_runtime_dependency 'multi_json', '~> 1.10.0'
+  s.add_runtime_dependency 'mimemagic', '~> 0.2.0'
 end

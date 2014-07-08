@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :pry do
-  gem 'pry', '>=1.0.0.pre1'
+  gem 'pry'
   gem 'pry-doc'
   gem 'pry-theme'
   gem 'pry-syntax-hacks'

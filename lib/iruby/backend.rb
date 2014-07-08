@@ -16,13 +16,6 @@ module IRuby
   class PryBackend
     def initialize
       require 'pry'
-      # Monkey patching the Pry bond completer
-      ::Pry::BondCompleter.module_eval do
-        def self.call(input, options)
-          Pry.current[:pry] = options[:pry]
-          Bond.agent.call(input, input)
-        end
-      end
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
