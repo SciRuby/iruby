@@ -1,6 +1,7 @@
 master
 
   * Fix #19 (pp)
+  * Handle exception when symlink cannot be created
 
 0.1.9
 

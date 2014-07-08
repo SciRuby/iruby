@@ -1,4 +1,5 @@
 require 'shellwords'
+require 'fileutils'
 
 module IRuby
   class Command
@@ -86,8 +87,12 @@ module IRuby
       static_dir = File.join(profile_dir, 'static')
       target_dir = File.join(File.dirname(__FILE__), 'static')
       unless (File.readlink(static_dir) rescue nil) == target_dir
-        File.unlink(static_dir) rescue nil
-        File.symlink(target_dir, static_dir)
+        FileUtils.rm_rf(static_dir) rescue nil
+        begin
+          FileUtils.ln_sf(target_dir, static_dir)
+        rescue => ex
+          STDERR.puts "Could not create directory #{static_dir}: #{ex.message}"
+        end
       end
     end
   end
