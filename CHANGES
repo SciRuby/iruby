@@ -1,3 +1,7 @@
+0.1.11
+
+  * Push binding if pry binding stack is empty
+
 0.1.10
 
   * Fix #19 (pp)

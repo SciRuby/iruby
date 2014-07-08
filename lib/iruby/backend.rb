@@ -27,6 +27,7 @@ module IRuby
       @pry.last_result = nil
       @pry.eval(code)
       raise @pry.last_exception if @pry.last_result_is_exception?
+      @pry.push_initial_binding unless @pry.current_binding
       @pry.last_result
     end
 
