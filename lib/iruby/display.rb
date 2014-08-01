@@ -196,7 +196,12 @@ module IRuby
 
       type { GSL::Complex }
       format 'text/latex' do |obj|
-        "$#{obj.re}+#{obj.im}i$"
+        "$#{obj.re}+#{obj.im}\\imath$"
+      end
+
+      type { Complex }
+      format 'text/latex' do |obj|
+        "$#{obj.real}+#{obj.imag}\\imath$"
       end
 
       type { Gnuplot::Plot }
