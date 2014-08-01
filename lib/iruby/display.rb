@@ -125,7 +125,8 @@ module IRuby
 
       def match(&block)
         @match = block
-        @priority = 0
+        priority 0
+        nil
       end
 
       def respond_to(name)
@@ -138,6 +139,7 @@ module IRuby
 
       def priority(p)
         @priority = p
+        nil
       end
 
       def format(mime = nil, &block)
@@ -148,6 +150,7 @@ module IRuby
         # which are added later for a type.
         # Overwrite with the `priority` method!
         @priority -= 1
+        nil
       end
 
       type { NMatrix }
