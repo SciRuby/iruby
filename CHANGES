@@ -1,3 +1,10 @@
+0.1.12
+
+  * IRuby#table add option maxrows
+  * powerful display system with format and datatype registry, see #25
+  * Add IRuby#javascript
+  * Add IRuby#svg
+
 0.1.11
 
   * Push binding if pry binding stack is empty

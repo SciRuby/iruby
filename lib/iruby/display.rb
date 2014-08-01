@@ -1,81 +1,116 @@
 module IRuby
-  class Display
-    module Helper
-      def latex_vector(v)
-        x = 'c' * v.size
-        y = v.map(&:to_s).join(' & ')
-        "$$\\left(\\begin{array}{#{x}} #{y} \\end{array}\\right)$$"
+  module Display
+    class << self
+      def convert(obj, options)
+        Representation.new(obj, options)
       end
 
-      def latex_matrix(m, row_count, column_count)
-        s = "$$\\left(\\begin{array}{#{'c' * column_count}}\n"
-        (0...row_count).each do |i|
-          s << '  ' << m[i,0].to_s
-          (1...column_count).each do |j|
-            s << '&' << m[i,j].to_s
-          end
-          s << "\\\\\n"
+      def display(obj, options = {})
+        obj = convert(obj, options)
+        options = obj.options
+        obj = obj.object
+
+        exact_mime = options[:mime]
+        fuzzy_mime = options[:format] # Treated like a fuzzy mime type
+        raise 'Invalid argument :format' unless !fuzzy_mime || String === fuzzy_mime
+        if exact_mime
+          raise 'Invalid argument :mime' unless String === exact_mime
+          raise 'Invalid mime type' unless exact_mime.include?('/')
         end
-        s << "\\end{array}\\right)$$"
+
+        data = {}
+
+        # Render additional representation
+        render(data, obj, exact_mime, fuzzy_mime)
+
+        # IPython always requires a text representation
+        render(data, obj, 'text/plain', nil) unless data['text/plain']
+
+        # As a last resort, interpret string representation of the object
+        # as the given mime type.
+        data[exact_mime] = protect(exact_mime, obj) if exact_mime && !data.any? {|m,_| exact_mime == m }
+
+        data
       end
-    end
 
-    include Helper
+      private
 
-    attr_reader :match, :formats
-
-    def initialize(match)
-      @match, @formats = match, {}
-    end
-
-    def add(mime, block)
-      @formats[mime] = block
-    end
-
-    def self.data_add(data, mime, value)
-      data[mime] = MimeMagic.new(mime).text? ? value.to_s : [value.to_s].pack('m0')
-    end
-
-    def self.display(obj, options = {})
-      mime = options[:mime]
-      data = { 'text/plain' => obj.inspect }
-      if options[:mime]
-      else
+      def protect(mime, data)
+        MimeMagic.new(mime).text? ? data.to_s : [data.to_s].pack('m0')
       end
-      display = Registry.displays.find do |d|
-        begin
-          d.match.call(obj)
-        rescue NameError
-          false
-        end
-      end
-      if display
-        formats = display.formats.to_a
-        if mime
-          format = display.formats[mime]
-          format = [mime, format] if format
-          format ||= display.formats.find {|m| mime === m }
-          formats.unshift format
-        end
-        formats.each do |format_mime, format|
-          result = display.instance_exec(obj, &format)
-          result_mime = format_mime
-          result_mime, result = result if Array === result
-          if !mime || mime === result_mime
-            data_add(data, result_mime, result)
+
+      def render(data, obj, exact_mime, fuzzy_mime)
+        # Filter matching renderer by object type
+        renderer = Registry.renderer.select {|r| r.match?(obj) }
+
+        matching_renderer = nil
+
+        # Find exactly matching display by exact_mime
+        matching_renderer = renderer.find {|r| exact_mime == r.mime } if exact_mime
+
+        # Find fuzzy matching display by fuzzy_mime
+        matching_renderer ||= renderer.find {|r| r.mime && r.mime.include?(fuzzy_mime) } if fuzzy_mime
+
+        renderer.unshift matching_renderer if matching_renderer
+
+        # Return first render result which has the right mime type
+        renderer.each do |r|
+          mime, result = r.render(obj)
+          if mime && result && (!exact_mime || exact_mime == mime) && (!fuzzy_mime || mime.include?(fuzzy_mime))
+            data[mime] = protect(mime, result)
             break
           end
         end
+
+        nil
       end
-      data_add(data, mime, obj) if mime && !data.any? {|m,_| mime === m }
-      data
+    end
+
+    class Representation
+      attr_reader :object, :options
+
+      def initialize(object, options)
+        @object, @options = object, options
+      end
+
+      class << self
+        alias old_new new
+
+        def new(obj, options)
+          options = { format: options } if String === options
+          if Representation === obj
+            options = obj.options.merge(options)
+            obj = obj.object
+          end
+          old_new(obj, options)
+        end
+      end
+    end
+
+    class Renderer
+      attr_reader :match, :mime, :render, :priority
+
+      def initialize(match, mime, render, priority)
+        @match, @mime, @render, @priority = match, mime, render, priority
+      end
+
+      def match?(obj)
+        @match.call(obj)
+      rescue NameError
+        false
+      end
+
+      def render(obj)
+        result = @render.call(obj)
+        Array === result ? result : [@mime, result]
+      end
     end
 
     module Registry
       extend self
 
-      def displays
-        @displays ||= []
+      def renderer
+        @renderer ||= []
       end
 
       SUPPORTED_MIMES = %w(
@@ -89,7 +124,9 @@ module IRuby
         image/svg+xml)
 
       def match(&block)
-        displays << Display.new(block)
+        @match = block
+        priority 0
+        nil
       end
 
       def respond_to(name)
@@ -100,46 +137,70 @@ module IRuby
         match {|obj| block.call === obj }
       end
 
-      def display(mime = nil, &block)
-        displays.last.add(mime, block)
+      def priority(p)
+        @priority = p
+        nil
+      end
+
+      def format(mime = nil, &block)
+        renderer << Renderer.new(@match, mime, block, @priority)
+        renderer.sort_by! {|r| -r.priority }
+
+        # Decrease priority implicitly for all formats
+        # which are added later for a type.
+        # Overwrite with the `priority` method!
+        @priority -= 1
+        nil
       end
 
       type { NMatrix }
-      display 'text/latex' do |obj|
+      format 'text/latex' do |obj|
         obj.dim == 2 ?
-         latex_matrix(obj, obj.shape[0], obj.shape[1]) :
-          latex_vector(obj.to_a)
+         LaTeX.matrix(obj, obj.shape[0], obj.shape[1]) :
+          LaTeX.vector(obj.to_a)
       end
 
       type { NArray }
-      display 'text/latex' do |obj|
+      format 'text/latex' do |obj|
         obj.dim == 2 ?
-        latex_matrix(obj.transpose, obj.shape[1], obj.shape[0]) :
-          latex_vector(obj.to_a)
+        LaTeX.matrix(obj.transpose, obj.shape[1], obj.shape[0]) :
+          LaTeX.vector(obj.to_a)
+      end
+      format 'text/html' do |obj|
+        HTML.table(obj.to_a)
       end
 
       type { Matrix }
-      display 'text/latex' do |obj|
-        latex_matrix(obj, obj.row_count, obj.column_count)
+      format 'text/latex' do |obj|
+        LaTeX.matrix(obj, obj.row_count, obj.column_count)
+      end
+      format 'text/html' do |obj|
+        HTML.table(obj.to_a)
       end
 
       type { GSL::Matrix }
-      display 'text/latex' do |obj|
-        latex_matrix(obj, obj.size1, obj.size2)
+      format 'text/latex' do |obj|
+        LaTeX.matrix(obj, obj.size1, obj.size2)
+      end
+      format 'text/html' do |obj|
+        HTML.table(obj.to_a)
       end
 
       type { GSL::Vector }
-      display 'text/latex' do |obj|
-        latex_vector(obj.to_a)
+      format 'text/latex' do |obj|
+        LaTeX.vector(obj.to_a)
+      end
+      format 'text/html' do |obj|
+        HTML.table(obj.to_a)
       end
 
       type { GSL::Complex }
-      display 'text/latex' do |obj|
+      format 'text/latex' do |obj|
         "$#{obj.re}+#{obj.im}i$"
       end
 
       type { Gnuplot::Plot }
-      display 'image/svg+xml' do |obj|
+      format 'image/svg+xml' do |obj|
         Tempfile.open('plot') do |f|
           obj.terminal 'svg enhanced'
           obj.output f.path
@@ -152,46 +213,52 @@ module IRuby
       end
 
       match {|obj| Magick::Image === obj || MiniMagick::Image === obj }
-      display 'image' do |obj|
+      format 'image' do |obj|
         format = obj.format || 'PNG'
         [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob {|i| i.format = format }]
       end
 
       type { Gruff::Base }
-      display 'image/png' do |obj|
+      format 'image/png' do |obj|
         obj.to_blob
       end
 
       respond_to :to_html
-      display 'text/html' do |obj|
+      format 'text/html' do |obj|
         obj.to_html
       end
 
       respond_to :to_latex
-      display 'text/latex' do |obj|
+      format 'text/latex' do |obj|
         obj.to_latex
       end
 
       respond_to :to_javascript
-      display 'text/javascript' do |obj|
+      format 'text/javascript' do |obj|
         obj.to_javascript
       end
 
       respond_to :to_svg
-      display 'image/svg+xml' do |obj|
+      format 'image/svg+xml' do |obj|
         obj.render if defined?(Rubyvis) && Rubyvis::Mark === obj
         obj.to_svg
       end
 
       respond_to :to_iruby
-      display do |obj|
+      format do |obj|
         obj.to_iruby
       end
 
       match {|obj| obj.respond_to?(:path) && File.readable?(obj.path) }
-      display do |obj|
+      format do |obj|
         mime = MimeMagic.by_path(obj.path).to_s
         [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
+      end
+
+      type { Object }
+      priority -1000
+      format 'text/plain' do |obj|
+        obj.inspect
       end
     end
   end
