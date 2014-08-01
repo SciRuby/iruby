@@ -77,4 +77,8 @@ module IRuby
   def self.javascript(s)
     MimeString.new('application/javascript', s)
   end
+
+  def self.svg(s)
+    MimeString.new('image/svg+xml', s)
+  end
 end
