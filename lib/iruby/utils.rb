@@ -12,16 +12,17 @@ module IRuby
     end
   end
 
-  def self.display(obj, options={})
+  def self.display(obj, options = {})
     Kernel.instance.display(obj, options)
   end
 
-  def self.table(obj)
+  def self.table(obj, options = {})
+    options[:maxrows] = 15 unless options.include?(:maxrows)
     return obj unless Enumerable === obj
     keys = nil
     size = 0
     rows = []
-    obj.each do |row|
+    obj.each_with_index do |row, i|
       row = row.flatten(1) if obj.respond_to?(:keys)
       if row.respond_to?(:keys)
         # Array of Hashes
@@ -30,6 +31,10 @@ module IRuby
       elsif row.respond_to?(:map)
         # Array of Arrays
         size = row.size if size < row.size
+      end
+      if options[:maxrows] && i > options[:maxrows]
+        rows << '...'
+        break
       end
       rows << row
     end
