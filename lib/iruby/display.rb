@@ -172,9 +172,9 @@ module IRuby
         obj.to_latex
       end
 
-      respond_to :to_svg
-      display 'text/svg' do |obj|
-        obj.to_svg
+      respond_to :to_javascript
+      display 'text/javascript' do |obj|
+        obj.to_javascript
       end
 
       respond_to :to_svg

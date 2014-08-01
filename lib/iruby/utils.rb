@@ -73,4 +73,8 @@ module IRuby
   def self.html(s)
     MimeString.new('text/html', s)
   end
+
+  def self.javascript(s)
+    MimeString.new('application/javascript', s)
+  end
 end
