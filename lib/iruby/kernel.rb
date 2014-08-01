@@ -68,7 +68,7 @@ module IRuby
 
     def display(obj, options={})
       unless obj.nil?
-        content = { data: Display.new(obj, options).data, metadata: {}, execution_count: @execution_count }
+        content = { data: Display.display(obj, options), metadata: {}, execution_count: @execution_count }
         @session.send(@pub_socket, 'pyout', content)
       end
       nil
