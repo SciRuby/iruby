@@ -96,8 +96,6 @@ module IRuby
 
       def match?(obj)
         @match.call(obj)
-      rescue NameError
-        false
       end
 
       def render(obj)
@@ -134,7 +132,13 @@ module IRuby
       end
 
       def type(&block)
-        match {|obj| block.call === obj }
+        match do |obj|
+          begin
+            block.call === obj
+          rescue NameError
+            false
+          end
+        end
       end
 
       def priority(p)
@@ -217,7 +221,10 @@ module IRuby
         end
       end
 
-      match {|obj| Magick::Image === obj || MiniMagick::Image === obj }
+      match do |obj|
+        defined?(Magic::Image) && Magic::Image === obj ||
+        defined?(MiniMagic::Image) && MiniMagic::Image === obj
+      end
       format 'image' do |obj|
         format = obj.format || 'PNG'
         [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob {|i| i.format = format }]

@@ -1,3 +1,7 @@
+master
+
+  * Improved IRuby.table, supports :maxrows and :maxcols
+
 0.1.12
 
   * IRuby#table add option maxrows

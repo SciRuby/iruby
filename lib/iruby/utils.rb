@@ -7,8 +7,8 @@ module IRuby
     Kernel.instance.display(obj, options)
   end
 
-  def self.table(s)
-    html(HTML.table(s))
+  def self.table(s, options = {})
+    html(HTML.table(s, options))
   end
 
   def self.latex(s)

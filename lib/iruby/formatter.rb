@@ -26,11 +26,16 @@ module IRuby
 
     def table(obj, options = {})
       options[:maxrows] = 15 unless options.include?(:maxrows)
+      options[:maxcols] = 15 unless options.include?(:maxcols)
+      raise ArgumentError, 'Invalid :maxrows' if options[:maxrows] && options[:maxrows] < 3
+      raise ArgumentError, 'Invalid :maxcols' if options[:maxcols] && options[:maxcols] < 3
+
       return obj unless Enumerable === obj
       keys = nil
       size = 0
       rows = []
-      obj.each_with_index do |row, i|
+
+      obj.each do |row|
         row = row.flatten(1) if obj.respond_to?(:keys)
         if row.respond_to?(:keys)
           # Array of Hashes
@@ -40,34 +45,73 @@ module IRuby
           # Array of Arrays
           size = row.size if size < row.size
         end
-        if options[:maxrows] && i > options[:maxrows]
-          rows << '...'
-          break
-        end
         rows << row
       end
-      table = '<table>'
-      if keys
+
+      if header = keys
         keys.merge(0...size)
-        table << '<tr>' << keys.map {|k| "<th>#{k}</th>"}.join << '</tr>'
       else
         keys = 0...size
       end
-      rows.each do |row|
+      keys = keys.to_a
+
+      rows1, rows2 = rows, nil
+      keys1, keys2 = keys, nil
+
+      if options[:maxcols] && keys.size > options[:maxcols]
+        keys1 = keys[0...options[:maxcols] / 2]
+        keys2 = keys[-options[:maxcols] / 2...-1]
+      end
+
+      if options[:maxrows] && rows.size > options[:maxrows]
+        rows1 = rows[0...options[:maxrows] / 2]
+        rows2 = rows[-options[:maxrows] / 2...-1]
+      end
+
+      table = '<table>'
+
+      if (header || options[:header]) && options[:header] != false
+        table << '<tr>' << keys1.map {|k| "<th>#{k}</th>" }.join
+        table << "<th>&#8230;</th>" << keys2.map {|k| "<th>#{k}</th>" }.join if keys2
+        table << '</tr>'
+      end
+
+      row_block(table, rows1, keys1, keys2)
+
+      if rows2
+        table << "<tr><td#{keys1.size > 1 ? " colspan='#{keys1.size}'" : ''}>&#8942;</td>"
+        table << "<td>&#8945;</td><td#{keys2.size > 1 ? " colspan='#{keys2.size}'" : ''}>&#8942;</td>" if keys2
+        table << '</tr>'
+
+        row_block(table, rows2, keys1, keys2)
+      end
+
+      table << '</table>'
+    end
+
+    private
+
+    def row_block(table, rows, keys1, keys2)
+      cols = keys1.size
+      cols += keys2.size + 1 if keys2
+      rows.each_with_index do |row, i|
         table << '<tr>'
         if row.respond_to?(:map)
-          row = keys.map {|k| "<td>#{row[k] rescue nil}</td>" }
-          if row.empty?
-            table << "<td#{keys.size > 1 ? " colspan='#{keys.size}'" : ''}></td>"
+          row_html = keys1.map {|k| "<td>#{row[k] rescue nil}</td>" }.join
+          if keys2
+            row_html << "<td#{rows.size > 1 ? " rowspan='#{rows.size}'" : ''}>&#8230;</td>" if i == 0
+            row_html << keys2.map {|k| "<td>#{row[k] rescue nil}</td>" }.join
+          end
+          if row_html.empty?
+            table << "<td#{cols > 1 ? " colspan='#{cols}'" : ''}></td>"
           else
-            table << row.join
+            table << row_html
           end
         else
-          table << "<td#{keys.size > 1 ? " colspan='#{keys.size}'" : ''}>#{row}</td>"
+          table << "<td#{cols > 1 ? " colspan='#{cols}'" : ''}>#{row}</td>"
         end
         table << '</tr>'
       end
-      table << '</table>'
     end
   end
 end
