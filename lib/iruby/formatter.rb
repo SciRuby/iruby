@@ -30,37 +30,60 @@ module IRuby
       raise ArgumentError, 'Invalid :maxrows' if options[:maxrows] && options[:maxrows] < 3
       raise ArgumentError, 'Invalid :maxcols' if options[:maxcols] && options[:maxcols] < 3
 
-      return obj unless Enumerable === obj
-      keys = nil
-      size = 0
+      return obj unless obj.respond_to?(:each)
+
       rows = []
 
-      obj.each do |row|
-        row = row.flatten(1) if obj.respond_to?(:keys)
-        if row.respond_to?(:keys)
-          # Array of Hashes
-          keys ||= Set.new
-          keys.merge(row.keys)
-        elsif row.respond_to?(:map)
-          # Array of Arrays
-          size = row.size if size < row.size
+      if obj.respond_to?(:keys)
+        # Hash of Arrays
+        header = obj.keys
+        keys = (0...obj.keys.size).to_a
+        cols = obj.values.map {|x| [x].flatten(1) }
+        num_rows = cols.map(&:size).max
+        rows = []
+        (0...num_rows).each do |i|
+          rows << []
+          (0...cols.size).each do |j|
+            rows[i][j] = cols[j][i]
+          end
         end
-        rows << row
+      else
+        keys = nil
+        array_size = 0
+
+        obj.each do |row|
+          if row.respond_to?(:keys)
+            # Array of Hashes
+            keys ||= Set.new
+            keys.merge(row.keys)
+          elsif row.respond_to?(:map)
+            # Array of Arrays
+            array_size = row.size if array_size < row.size
+          end
+          rows << row
+        end
+
+        if header = keys
+          keys.merge(0...array_size)
+        else
+          keys = 0...array_size
+        end
+        keys = keys.to_a
       end
 
-      if header = keys
-        keys.merge(0...size)
-      else
-        keys = 0...size
-      end
-      keys = keys.to_a
+      header ||= keys if options[:header]
 
       rows1, rows2 = rows, nil
       keys1, keys2 = keys, nil
+      header1, header2 = header, nil
 
       if options[:maxcols] && keys.size > options[:maxcols]
         keys1 = keys[0...options[:maxcols] / 2]
         keys2 = keys[-options[:maxcols] / 2...-1]
+        if header
+          header1 = header[0...options[:maxcols] / 2]
+          header2 = header[-options[:maxcols] / 2...-1]
+        end
       end
 
       if options[:maxrows] && rows.size > options[:maxrows]
@@ -70,9 +93,9 @@ module IRuby
 
       table = '<table>'
 
-      if (header || options[:header]) && options[:header] != false
-        table << '<tr>' << keys1.map {|k| "<th>#{k}</th>" }.join
-        table << "<th>&#8230;</th>" << keys2.map {|k| "<th>#{k}</th>" }.join if keys2
+      if header1 && options[:header] != false
+        table << '<tr>' << header1.map {|k| "<th>#{k}</th>" }.join
+        table << "<th>&#8230;</th>" << header2.map {|k| "<th>#{k}</th>" }.join if keys2
         table << '</tr>'
       end
 
