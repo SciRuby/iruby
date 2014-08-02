@@ -30,6 +30,12 @@ module IRuby
         # as the given mime type.
         data[exact_mime] = protect(exact_mime, obj) if exact_mime && !data.any? {|m,_| exact_mime == m }
 
+        # HACK for IPython #6259
+        # https://github.com/ipython/ipython/issues/6259
+        if js = data.delete('application/javascript')
+          data['text/html'] = "<script type='text/javascript'>#{js}</script>"
+        end
+
         data
       end
 
