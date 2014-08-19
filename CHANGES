@@ -1,4 +1,4 @@
-master
+0.1.13
 
   * Improved IRuby.table, supports :maxrows and :maxcols
   * IRuby#javascript workaround (https://github.com/ipython/ipython/issues/6259)
