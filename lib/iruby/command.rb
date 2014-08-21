@@ -3,7 +3,8 @@ require 'fileutils'
 
 module IRuby
   class Command
-    IRUBYDIR = '~/.config/iruby'
+    WINDOWS_REGEXP = /mswin(?!ce)|mingw|cygwin/
+    IRUBYDIR = RUBY_PLATFORM =~ WINDOWS_REGEXP ? '~/iruby' : '~/.config/iruby'
 
     def initialize(args)
       @args = args
@@ -76,23 +77,37 @@ module IRuby
 
       kernel_cmd = []
       kernel_cmd << ENV['BUNDLE_BIN_PATH'] << 'exec' if ENV['BUNDLE_BIN_PATH']
-      kernel_cmd += [File.expand_path($0), 'kernel', '{connection_file}']
+
+      if RUBY_PLATFORM =~ WINDOWS_REGEXP
+        kernel_cmd += [RbConfig.ruby, File.expand_path('../../../bin/iruby', __FILE__)].map{|path| path.gsub('/', '\\\\\\') }
+      else
+        kernel_cmd << File.expand_path($0)
+      end
+      kernel_cmd << 'kernel' << '{connection_file}'
+
       kernel_cmd = "c.KernelManager.kernel_cmd = #{kernel_cmd.inspect}"
       Dir[File.join(profile_dir, '*_config.py')].each do |path|
         content = File.read(path)
         content << kernel_cmd unless content.gsub!(/^c\.KernelManager\.kernel_cmd.*$/, kernel_cmd)
-        File.open(path, 'w') {|f| f.write(content) }
+        File.write(path, content)
       end
 
-      static_dir = File.join(profile_dir, 'static')
-      target_dir = File.join(File.dirname(__FILE__), 'static')
-      unless (File.readlink(static_dir) rescue nil) == target_dir
-        FileUtils.rm_rf(static_dir) rescue nil
+      begin
+        static_dir = File.join(profile_dir, 'static')
+        target_dir = File.join(File.dirname(__FILE__), 'static')
         begin
-          FileUtils.ln_sf(target_dir, static_dir)
-        rescue => ex
-          STDERR.puts "Could not create directory #{static_dir}: #{ex.message}"
+          old_target = File.readlink(static_dir) rescue nil
+        rescue NotImplementedError
+          FileUtils.cp_r(target_dir, static_dir)
+          return
         end
+
+        unless old_target == target_dir
+          FileUtils.rm_rf(static_dir) rescue nil
+          FileUtils.ln_sf(target_dir, static_dir)
+        end
+      rescue => ex
+        STDERR.puts "Could not create directory #{static_dir}: #{ex.message}"
       end
     end
   end
