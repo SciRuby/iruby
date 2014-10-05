@@ -228,8 +228,8 @@ module IRuby
       end
 
       match do |obj|
-        defined?(Magic::Image) && Magic::Image === obj ||
-        defined?(MiniMagic::Image) && MiniMagic::Image === obj
+        defined?(Magick::Image) && Magick::Image === obj ||
+        defined?(MiniMagick::Image) && MiniMagick::Image === obj
       end
       format 'image' do |obj|
         format = obj.format || 'PNG'
