@@ -1,6 +1,8 @@
 module IRuby
   # IO-like object that publishes to 0MQ socket.
   class OStream
+    attr_accessor :sync
+
     def initialize(session, socket, name)
       @session = session
       @socket = socket
@@ -33,7 +35,7 @@ module IRuby
     alias_method :<<, :write
     alias_method :print, :write
 
-    def puts(s)
+    def puts(s = nil)
       write "#{s}\n"
     end
 
