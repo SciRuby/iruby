@@ -8,6 +8,8 @@ module IRuby
       attr_accessor :instance
     end
 
+    attr_reader :pub_socket, :session
+
     def initialize(config_file)
       @config = MultiJson.load(File.read(config_file))
 
@@ -44,6 +46,7 @@ module IRuby
       @execution_count = 0
       @backend = create_backend
       @running = true
+      @comms = {}
     end
 
     def create_backend
@@ -59,6 +62,8 @@ module IRuby
         ident, msg = @session.recv(@reply_socket, 0)
         type = msg[:header]['msg_type']
         if type =~ /_request\Z/ && respond_to?(type)
+          send(type, ident, msg)
+        elsif type =~ /comm/
           send(type, ident, msg)
         else
           STDERR.puts "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
@@ -184,6 +189,27 @@ module IRuby
         found: false
       }
       @session.send(@reply_socket, 'object_info_reply', content, ident)
+    end
+
+    def comm_open(ident, msg)
+      comm_id = msg[:content]["comm_id"]
+      comm = Comm.new(msg[:content]["target_name"], comm_id)
+      @comms[comm_id] = comm
+    end
+
+    def comm_msg(ident, msg)
+      comm_id = msg[:content]["comm_id"]
+      @comms[comm_id].handle_msg(msg[:content]["data"])
+    end
+
+    def comm_close(ident, msg)
+      comm_id = msg[:content]["comm_id"]
+      @comms[comm_id].handle_close
+      @comms.delete(comm_id)
+    end
+
+    def register_comm(comm_id, comm)
+      @comms[comm_id] = comm
     end
   end
 end
