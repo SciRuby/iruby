@@ -10,8 +10,10 @@ module IRuby
 
     def initialize
       @model_id = SecureRandom.hex(16).upcase
-      @comm = Comm.new(target_name, @model_id)
+      @sync_data = {}
+      @comm = Comm.new(@@target_name, @model_id)
       Kernel.instance.register_comm(@model_id, @comm)
+      @comm.on_msg(method(:handle_msg))
       @comm.open
 
       content = {
@@ -48,6 +50,14 @@ module IRuby
       if msg["method"] == "custom"
         @msg_callback.call(msg["content"])
       elsif msg["method"] == "backbone"
+        data = msg["content"]["data"]
+
+        if data.has_key? "sync_data"
+          sync_data = data["sync_data"].reduce({}) do |memo, (key, val)|
+            memo[key.to_sym] = val
+          end
+          @sync_data.merge!(sync_data)
+        end
       else
         STDERR.puts("Unknown method type #{msg["method"]}.")
       end
