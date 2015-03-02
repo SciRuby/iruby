@@ -17,8 +17,8 @@ The IRuby notebook requires `ipython` >= 1.2.0. Furthermore we need `libzmq` >= 
 
 === Authors
 
-See the CONTRIBUTORS[CONTRIBUTORS] file.
+See the link:CONTRIBUTORS file.
 
 === License
 
-See the LICENSE[LICENSE] file.
+See the link:LICENSE file.
