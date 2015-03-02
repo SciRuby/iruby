@@ -1,6 +1,6 @@
 = IRuby
 
-This is a Ruby kernel for IPython.
+This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
 
 link:screenshot.png
 
@@ -25,4 +25,4 @@ Copyright © 2013-15, IRuby contributors and the Ruby Science Foundation.
 
 All rights reserved.
 
-IRuby, along with SciRuby, is licensed under the MIT license. See the link:LICENSE.txt file for details.
+IRuby, along with SciRuby[http://sciruby.com/], is licensed under the MIT license. See the link:LICENSE.txt file for details.
