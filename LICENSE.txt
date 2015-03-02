@@ -1,4 +1,4 @@
-Copyright (c) 2013 Damián Silvani, Min RK, Martin Sarsale, Josh Adams, Daniel Mendler
+Copyright (c) 2013-2015 Damián Silvani, Min RK, Martin Sarsale, Josh Adams, Daniel Mendler
 
 MIT License
 

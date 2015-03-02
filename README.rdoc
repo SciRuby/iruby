@@ -21,4 +21,8 @@ See the link:CONTRIBUTORS file.
 
 === License
 
-See the link:LICENSE file.
+Copyright © 2013-15, IRuby contributors and the Ruby Science Foundation.
+
+All rights reserved.
+
+IRuby, along with SciRuby, is licensed under the MIT license. See the link:LICENSE.txt file for details.
