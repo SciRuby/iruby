@@ -182,7 +182,7 @@ module IRuby
 
       type { Matrix }
       format 'text/latex' do |obj|
-        LaTeX.matrix(obj, obj.row_size, obj.column_count)
+        LaTeX.matrix(obj, obj.row_size, obj.column_size)
       end
       format 'text/html' do |obj|
         HTML.table(obj.to_a)
