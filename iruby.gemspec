@@ -6,11 +6,11 @@ Gem::Specification.new do |s|
   s.name          = 'iruby'
   s.date          = Date.today.to_s
   s.version       = IRuby::VERSION
-  s.authors       = ['Damián Silvani', 'Min RK', 'Martin Sarsale', 'Josh Adams', 'Daniel Mendler']
+  s.authors       = ['The SciRuby developers']
   s.email         = ['benjaminrk@gmail.com']
   s.description   = 'Ruby Kernel for IPython'
   s.summary       = 'A Ruby kernel for IPython frontends (notebook console, etc.)'
-  s.homepage      = 'https://github.com/minad/iruby'
+  s.homepage      = 'https://github.com/SciRuby/iruby'
   s.license       = 'MIT'
 
   s.files         = `git ls-files`.split($/)
