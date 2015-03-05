@@ -1,3 +1,5 @@
+= Main development of this project continues now within the SciRuby[https://github.com/sciruby] project.
+
 = IRuby
 
 This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
