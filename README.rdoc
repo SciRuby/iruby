@@ -1,4 +1,4 @@
-= Main development of this project continues now within the SciRuby[https://github.com/sciruby] project.
+= Main development of this project continues now within the SciRuby[https://github.com/sciruby/iruby] project.
 
 = IRuby
 
