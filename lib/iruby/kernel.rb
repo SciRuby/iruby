@@ -61,9 +61,7 @@ module IRuby
       while @running
         ident, msg = @session.recv(@reply_socket, 0)
         type = msg[:header]['msg_type']
-        if type =~ /_request\Z/ && respond_to?(type)
-          send(type, ident, msg)
-        elsif type =~ /comm/
+        if type =~ /comm|_request\Z/ && respond_to?(type)
           send(type, ident, msg)
         else
           STDERR.puts "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
