@@ -3,17 +3,33 @@ require 'fileutils'
 
 module IRuby
   class Command
-    WINDOWS_REGEXP = /mswin(?!ce)|mingw|cygwin/
-    IRUBYDIR = RUBY_PLATFORM =~ WINDOWS_REGEXP ? '~/iruby' : '~/.config/iruby'
-
     def initialize(args)
       @args = args
+
+      ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
+      @args.each do |arg|
+        ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
+      end
+      ipython_dir = File.expand_path(ipython_dir)
+      @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
     end
 
     def run
-      raise 'Use --iruby-dir instead of --ipython-dir!' unless @args.grep(/\A--ipython-dir=.*\Z/).empty?
-
-      if @args.first == 'kernel'
+      case @args.first
+      when 'version', '-v', '--version'
+        require 'iruby/version'
+        puts IRuby::VERSION
+      when 'help', '-h', '--help'
+        print_help
+      when 'register'
+        if File.exist?(@kernel_file) && !@args.include?('--force')
+          STDERR.puts "#{@kernel_file} already exists!\nUse --force to force a register."
+          exit 1
+        end
+        register_kernel
+      when 'unregister'
+        unregister_kernel
+      when 'kernel'
         run_kernel
       else
         run_ipython
@@ -21,6 +37,20 @@ module IRuby
     end
 
     private
+
+    def print_help
+      puts %{
+Usage:
+    iruby register        Register IRuby kernel into #{@kernel_file}.
+    iruby unregister      Remove #{@kernel_file}.
+    iruby console         Launch the IRuby terminal-based console.
+    iruby notebook        Launch the IRuby HTML notebook server.
+    ...                   Same as IPython.
+
+Please note that IRuby accepts the same parameters as IPython.
+Try `ipython help` for more information.
+}
+    end
 
     def run_kernel
       raise(ArgumentError, 'Not enough arguments to the kernel') if @args.size < 2 || @args.size > 4
@@ -35,7 +65,7 @@ module IRuby
     end
 
     def check_version
-      required = '1.2.0'
+      required = '3.0.0'
       version = `ipython --version`.chomp
       if version < required
         STDERR.puts "Your IPython version #{version} is too old, at least #{required} is required"
@@ -46,69 +76,26 @@ module IRuby
     def run_ipython
       check_version
 
-      dir = @args.grep(/\A--iruby-dir=.*\Z/)
-      @args -= dir
-      dir = dir.last.to_s.sub(/\A--profile=/, '')
-      dir = ENV['IRUBYDIR'] || IRUBYDIR if dir.empty?
-      dir = File.expand_path(dir)
-      ENV['IPYTHONDIR'] = dir
-
-      if @args.size == 3 && @args[0] == 'profile' && @args[1] == 'create'
-        profile = @args[2]
-      else
-        profile = @args.grep(/\A--profile=.*\Z/).last.to_s.sub(/\A--profile=/, '')
-        profile = 'default' if profile.empty?
-      end
-
-      create_profile(dir, profile)
-
       # We must use the console to launch the whole 0MQ-client-server stack
-      @args = %w(console --no-banner) + @args if @args.first.to_s !~ /\A\w+\Z/
+      @args = %w(console --no-banner) + @args if @args.first.to_s !~ /\A\w/
+      register_kernel if %w(console qtconsole notebook).include?(@args.first) && !File.exist?(@kernel_file)
+      @args += %w(--kernel ruby) if %w(console qtconsole).include? @args.first
 
       Kernel.exec('ipython', *@args)
     end
 
-    def create_profile(dir, profile)
-      profile_dir = File.join(dir, "profile_#{profile}")
-      unless File.directory?(profile_dir)
-        puts "Creating profile directory #{profile_dir}"
-        `ipython profile create #{Shellwords.escape profile}`
-      end
+    def register_kernel
+      FileUtils.mkpath(File.dirname(@kernel_file))
+      File.write(@kernel_file, %{{
+  "argv":         [ "#{File.expand_path $0}", "kernel", "{connection_file}" ],
+  "display_name": "Ruby",
+  "language":     "ruby"
+}
+})
+    end
 
-      kernel_cmd = []
-      kernel_cmd << ENV['BUNDLE_BIN_PATH'] << 'exec' if ENV['BUNDLE_BIN_PATH']
-
-      if RUBY_PLATFORM =~ WINDOWS_REGEXP
-        kernel_cmd += [RbConfig.ruby, File.expand_path('../../../bin/iruby', __FILE__)].map{|path| path.gsub('/', '\\\\\\') }
-      else
-        kernel_cmd << File.expand_path($0)
-      end
-      kernel_cmd << 'kernel' << '{connection_file}'
-
-      kernel_cmd = "c.KernelManager.kernel_cmd = #{kernel_cmd.inspect}"
-      Dir[File.join(profile_dir, '*_config.py')].each do |path|
-        content = File.read(path)
-        content << kernel_cmd unless content.gsub!(/^c\.KernelManager\.kernel_cmd.*$/, kernel_cmd)
-        File.write(path, content)
-      end
-
-      begin
-        static_dir = File.join(profile_dir, 'static')
-        target_dir = File.join(File.dirname(__FILE__), 'static')
-        begin
-          old_target = File.readlink(static_dir) rescue nil
-        rescue NotImplementedError
-          FileUtils.cp_r(target_dir, static_dir)
-          return
-        end
-
-        unless old_target == target_dir
-          FileUtils.rm_rf(static_dir) rescue nil
-          FileUtils.ln_sf(target_dir, static_dir)
-        end
-      rescue => ex
-        STDERR.puts "Could not create directory #{static_dir}: #{ex.message}"
-      end
+    def unregister_kernel
+      File.unlink(@kernel_file)
     end
   end
 end
