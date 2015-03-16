@@ -175,7 +175,6 @@ module IRuby
         ismagic: false,
         isalias: false,
         docstring: '', # TODO
-        type_class: o.class.to_s,
         type_class: o.class.superclass.to_s,
         string_form: o.inspect
       }
