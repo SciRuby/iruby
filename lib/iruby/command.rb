@@ -6,13 +6,11 @@ module IRuby
     WINDOWS_REGEXP = /mswin(?!ce)|mingw|cygwin/
 
     def initialize(args)
-      @args = args.map { |e| e.dup } # unfreeze
+      @args = args
 
-      ENV['IPYTHONDIR'] ||= ENV['IRUBYDIR']
       @ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
       @args.each do |arg|
-        arg.sub!(/\A--iruby-dir=(.*)\Z/, '--ipython-dir=\1')
-        @ipython_dir ||= $1
+        @ipython_dir = $1 if arg.match(/\A--ipython-dir=(.*)\Z/)
       end
       @ipython_dir = Pathname.new(@ipython_dir).expand_path
     end
@@ -25,6 +23,10 @@ module IRuby
       when 'help', '-h', '--help'
         print_help
       when 'register'
+        if ipython_register_file.exist?
+          puts "#{ipython_register_file} already exists! Please remove it first."
+          exit(1)
+        end
         register_iruby_kernel
       when 'unregister'
         unregister_iruby_kernel
@@ -82,7 +84,7 @@ EOF
 
       # We must use the console to launch the whole 0MQ-client-server stack
       @args = %w(console --no-banner) + @args if @args.first.to_s !~ /\A\w/
-      register_iruby_kernel if %w(console qtconsole notebook).include? @args.first
+      register_iruby_kernel if %w(console qtconsole notebook).include? @args.first and not ipython_register_file.exist?
       @args += %w(--kernel ruby) if %w(console qtconsole).include? @args.first
 
       Kernel.exec('ipython', *@args)
