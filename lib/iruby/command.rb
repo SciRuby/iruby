@@ -23,8 +23,9 @@ module IRuby
       when 'help', '-h', '--help'
         print_help
       when 'register'
-        if ipython_register_file.exist?
-          puts "#{ipython_register_file} already exists! Please remove it first."
+        if ipython_register_file.exist? and not @args.include? "--force"
+          puts "#{ipython_register_file} already exists!"
+          puts "Use --force to force a register."
           exit(1)
         end
         register_iruby_kernel
