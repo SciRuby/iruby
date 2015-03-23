@@ -1,3 +1,5 @@
+<b>We are currently developing the kernel compatible with IPython3, the old IPython2-compatible version is in the branch ipython2</b>
+
 = IRuby
 
 This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
