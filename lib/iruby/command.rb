@@ -54,11 +54,9 @@ Try `ipython help` for more information.
 
     def run_kernel
       raise(ArgumentError, 'Not enough arguments to the kernel') if @args.size < 2 || @args.size > 4
-      config_file, boot_file, working_dir = @args[1..-1]
-      Dir.chdir(working_dir) if working_dir
-      require boot_file if boot_file
+      config_file = @args[1]
       require 'iruby'
-      Kernel.new(config_file).run
+      Kernel.new(config_file, debug: @args.include?("--debug")).run
     rescue Exception => ex
       STDERR.puts "Kernel died: #{ex.message}\n#{ex.backtrace.join("\n")}"
       raise
