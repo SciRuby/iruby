@@ -33,7 +33,7 @@ module IRuby
           hb_socket = c.socket(ZMQ::REP)
           hb_socket.bind(connection % @config['hb_port'])
           ZMQ::Device.new(hb_socket, hb_socket)
-        rescue Exception => ex
+        rescue => ex
           STDERR.puts "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
         end
       end
@@ -51,7 +51,7 @@ module IRuby
 
     def create_backend
       PryBackend.new
-    rescue Exception => ex
+    rescue => ex
       STDERR.puts ex.message unless LoadError === ex
       PlainBackend.new
     end
@@ -118,7 +118,7 @@ module IRuby
           user_expressions: {},
           execution_count: @execution_count
         }
-      rescue Exception => e
+      rescue => e
         content = {
           ename: e.class.to_s,
           evalue: e.message,
@@ -180,7 +180,7 @@ module IRuby
       }
       content[:length] = o.length if o.respond_to?(:length)
       @session.send(@reply_socket, 'object_info_reply', content, ident)
-    rescue Exception
+    rescue
       content = {
         oname: msg[:content]['oname'],
         found: false
