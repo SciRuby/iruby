@@ -14,6 +14,7 @@ module IRuby
 
     # Build and send a message
     def send(socket, type, content, ident=nil)
+      $logger.debug "\e[33msend\e[0m \e[34m#{type}\e[0m #{content}"
       header = {
         msg_type: type,
         msg_id:   @msg_id,
@@ -45,6 +46,7 @@ module IRuby
       idents, msg_list = msg[0..i-1], msg[i+1..-1]
       msg = unserialize(msg_list)
       @last_received_header = msg[:header]
+      $logger.debug "\e[31mreceive\e[0m \e[34m#{msg[:header]['msg_type']}\e[0m #{msg}"
       return idents, msg
     end
 

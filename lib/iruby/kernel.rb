@@ -1,3 +1,5 @@
+require 'logger'
+
 module IRuby
   class Kernel
     RED = "\e[31m"
@@ -10,12 +12,13 @@ module IRuby
 
     attr_reader :pub_socket, :session
 
-    def initialize(config_file)
+    def initialize(config_file, debug: false)
+      $logger = Logger.new(STDERR)
+      $logger.level = debug ? Logger::DEBUG : Logger::INFO
+      $logger.datetime_format = "" # do not print datetime
       @config = MultiJson.load(File.read(config_file))
 
-      #puts 'Starting the kernel'
-      #puts config
-      #puts 'Use Ctrl-\\ (NOT Ctrl-C!) to terminate.'
+      $logger.debug "Starting the kernel with config #{@config}"
 
       Kernel.instance = self
 
@@ -33,8 +36,8 @@ module IRuby
           hb_socket = c.socket(ZMQ::REP)
           hb_socket.bind(connection % @config['hb_port'])
           ZMQ::Device.new(hb_socket, hb_socket)
-        rescue Exception => ex
-          STDERR.puts "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
+        rescue => ex
+          $logger.fatal "Kernel heartbeat died: #{ex.message}\n"
         end
       end
 
@@ -51,8 +54,8 @@ module IRuby
 
     def create_backend
       PryBackend.new
-    rescue Exception => ex
-      STDERR.puts ex.message unless LoadError === ex
+    rescue => ex
+      $logger.info ex.message unless LoadError === ex
       PlainBackend.new
     end
 
@@ -64,7 +67,7 @@ module IRuby
         if type =~ /comm|_request\Z/ && respond_to?(type)
           send(type, ident, msg)
         else
-          STDERR.puts "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
+          $logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
         end
       end
     end
@@ -101,7 +104,7 @@ module IRuby
       begin
         code = msg[:content]['code']
       rescue
-        STDERR.puts "Got bad message: #{msg.inspect}"
+        $logger.error "Got bad message: #{msg.inspect}"
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
@@ -118,7 +121,7 @@ module IRuby
           user_expressions: {},
           execution_count: @execution_count
         }
-      rescue Exception => e
+      rescue => e
         content = {
           ename: e.class.to_s,
           evalue: e.message,
@@ -180,7 +183,7 @@ module IRuby
       }
       content[:length] = o.length if o.respond_to?(:length)
       @session.send(@reply_socket, 'object_info_reply', content, ident)
-    rescue Exception
+    rescue
       content = {
         oname: msg[:content]['oname'],
         found: false
