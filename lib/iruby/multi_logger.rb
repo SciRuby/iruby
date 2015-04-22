@@ -7,7 +7,7 @@ module IRuby
 
   class MultiLogger < BasicObject
     def initialize(*loggers)
-      @loggers = loggers.map { |e| Logger.new(e) }
+      @loggers = loggers.map { |e| ::Logger.new(e) }
     end
 
     def method_missing(name, *args, &b)
