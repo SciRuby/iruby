@@ -13,9 +13,7 @@ module IRuby
     def initialize(config_file)
       @config = MultiJson.load(File.read(config_file))
 
-      #puts 'Starting the kernel'
-      #puts config
-      #puts 'Use Ctrl-\\ (NOT Ctrl-C!) to terminate.'
+      Logger.debug("IRuby kernel start with config #{@config}")
 
       Kernel.instance = self
 
@@ -34,7 +32,7 @@ module IRuby
           hb_socket.bind(connection % @config['hb_port'])
           ZMQ::Device.new(hb_socket, hb_socket)
         rescue Exception => ex
-          STDERR.puts "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
+          Logger.fatal "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
         end
       end
 
@@ -52,7 +50,7 @@ module IRuby
     def create_backend
       PryBackend.new
     rescue Exception => ex
-      STDERR.puts ex.message unless LoadError === ex
+      Logger.warn ex.message unless LoadError === ex
       PlainBackend.new
     end
 
@@ -64,7 +62,7 @@ module IRuby
         if type =~ /comm|_request\Z/ && respond_to?(type)
           send(type, ident, msg)
         else
-          STDERR.puts "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
+          Logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
         end
       end
     end
@@ -101,7 +99,7 @@ module IRuby
       begin
         code = msg[:content]['code']
       rescue
-        STDERR.puts "Got bad message: #{msg.inspect}"
+        Logger.fatal "Got bad message: #{msg.inspect}"
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
