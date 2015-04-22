@@ -1,6 +1,6 @@
 require 'shellwords'
 require 'fileutils'
-require "logger"
+require "iruby/multi_logger"
 
 module IRuby
   class Command
@@ -8,21 +8,21 @@ module IRuby
       @args = args
 
       ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
-      logfile = STDOUT
+      logfiles = [STDOUT]
       # TODO: use OptParse to parse options
       @args.each do |arg|
         case arg
         when /\A--ipython-dir=(.*)\Z/
           ipython_dir = $1
         when /\A--log=(.*)\Z/
-          logfile = $1
+          logfiles << $1
         end
       end
       ipython_dir = File.expand_path(ipython_dir)
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
 
-      IRuby.const_set(:Logger, Logger.new(logfile))
-      Logger.level = ::Logger::DEBUG if args.delete('--debug')
+      IRuby.logger = Logger.new(*logfiles)
+      IRuby.logger.level = Logger::DEBUG if args.include?('--debug')
     end
 
     def run
@@ -71,7 +71,7 @@ Try `ipython help` for more information.
       require 'iruby'
       Kernel.new(config_file).run
     rescue Exception => ex
-      Logger.fatal "Kernel died: #{ex.message}\n#{ex.backtrace.join("\n")}"
+      IRuby.logger.fatal "Kernel died: #{ex.message}\n#{ex.backtrace.join("\n")}"
       raise
     end
 
