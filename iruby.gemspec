@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.post_install_message = m << "\n"
 
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'minitest'
 
   s.add_runtime_dependency 'bond', '~> 0.5.0'
   s.add_runtime_dependency 'ffi-rzmq', '~> 2.0'
