@@ -35,8 +35,10 @@ module IRuby
     alias_method :<<, :write
     alias_method :print, :write
 
-    def puts(s = nil)
-      write "#{s}\n"
+    def puts(*lines)
+      lines = [nil] if lines.length == 0
+      lines.each { |s| write("#{s}\n")}
+      nil
     end
 
     def writelines(lines)
