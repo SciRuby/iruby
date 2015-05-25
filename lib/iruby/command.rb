@@ -1,28 +1,14 @@
-require 'shellwords'
-require 'fileutils'
-require 'iruby/multi_logger'
-
 module IRuby
   class Command
     def initialize(args)
       @args = args
 
       ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
-      loggers = [Logger.new(STDOUT)]
-      # TODO: use OptParse to parse options
       @args.each do |arg|
-        case arg
-        when /\A--ipython-dir=(.*)\Z/
-          ipython_dir = $1
-        when /\A--log=(.*)\Z/
-          loggers << Logger.new($1)
-        end
+        ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
       end
       ipython_dir = File.expand_path(ipython_dir)
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
-
-      IRuby.logger = MultiLogger.new(*loggers)
-      IRuby.logger.level = args.include?('--debug') ? Logger::DEBUG : Logger::INFO
     end
 
     def run
@@ -64,10 +50,25 @@ Try `ipython help` for more information.
     end
 
     def run_kernel
+      require 'iruby/logger'
+      loggers = [Logger.new(STDOUT)]
+      @args.each do |arg|
+        loggers << Logger.new($1) if arg =~ /\A--log=(.*)\Z/
+      end
+      IRuby.logger = MultiLogger.new(*loggers)
+      IRuby.logger.level = @args.include?('--debug') ? Logger::DEBUG : Logger::INFO
+
       raise(ArgumentError, 'Not enough arguments to the kernel') if @args.size < 2 || @args.size > 4
       config_file, boot_file, working_dir = @args[1..-1]
       Dir.chdir(working_dir) if working_dir
+
       require boot_file if boot_file
+
+      begin
+        require 'bundler/setup'
+      rescue Exception
+      end
+
       require 'iruby'
       Kernel.new(config_file).run
     rescue Exception => ex
@@ -96,6 +97,7 @@ Try `ipython help` for more information.
     end
 
     def register_kernel
+      require 'fileutils'
       FileUtils.mkpath(File.dirname(@kernel_file))
       File.write(@kernel_file, %{{
   "argv":         [ "#{File.expand_path $0}", "kernel", "{connection_file}" ],
