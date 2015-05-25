@@ -1,6 +1,6 @@
 require 'stringio'
 require 'test_helper'
-require 'iruby/multi_logger'
+require 'iruby/logger'
 
 class MultiLoggerTest < IRubyTest
   def test_multilogger

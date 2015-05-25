@@ -13,3 +13,4 @@ rdoc
 test/tmp
 test/version_tmp
 tmp
+venv
