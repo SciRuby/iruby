@@ -8,8 +8,8 @@ module IRuby
       TOPLEVEL_BINDING.eval(code)
     end
 
-    def complete(line, text)
-      Bond.agent.call(line, line)
+    def complete(code)
+      Bond.agent.call(code, code)
     end
   end
 
@@ -31,8 +31,8 @@ module IRuby
       @pry.last_result
     end
 
-    def complete(line, text)
-      @pry.complete(line)
+    def complete(code)
+      @pry.complete(code)
     end
   end
 end

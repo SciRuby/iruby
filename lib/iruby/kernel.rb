@@ -106,7 +106,7 @@ module IRuby
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
-      @session.send(:publish, 'execute_input', {code: code}, ident)
+      @session.send(:publish, 'execute_input', {code: code, execution_count: @execution_count}, ident)
 
       result = nil
       begin
@@ -135,9 +135,8 @@ module IRuby
 
     def complete_request(ident, msg)
       content = {
-        matches: @backend.complete(msg[:content]['line'], msg[:content]['text']),
-        status: 'ok',
-        matched_text: msg[:content]['line'],
+        matches: @backend.complete(msg[:content]['code']),
+        status: 'ok'
       }
       @session.send(:reply, 'complete_reply', content, ident)
     end
