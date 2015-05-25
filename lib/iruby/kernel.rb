@@ -136,7 +136,9 @@ module IRuby
     def complete_request(ident, msg)
       content = {
         matches: @backend.complete(msg[:content]['code']),
-        status: 'ok'
+        status: 'ok',
+        cursor_start: 0,
+        cursor_end: msg[:content]['cursor_pos']
       }
       @session.send(:reply, 'complete_reply', content, ident)
     end
