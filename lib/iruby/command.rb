@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module IRuby
   class Command
     def initialize(args)
@@ -8,7 +10,8 @@ module IRuby
         ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
       end
       ipython_dir = File.expand_path(ipython_dir)
-      @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
+      @kernel_dir = File.join(ipython_dir, 'kernels', 'ruby')
+      @kernel_file = File.join(@kernel_dir, 'kernel.json')
     end
 
     def run
@@ -38,8 +41,8 @@ module IRuby
     def print_help
       puts %{
 Usage:
-    iruby register        Register IRuby kernel into #{@kernel_file}.
-    iruby unregister      Remove #{@kernel_file}.
+    iruby register        Register IRuby kernel.
+    iruby unregister      Unregister IRuby kernel.
     iruby console         Launch the IRuby terminal-based console.
     iruby notebook        Launch the IRuby HTML notebook server.
     ...                   Same as IPython.
@@ -97,18 +100,20 @@ Try `ipython help` for more information.
     end
 
     def register_kernel
-      require 'fileutils'
-      FileUtils.mkpath(File.dirname(@kernel_file))
+      FileUtils.mkpath(@kernel_dir)
       File.write(@kernel_file, %{{
   "argv":         [ "#{File.expand_path $0}", "kernel", "{connection_file}" ],
   "display_name": "Ruby",
   "language":     "ruby"
 }
 })
+      Dir[File.join(__dir__, 'logo', 'logo-*.png')].each do |file|
+        FileUtils.copy(File.expand_path(file), File.join(@kernel_dir, File.basename(file))) rescue nil
+      end
     end
 
     def unregister_kernel
-      File.unlink(@kernel_file)
+      FileUtils.rm_rf(@kernel_dir)
     end
   end
 end
