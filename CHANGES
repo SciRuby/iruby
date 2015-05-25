@@ -1,9 +1,11 @@
 0.2.0
 
   * Dropped IPython2 support
+  * Dropped Ruby < 2.0.0 support
   * Supports and requires now IPython3/Jupyter
   * Switch from ffi-rzmq to rbczmq
   * Added IRuby::Conn (experimental, to be used by widgets)
+  * iruby register/unregister commands to register IRuby kernel in Jupyter
 
 0.1.13
 
