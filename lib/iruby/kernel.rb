@@ -59,10 +59,10 @@ module IRuby
       while @running
         ident, msg = @session.recv(@reply_socket, 0)
         type = msg[:header]['msg_type']
-        if type =~ /comm|_request\Z/ && respond_to?(type)
-          send_status('busy')
+        if type =~ /comm_|_request\Z/ && respond_to?(type)
+          send_status('busy', ident)
           send(type, ident, msg)
-          send_status('idle')
+          send_status('idle', ident)
         else
           IRuby.logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
         end
@@ -94,8 +94,8 @@ module IRuby
       @session.send(@reply_socket, 'kernel_info_reply', content, ident)
     end
 
-    def send_status(status)
-      @session.send(@pub_socket, 'status', execution_state: status)
+    def send_status(status, ident = nil)
+      @session.send(@pub_socket, 'status', {execution_state: status}, ident)
     end
 
     def execute_request(ident, msg)
