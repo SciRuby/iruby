@@ -57,7 +57,7 @@ module IRuby
     def run
       send_status('starting')
       while @running
-        ident, msg = @session.recv(:reply, 0)
+        ident, msg = @session.recv(:reply)
         type = msg[:header]['msg_type']
         if type =~ /comm_|_request\Z/ && respond_to?(type)
           send_status('busy', ident)

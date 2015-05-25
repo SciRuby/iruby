@@ -28,7 +28,7 @@ module IRuby
     end
 
     # Receive a message and decode it
-    def recv(socket, mode)
+    def recv(socket)
       idents, msg = unserialize(@sockets[socket].recv_message)
       @last_received_header = msg[:header]
       return idents, msg
