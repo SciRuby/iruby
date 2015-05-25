@@ -7,11 +7,11 @@ module IRuby
 
   class MultiLogger < BasicObject
     def initialize(*loggers)
-      @loggers = loggers.map { |e| Logger.new(e) }
+      @loggers = loggers
     end
 
     def method_missing(name, *args, &b)
-      @loggers.map { |e| e.respond_to?(name) && e.public_send(name, *args, &b) }.any?
+      @loggers.map {|x| x.respond_to?(name) && x.public_send(name, *args, &b) }.any?
     end
   end
 end

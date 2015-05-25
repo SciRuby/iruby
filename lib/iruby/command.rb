@@ -8,20 +8,20 @@ module IRuby
       @args = args
 
       ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
-      logfiles = [STDOUT]
+      loggers = [Logger.new(STDOUT)]
       # TODO: use OptParse to parse options
       @args.each do |arg|
         case arg
         when /\A--ipython-dir=(.*)\Z/
           ipython_dir = $1
         when /\A--log=(.*)\Z/
-          logfiles << $1
+          loggers << Logger.new($1)
         end
       end
       ipython_dir = File.expand_path(ipython_dir)
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
 
-      IRuby.logger = MultiLogger.new(*logfiles)
+      IRuby.logger = MultiLogger.new(*loggers)
       IRuby.logger.level = Logger::DEBUG if args.delete('--debug')
     end
 
