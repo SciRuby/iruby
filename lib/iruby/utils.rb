@@ -4,10 +4,10 @@ module IRuby
   end
 
   def self.display(obj, options = {})
-    Kernel.instance.display(obj, options)
+    Kernel.instance.session.send(:publish, 'display_data', data: Display.display(obj, options), metadata: {}) unless obj.nil?
   end
 
-  def self.table(s, options = {})
+  def self.table(s, **options)
     html(HTML.table(s, options))
   end
 

@@ -14,7 +14,7 @@ module IRuby
       @target_name, @comm_id = target_name, comm_id
     end
 
-    def open(data = {})
+    def open(**data)
       content = {
         comm_id: @comm_id,
         data: data,
@@ -24,7 +24,7 @@ module IRuby
       Kernel.instance.comms[@comm_id] = self
     end
 
-    def send(data = {})
+    def send(**data)
       content = {
         comm_id: @comm_id,
         data: data
@@ -32,7 +32,7 @@ module IRuby
       Kernel.instance.session.send(:publish, 'comm_msg', content)
     end
 
-    def close(data = {})
+    def close(**data)
       content = {
         comm_id: @comm_id,
         data: data

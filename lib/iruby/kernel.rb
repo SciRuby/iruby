@@ -69,15 +69,6 @@ module IRuby
       end
     end
 
-    def display(obj, options={})
-      unless obj.nil?
-        content = { data: Display.display(obj, options), metadata: {} }
-        content[:execution_count] = @execution_count if options[:result]
-        @session.send(:publish, options[:result] ? 'execute_result' : 'display_data', content)
-      end
-      nil
-    end
-
     def kernel_info_request(ident, msg)
       content = {
         protocol_version: '5.0',
@@ -130,7 +121,9 @@ module IRuby
         @session.send(:publish, 'error', content, ident)
       end
       @session.send(:reply, 'execute_reply', content, ident)
-      display(result, result: true) unless msg[:content]['silent']
+      unless result.nil? || msg[:content]['silent']
+        @session.send(:publish, 'execute_result', data: Display.display(result), metadata: {}, execution_count: @execution_count)
+      end
     end
 
     def complete_request(ident, msg)

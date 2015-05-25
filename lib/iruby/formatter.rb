@@ -24,11 +24,9 @@ module IRuby
   module HTML
     extend self
 
-    def table(obj, options = {})
-      options[:maxrows] = 15 unless options.include?(:maxrows)
-      options[:maxcols] = 15 unless options.include?(:maxcols)
-      raise ArgumentError, 'Invalid :maxrows' if options[:maxrows] && options[:maxrows] < 3
-      raise ArgumentError, 'Invalid :maxcols' if options[:maxcols] && options[:maxcols] < 3
+    def table(obj, maxrows: 15, maxcols: 15, **options)
+      raise ArgumentError, 'Invalid :maxrows' if maxrows && maxrows < 3
+      raise ArgumentError, 'Invalid :maxcols' if maxcols && maxcols < 3
 
       return obj unless obj.respond_to?(:each)
 
@@ -77,18 +75,18 @@ module IRuby
       keys1, keys2 = keys, nil
       header1, header2 = header, nil
 
-      if options[:maxcols] && keys.size > options[:maxcols]
-        keys1 = keys[0...options[:maxcols] / 2]
-        keys2 = keys[-options[:maxcols] / 2...-1]
+      if maxcols && keys.size > maxcols
+        keys1 = keys[0...maxcols / 2]
+        keys2 = keys[-maxcols / 2...-1]
         if header
-          header1 = header[0...options[:maxcols] / 2]
-          header2 = header[-options[:maxcols] / 2...-1]
+          header1 = header[0...maxcols / 2]
+          header2 = header[-maxcols / 2...-1]
         end
       end
 
-      if options[:maxrows] && rows.size > options[:maxrows]
-        rows1 = rows[0...options[:maxrows] / 2]
-        rows2 = rows[-options[:maxrows] / 2...-1]
+      if maxrows && rows.size > maxrows
+        rows1 = rows[0...maxrows / 2]
+        rows2 = rows[-maxrows / 2...-1]
       end
 
       table = '<table>'
