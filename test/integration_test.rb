@@ -5,9 +5,9 @@ require 'expect'
 class IntegrationTest < IRubyTest
   def setup
     @stdin, @stdout, @stderr, @process = Open3.popen3('bin/iruby')
-    expect 'In [', 10
-    expect '1', 10
-    expect ']:', 10
+    expect 'In [', 30
+    expect '1'
+    expect ']:'
   end
 
   def teardown
