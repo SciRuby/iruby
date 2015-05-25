@@ -6,6 +6,13 @@ This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
 
 link:screenshot.png
 
+=== Installation of IPython with virtualenv
+
+apt-get install python3-dev virtualenv
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install 'ipython[notebook]'
+
 === Quick start
 
 At first install the packages `ipython`, `python-jinja`, `python-tornado`, `python-pyzmq` so that you get a working `ipython notebook`.
