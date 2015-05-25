@@ -187,18 +187,18 @@ module IRuby
     end
 
     def comm_open(ident, msg)
-      comm_id = msg[:content]["comm_id"]
+      comm_id = msg[:content]['comm_id']
       comm = Comm.new(msg[:content]["target_name"], comm_id)
       @comms[comm_id] = comm
     end
 
     def comm_msg(ident, msg)
-      comm_id = msg[:content]["comm_id"]
+      comm_id = msg[:content]['comm_id']
       @comms[comm_id].handle_msg(msg[:content]["data"])
     end
 
     def comm_close(ident, msg)
-      comm_id = msg[:content]["comm_id"]
+      comm_id = msg[:content]['comm_id']
       @comms[comm_id].handle_close
       @comms.delete(comm_id)
     end

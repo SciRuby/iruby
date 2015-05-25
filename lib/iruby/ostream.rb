@@ -36,7 +36,7 @@ module IRuby
     alias_method :print, :write
 
     def puts(*lines)
-      lines = [nil] if lines.length == 0
+      lines = [''] if lines.empty?
       lines.each { |s| write("#{s}\n")}
       nil
     end
