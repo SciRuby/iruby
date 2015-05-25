@@ -6,10 +6,7 @@ rvm:
   - 2.1.6
   - 2.0.0
 
-sudo: false
-
 before_install:
-  - "virtualenv -p python3 venv"
-  - "source venv/bin/activate; pip install 'ipython[notebook]'"
+  - "sudo pip install 'ipython[notebook]'"
 
-script: "source venv/bin/activate; bundle exec rake"
+script: bundle exec rake
