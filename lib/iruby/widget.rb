@@ -4,6 +4,8 @@ module IRuby
   # @@target_name: THe target to which kernel send comm messages. Default target is "WidgetModel", but you can define your own target on the front-end.
   #
   class Widget
+    # TODO FIXME: These variables are shared by the entire widget hierarchy.
+    # I don't think this should be the case.
     @@view_name = ''
     @@description = ''
     @@target_name = 'WidgetModel'
