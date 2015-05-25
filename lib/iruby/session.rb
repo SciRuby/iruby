@@ -23,21 +23,12 @@ module IRuby
       }
       @msg_id += 1
 
-      socket.send_message(ZMQ::Message(*serialize(header, content, ident)))
+      socket.send_message(serialize(header, content, ident))
     end
 
     # Receive a message and decode it
     def recv(socket, mode)
-      msg = socket.recv_message
-
-      parts = []
-      while frame = msg.popstr
-        parts << frame
-      end
-
-      i = parts.index(DELIM)
-      idents, msg_list = parts[0..i-1], parts[i+1..-1]
-      msg = unserialize(msg_list)
+      idents, msg = unserialize(socket.recv_message)
       @last_received_header = msg[:header]
       return idents, msg
     end
@@ -49,15 +40,23 @@ module IRuby
              MultiJson.dump(@last_received_header || {}),
              '{}',
              MultiJson.dump(content || {})]
-      ([ident].flatten.compact << DELIM << sign(msg)) + msg
+      ZMQ::Message(*(([ident].flatten.compact << DELIM << sign(msg)) + msg))
     end
 
-    def unserialize(msg_list)
+    def unserialize(msg)
+      parts = []
+      while frame = msg.popstr
+        parts << frame
+      end
+
+      i = parts.index(DELIM)
+      idents, msg_list = parts[0..i-1], parts[i+1..-1]
+
       minlen = 5
       raise 'malformed message, must have at least #{minlen} elements' unless msg_list.length >= minlen
       s, header, parent_header, metadata, content, buffers = *msg_list
       raise 'Invalid signature' unless s == sign(msg_list[1..-1])
-      {
+      return idents, {
         header: MultiJson.load(header),
         parent_header: MultiJson.load(parent_header),
         metadata: MultiJson.load(metadata),
