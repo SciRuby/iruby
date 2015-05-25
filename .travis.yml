@@ -7,6 +7,6 @@ rvm:
   - 2.0.0
 
 before_install:
-  - sudo pip install ipython
+  - "sudo pip install 'ipython[notebook]'"
 
 script: bundle exec rake
