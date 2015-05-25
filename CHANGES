@@ -1,3 +1,10 @@
+0.2.0
+
+  * Dropped IPython2 support
+  * Supports and requires now IPython3/Jupyter
+  * Switch from ffi-rzmq to rbczmq
+  * Added IRuby::Conn (experimental, to be used by widgets)
+
 0.1.13
 
   * Improved IRuby.table, supports :maxrows and :maxcols
