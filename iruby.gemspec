@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.name          = 'iruby'
   s.date          = Date.today.to_s
   s.version       = IRuby::VERSION
-  s.authors       = ['The SciRuby developers']
-  s.email         = ['benjaminrk@gmail.com']
+  s.authors       = ['Daniel Mendler', 'The SciRuby developers']
+  s.email         = ['mail@daniel-mendler.de']
   s.description   = 'Ruby Kernel for IPython'
   s.summary       = 'A Ruby kernel for IPython frontends (notebook console, etc.)'
   s.homepage      = 'https://github.com/SciRuby/iruby'
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest'
 
   s.add_runtime_dependency 'bond', '~> 0.5.1'
-  s.add_runtime_dependency 'ffi-rzmq', '~> 2.0'
+  s.add_runtime_dependency 'rbczmq', '~> 1.7.8'
   s.add_runtime_dependency 'multi_json', '~> 1.11.0'
   s.add_runtime_dependency 'mimemagic', '~> 0.3.0'
 end

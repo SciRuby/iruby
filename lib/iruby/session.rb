@@ -22,27 +22,20 @@ module IRuby
       }
       @msg_id += 1
 
-      list = serialize(header, content, ident)
-      list.each_with_index do |part, i|
-        socket.send_string(part, i == list.size - 1 ? 0 : ZMQ::SNDMORE)
-      end
+      socket.send_message(ZMQ::Message(*serialize(header, content, ident)))
     end
 
     # Receive a message and decode it
     def recv(socket, mode)
-      msg = []
-      while msg.empty? || socket.more_parts?
-        begin
-          frame = ''
-          rc = socket.recv_string(frame, mode)
-          ZMQ::Util.error_check('zmq_msg_send', rc)
-          msg << frame
-        rescue
-        end
+      msg = socket.recv_message
+
+      parts = []
+      while frame = msg.popstr
+        parts << frame
       end
 
-      i = msg.index(DELIM)
-      idents, msg_list = msg[0..i-1], msg[i+1..-1]
+      i = parts.index(DELIM)
+      idents, msg_list = parts[0..i-1], parts[i+1..-1]
       msg = unserialize(msg_list)
       @last_received_header = msg[:header]
       return idents, msg

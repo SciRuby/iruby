@@ -20,17 +20,17 @@ module IRuby
       c = ZMQ::Context.new
 
       connection = "#{@config['transport']}://#{@config['ip']}:%d"
-      @reply_socket = c.socket(ZMQ::XREP)
+      @reply_socket = c.socket(:ROUTER)
       @reply_socket.bind(connection % @config['shell_port'])
 
-      @pub_socket = c.socket(ZMQ::PUB)
+      @pub_socket = c.socket(:PUB)
       @pub_socket.bind(connection % @config['iopub_port'])
 
       Thread.new do
         begin
-          hb_socket = c.socket(ZMQ::REP)
+          hb_socket = c.socket(:REP)
           hb_socket.bind(connection % @config['hb_port'])
-          ZMQ::Device.new(hb_socket, hb_socket)
+          ZMQ.proxy(hb_socket, hb_socket)
         rescue Exception => ex
           IRuby.logger.fatal "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
         end
@@ -125,7 +125,7 @@ module IRuby
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
           execution_count: @execution_count
         }
-        @session.send(@pub_socket, 'pyerr', content)
+        @session.send(@pub_socket, 'error', content)
       end
       @session.send(@reply_socket, 'execute_reply', content, ident)
       display(result) unless msg[:content]['silent']

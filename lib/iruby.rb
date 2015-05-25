@@ -1,4 +1,4 @@
-require 'ffi-rzmq'
+require 'rbczmq'
 require 'mimemagic'
 require 'multi_json'
 require 'bond'
