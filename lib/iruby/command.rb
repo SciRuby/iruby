@@ -41,7 +41,7 @@ module IRuby
     def print_help
       puts %{
 Usage:
-    iruby register        Register IRuby kernel.
+    iruby register        Register IRuby kernel in #{@kernel_file}.
     iruby unregister      Unregister IRuby kernel.
     iruby console         Launch the IRuby terminal-based console.
     iruby notebook        Launch the IRuby HTML notebook server.
