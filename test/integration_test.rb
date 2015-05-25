@@ -1,9 +1,13 @@
 require 'test_helper'
 require 'open3'
+require 'expect'
 
 class IntegrationTest < IRubyTest
   def setup
     @stdin, @stdout, @stderr, @process = Open3.popen3('bin/iruby')
+    expect 'In [', 10
+    expect '1', 10
+    expect ']:', 10
   end
 
   def teardown
@@ -13,30 +17,25 @@ class IntegrationTest < IRubyTest
     @process.kill
   end
 
-  # We expect a process to print all its output at one time.
-  # Otherwise this would break.
-  def read
-    @stdout.read_nonblock(4096)
-  rescue IO::WaitReadable
-    retry
-  end
-
   def write(input)
-    read # eat prompt
     @stdin.puts input
   end
 
-  def test_hello_world
-    write '"Hello, world!"'
-    assert_match 'Hello, world!', read
-    write 'puts "Hello, world!"'
-    assert_match 'Hello, world!', read
-    write '12 + 12'
-    assert_match '24', read
+  def expect(pattern, timeout = 1)
+    assert @stdout.expect(pattern, timeout), "#{pattern} expected"
   end
 
-  def test_pry_functions
+  def test_interaction
+    write '"Hello, world!"'
+    expect '"Hello, world!"'
+
+    write 'puts "Hello!"'
+    expect 'Hello!'
+
+    write '12 + 12'
+    expect '24'
+
     write 'ls'
-    assert_match 'self.methods', read
+    expect 'self.methods'
   end
 end
