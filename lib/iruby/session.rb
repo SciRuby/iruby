@@ -46,6 +46,7 @@ module IRuby
     end
 
     def unserialize(msg)
+      raise 'no message received' unless msg
       parts = []
       while frame = msg.popstr
         parts << frame

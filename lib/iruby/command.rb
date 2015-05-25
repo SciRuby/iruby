@@ -22,7 +22,7 @@ module IRuby
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
 
       IRuby.logger = MultiLogger.new(*loggers)
-      IRuby.logger.level = Logger::DEBUG if args.delete('--debug')
+      IRuby.logger.level = args.delete('--debug') ? Logger::DEBUG : Logger::INFO
     end
 
     def run

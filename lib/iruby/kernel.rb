@@ -117,6 +117,8 @@ module IRuby
           user_expressions: {},
           execution_count: @execution_count
         }
+      rescue SystemExit
+        raise
       rescue Exception => e
         content = {
           status: 'error',
