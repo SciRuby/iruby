@@ -3,6 +3,7 @@ module IRuby
   # @@view_name: The view name defined on the front-end.
   # @@target_name: THe target to which kernel send comm messages. Default target is "WidgetModel", but you can define your own target on the front-end.
   #
+  # TODO: Maybe the whole widget implementation and toolkit should moved to a separate gem "iruby-widgets"
   class Widget
     # TODO FIXME: These variables are shared by the entire widget hierarchy.
     # I don't think this should be the case.
