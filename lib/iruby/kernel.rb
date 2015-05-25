@@ -106,7 +106,7 @@ module IRuby
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
-      @session.send(@pub_socket, 'execute_input', code: code)
+      @session.send(@pub_socket, 'execute_input', {code: code}, ident)
 
       result = nil
       begin
@@ -125,7 +125,7 @@ module IRuby
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
           execution_count: @execution_count
         }
-        @session.send(@pub_socket, 'error', content)
+        @session.send(@pub_socket, 'error', content, ident)
       end
       @session.send(@reply_socket, 'execute_reply', content, ident)
       display(result, result: true) unless msg[:content]['silent']
