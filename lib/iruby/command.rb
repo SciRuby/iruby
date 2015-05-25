@@ -20,12 +20,12 @@ module IRuby
       end
       ipython_dir = File.expand_path(ipython_dir)
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
+
+      IRuby.logger = MultiLogger.new(*logfiles)
+      IRuby.logger.level = Logger::DEBUG if args.delete('--debug')
     end
 
     def run
-      IRuby.logger = MultiLogger.new(*logfiles)
-      IRuby.logger.level = Logger::DEBUG if args.delete('--debug')
-
       case @args.first
       when 'version', '-v', '--version'
         require 'iruby/version'
