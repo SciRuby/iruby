@@ -1,24 +1,27 @@
 module IRuby
-
   # Comm is a new messaging system for bidirectional communication.
   # Both kernel and front-end listens for messages.
   class Comm
-    def initialize(target_name, comm_id = SecureRandom.hex(16))
-      @comm_id = comm_id
-      @target_name = target_name
-      @session = Kernel.instance.session
-      @pub_socket = Kernel.instance.pub_socket
+    attr_writer :on_msg, :on_close
+
+    class << self
+      def targets
+        @targets ||= {}
+      end
     end
 
-    # Ask front-end to open comm channel.
-    # Primary side should specify comm_id and target_name.
+    def initialize(target_name, comm_id = SecureRandom.uuid)
+      @target_name, @comm_id = target_name, comm_id
+    end
+
     def open(data = {})
       content = {
         comm_id: @comm_id,
         data: data,
         target_name: @target_name
       }
-      @session.send(@pub_socket, 'comm_open', content)
+      Kernel.instance.session.send(:publish, 'comm_open', content)
+      Kernel.instance.comms[@comm_id] = self
     end
 
     def send(data = {})
@@ -26,7 +29,7 @@ module IRuby
         comm_id: @comm_id,
         data: data
       }
-      @session.send(@pub_socket, 'comm_msg', content)
+      Kernel.instance.session.send(:publish, 'comm_msg', content)
     end
 
     def close(data = {})
@@ -34,27 +37,24 @@ module IRuby
         comm_id: @comm_id,
         data: data
       }
-      @session.send(@pub_socket, 'comm_close', content)
+      Kernel.instance.session.send(:publish, 'comm_close', content)
+      Kernel.instance.comms.delete(@comm_id)
     end
 
-    def on_open(callback)
-      @open_callback = callback
+    def on_msg(&b)
+      @on_msg = b
     end
 
-    def on_msg(callback)
-      @msg_callback = callback
+    def on_close(&b)
+      @on_close = b
     end
 
-    def on_close(callback)
-      @close_callback = callback
+    def comm_msg(msg)
+      @on_msg.call(msg) if @on_msg
     end
 
-    def handle_msg(msg)
-      @msg_callback.call(msg) unless @msg_callback
-    end
-
-    def handle_close(msg)
-      @close_callback.call(msg) unless @close_callback
+    def comm_close
+      @on_close.call if @on_close
     end
   end
 end

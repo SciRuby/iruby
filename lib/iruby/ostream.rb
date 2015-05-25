@@ -4,8 +4,7 @@ module IRuby
     attr_accessor :sync
 
     def initialize(session, name)
-      @session = session
-      @name = name
+      @session, @name = session, name
     end
 
     def close
