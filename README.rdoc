@@ -6,23 +6,31 @@ This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
 
 link:screenshot.png
 
-=== Installation of IPython with virtualenv
+=== Quick start
 
-    apt-get install python3-dev virtualenv
+At first install IPython. I recommend an installation using virtualenv.
+
+    apt-get install python3-dev virtualenv libzmq3-dev
     virtualenv -p python3 venv
     source venv/bin/activate
     pip install 'ipython[notebook]'
 
-=== Quick start
+After that, install the Ruby gem.
 
-At first install the packages `ipython`, `python-jinja`, `python-tornado`, `python-pyzmq` so that you get a working `ipython notebook`.
-Maybe the packages are called slightly different on your Unix.
+    gem install iruby
 
-Now install the rubygem using `gem install iruby` and then run `iruby notebook` or `iruby`.
+Now you can run iruby with:
+
+    iruby
+    iruby notebook
 
 Take a look at the Example[http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/iruby/master/IRuby-Example.ipynb].
 
-The IRuby notebook requires `ipython` >= 1.2.0. Furthermore we need `libzmq` >= 3.2 to work. Version 2.2.0 will not work. If you're using an old Debian without a new enough version of `libzmq`, you can install Anaconda[https://store.continuum.io/], a Python distribution with newer versions.
+=== Required dependencies
+
+* IPython >= 3.0.0
+* libzmq >= 3.2
+* Ruby >= 2.0.0
 
 === Authors
 
