@@ -4,7 +4,6 @@ gemspec
 group :pry do
   gem 'pry'
   gem 'pry-doc'
-  gem 'pry-theme'
   gem 'awesome_print'
 end
 
