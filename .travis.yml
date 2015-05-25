@@ -11,3 +11,6 @@ before_install:
   - "sudo pip install 'ipython[notebook]'"
 
 script: bundle exec rake
+
+notifications:
+  irc: "chat.freenode.net#sciruby"
