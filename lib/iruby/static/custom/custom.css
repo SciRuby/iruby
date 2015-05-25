@@ -1,0 +1,40 @@
+/* Placeholder for custom CSS */
+/*color: #800000;*/
+/*color: #c61a1a;*/
+/*color: #e85353;*/
+
+a {
+    color: #800000;
+}
+
+a:hover {
+    color: #000;
+}
+
+a tt {
+    color: #800000;
+}
+
+a tt:hover {
+    color: #000;
+}
+
+div.related ul li a {
+    color: #800000;
+}
+
+div.related ul li a:hover {
+    color: #000;
+}
+
+h1 {
+    color: #800000;
+}
+
+div.footer a {
+    color: #800000;
+}
+
+div.footer a:hover {
+    color: #000;
+}
