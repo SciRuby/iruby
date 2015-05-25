@@ -3,14 +3,13 @@ module IRuby
   class OStream
     attr_accessor :sync
 
-    def initialize(session, socket, name)
+    def initialize(session, name)
       @session = session
-      @socket = socket
       @name = name
     end
 
     def close
-      @socket = nil
+      @session = nil
     end
 
     def flush
@@ -28,8 +27,8 @@ module IRuby
     alias_method :readline, :read
 
     def write(s)
-      raise 'I/O operation on closed file' unless @socket
-      @session.send(@socket, 'stream', { name: @name, text: s.to_s })
+      raise 'I/O operation on closed file' unless @session
+      @session.send(:publish, 'stream', { name: @name, text: s.to_s })
       nil
     end
     alias_method :<<, :write

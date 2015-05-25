@@ -20,11 +20,11 @@ module IRuby
       c = ZMQ::Context.new
 
       connection = "#{@config['transport']}://#{@config['ip']}:%d"
-      @reply_socket = c.socket(:ROUTER)
-      @reply_socket.bind(connection % @config['shell_port'])
+      reply_socket = c.socket(:ROUTER)
+      reply_socket.bind(connection % @config['shell_port'])
 
-      @pub_socket = c.socket(:PUB)
-      @pub_socket.bind(connection % @config['iopub_port'])
+      pub_socket = c.socket(:PUB)
+      pub_socket.bind(connection % @config['iopub_port'])
 
       Thread.new do
         begin
@@ -36,10 +36,10 @@ module IRuby
         end
       end
 
-      @session = Session.new('kernel', @config)
+      @session = Session.new('kernel', @config, publish: pub_socket, reply: reply_socket)
 
-      $stdout = OStream.new(@session, @pub_socket, 'stdout')
-      $stderr = OStream.new(@session, @pub_socket, 'stderr')
+      $stdout = OStream.new(@session, 'stdout')
+      $stderr = OStream.new(@session, 'stderr')
 
       @execution_count = 0
       @backend = create_backend
@@ -57,7 +57,7 @@ module IRuby
     def run
       send_status('starting')
       while @running
-        ident, msg = @session.recv(@reply_socket, 0)
+        ident, msg = @session.recv(:reply, 0)
         type = msg[:header]['msg_type']
         if type =~ /comm_|_request\Z/ && respond_to?(type)
           send_status('busy', ident)
@@ -73,7 +73,7 @@ module IRuby
       unless obj.nil?
         content = { data: Display.display(obj, options), metadata: {} }
         content[:execution_count] = @execution_count if options[:result]
-        @session.send(@pub_socket, options[:result] ? 'execute_result' : 'display_data', content)
+        @session.send(:publish, options[:result] ? 'execute_result' : 'display_data', content)
       end
       nil
     end
@@ -91,11 +91,11 @@ module IRuby
         },
         banner: 'Welcome to IRuby!'
       }
-      @session.send(@reply_socket, 'kernel_info_reply', content, ident)
+      @session.send(:reply, 'kernel_info_reply', content, ident)
     end
 
     def send_status(status, ident = nil)
-      @session.send(@pub_socket, 'status', {execution_state: status}, ident)
+      @session.send(:publish, 'status', {execution_state: status}, ident)
     end
 
     def execute_request(ident, msg)
@@ -106,7 +106,7 @@ module IRuby
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
-      @session.send(@pub_socket, 'execute_input', {code: code}, ident)
+      @session.send(:publish, 'execute_input', {code: code}, ident)
 
       result = nil
       begin
@@ -125,9 +125,9 @@ module IRuby
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
           execution_count: @execution_count
         }
-        @session.send(@pub_socket, 'error', content, ident)
+        @session.send(:publish, 'error', content, ident)
       end
-      @session.send(@reply_socket, 'execute_reply', content, ident)
+      @session.send(:reply, 'execute_reply', content, ident)
       display(result, result: true) unless msg[:content]['silent']
     end
 
@@ -137,7 +137,7 @@ module IRuby
         status: 'ok',
         matched_text: msg[:content]['line'],
       }
-      @session.send(@reply_socket, 'complete_reply', content, ident)
+      @session.send(:reply, 'complete_reply', content, ident)
     end
 
     def connect_request(ident, msg)
@@ -147,11 +147,11 @@ module IRuby
         stdin_port: config['stdin_port'],
         hb_port:    config['hb_port']
       }
-      @session.send(@reply_socket, 'connect_reply', content, ident)
+      @session.send(:reply, 'connect_reply', content, ident)
     end
 
     def shutdown_request(ident, msg)
-      @session.send(@reply_socket, 'shutdown_reply', msg[:content], ident)
+      @session.send(:reply, 'shutdown_reply', msg[:content], ident)
       @running = false
     end
 
@@ -161,7 +161,7 @@ module IRuby
       content = {
         history: []
       }
-      @session.send(@reply_socket, 'history_reply', content, ident)
+      @session.send(:reply, 'history_reply', content, ident)
     end
 
     def inspect_request(ident, msg)
@@ -176,13 +176,13 @@ module IRuby
         string_form: o.inspect
       }
       content[:length] = o.length if o.respond_to?(:length)
-      @session.send(@reply_socket, 'inspect_reply', content, ident)
+      @session.send(:reply, 'inspect_reply', content, ident)
     rescue Exception
       content = {
         oname: msg[:content]['oname'],
         found: false
       }
-      @session.send(@reply_socket, 'inspect_reply', content, ident)
+      @session.send(:reply, 'inspect_reply', content, ident)
     end
 
     def comm_open(ident, msg)

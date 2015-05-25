@@ -2,8 +2,9 @@ module IRuby
   class Session
     DELIM = '<IDS|MSG>'
 
-    def initialize(username, config)
+    def initialize(username, config, sockets)
       @username = username
+      @sockets = sockets
       @session = SecureRandom.uuid
       @msg_id = 0
       if config['key'] && config['signature_scheme']
@@ -23,12 +24,12 @@ module IRuby
       }
       @msg_id += 1
 
-      socket.send_message(serialize(header, content, ident))
+      @sockets[socket].send_message(serialize(header, content, ident))
     end
 
     # Receive a message and decode it
     def recv(socket, mode)
-      idents, msg = unserialize(socket.recv_message)
+      idents, msg = unserialize(@sockets[socket].recv_message)
       @last_received_header = msg[:header]
       return idents, msg
     end
