@@ -80,7 +80,7 @@ module IRuby
           mimetype: 'text/ruby',
           file_extension: 'rb',
         },
-        banner: 'Welcome to IRuby!'
+        banner: "IRuby #{IRuby::VERSION}"
       }
       @session.send(:reply, 'kernel_info_reply', content, ident)
     end

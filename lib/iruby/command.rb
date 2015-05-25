@@ -22,7 +22,7 @@ module IRuby
       @kernel_file = File.join(ipython_dir, 'kernels', 'ruby', 'kernel.json')
 
       IRuby.logger = MultiLogger.new(*loggers)
-      IRuby.logger.level = args.delete('--debug') ? Logger::DEBUG : Logger::INFO
+      IRuby.logger.level = args.include?('--debug') ? Logger::DEBUG : Logger::INFO
     end
 
     def run
@@ -88,7 +88,7 @@ Try `ipython help` for more information.
       check_version
 
       # We must use the console to launch the whole 0MQ-client-server stack
-      @args = %w(console --no-banner) + @args if @args.first.to_s !~ /\A\w/
+      @args = %w(console) + @args if @args.first.to_s !~ /\A\w/
       register_kernel if %w(console qtconsole notebook).include?(@args.first) && !File.exist?(@kernel_file)
       @args += %w(--kernel ruby) if %w(console qtconsole).include? @args.first
 
