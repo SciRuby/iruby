@@ -18,7 +18,8 @@ module IRuby
         msg_type: type,
         msg_id:   @msg_id,
         username: @username,
-        session:  @session
+        session:  @session,
+        version:  '5.0'
       }
       @msg_id += 1
 

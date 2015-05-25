@@ -60,7 +60,9 @@ module IRuby
         ident, msg = @session.recv(@reply_socket, 0)
         type = msg[:header]['msg_type']
         if type =~ /comm|_request\Z/ && respond_to?(type)
+          send_status('busy')
           send(type, ident, msg)
+          send_status('idle')
         else
           IRuby.logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
         end
@@ -69,24 +71,25 @@ module IRuby
 
     def display(obj, options={})
       unless obj.nil?
-        content = { data: Display.display(obj, options), metadata: {}, execution_count: @execution_count }
-        @session.send(@pub_socket, 'pyout', content)
+        content = { data: Display.display(obj, options), metadata: {} }
+        content[:execution_count] = @execution_count if options[:result]
+        @session.send(@pub_socket, options[:result] ? 'execute_result' : 'display_data', content)
       end
       nil
     end
 
     def kernel_info_request(ident, msg)
       content = {
-        protocol_version: [4, 0],
-
-        # Language version number (mandatory).
-        # It is Python version number (e.g., [2, 7, 3]) for the kernel
-        # included in IPython.
-        language_version: RUBY_VERSION.split('.').map(&:to_i),
-
-        # Programming language in which kernel is implemented (mandatory).
-        # Kernel included in IPython returns 'python'.
-        language: 'ruby'
+        protocol_version: '5.0',
+        implementation: 'iruby',
+        implementation_version: IRuby::VERSION,
+        language_info: {
+          name: 'ruby',
+          version: RUBY_VERSION,
+          mimetype: 'text/ruby',
+          file_extension: 'rb',
+        },
+        banner: 'Welcome to IRuby!'
       }
       @session.send(@reply_socket, 'kernel_info_reply', content, ident)
     end
@@ -103,8 +106,7 @@ module IRuby
         return
       end
       @execution_count += 1 unless msg[:content].fetch('silent', false)
-      send_status('busy')
-      @session.send(@pub_socket, 'pyin', code: code)
+      @session.send(@pub_socket, 'execute_input', code: code)
 
       result = nil
       begin
@@ -112,24 +114,21 @@ module IRuby
         content = {
           status: 'ok',
           payload: [],
-          user_variables: {},
           user_expressions: {},
           execution_count: @execution_count
         }
       rescue Exception => e
         content = {
+          status: 'error',
           ename: e.class.to_s,
           evalue: e.message,
-          etype: e.class.to_s,
-          status: 'error',
           traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
           execution_count: @execution_count
         }
         @session.send(@pub_socket, 'error', content)
       end
       @session.send(@reply_socket, 'execute_reply', content, ident)
-      display(result) unless msg[:content]['silent']
-      send_status('idle')
+      display(result, result: true) unless msg[:content]['silent']
     end
 
     def complete_request(ident, msg)
@@ -165,7 +164,7 @@ module IRuby
       @session.send(@reply_socket, 'history_reply', content, ident)
     end
 
-    def object_info_request(ident, msg)
+    def inspect_request(ident, msg)
       o = @backend.eval(msg[:content]['oname'])
       content = {
         oname: msg[:content]['oname'],
@@ -177,13 +176,13 @@ module IRuby
         string_form: o.inspect
       }
       content[:length] = o.length if o.respond_to?(:length)
-      @session.send(@reply_socket, 'object_info_reply', content, ident)
+      @session.send(@reply_socket, 'inspect_reply', content, ident)
     rescue Exception
       content = {
         oname: msg[:content]['oname'],
         found: false
       }
-      @session.send(@reply_socket, 'object_info_reply', content, ident)
+      @session.send(@reply_socket, 'inspect_reply', content, ident)
     end
 
     def comm_open(ident, msg)
@@ -194,7 +193,7 @@ module IRuby
 
     def comm_msg(ident, msg)
       comm_id = msg[:content]['comm_id']
-      @comms[comm_id].handle_msg(msg[:content]["data"])
+      @comms[comm_id].handle_msg(msg[:content]['data'])
     end
 
     def comm_close(ident, msg)
