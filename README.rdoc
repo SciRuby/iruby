@@ -1,4 +1,4 @@
-<b>We are currently developing the kernel compatible with IPython3, the old IPython2-compatible version is in the branch ipython2</b>
+<b>The current master branch and gem version >= 0.2 are compatible with IPython3. If you require IPython2 support, please install an older gem version < 0.2 or use the branch ipython2</b>
 
 = IRuby
 
