@@ -8,10 +8,10 @@ link:screenshot.png
 
 === Installation of IPython with virtualenv
 
-apt-get install python3-dev virtualenv
-virtualenv -p python3 venv
-source venv/bin/activate
-pip install 'ipython[notebook]'
+    apt-get install python3-dev virtualenv
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    pip install 'ipython[notebook]'
 
 === Quick start
 
