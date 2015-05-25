@@ -1,14 +1,14 @@
-<b>The current master branch and gem version >= 0.2 are compatible with IPython3. If you require IPython2 support, please install an older gem version < 0.2 or use the branch ipython2</b>
+<b>The current master branch and gem version >= 0.2 are compatible with IPython3/Jupyter. If you require IPython2 support, please install an older gem version < 0.2 or use the branch ipython2</b>
 
 = IRuby
 
-This is a Ruby kernel for IPython and is part of SciRuby[http://sciruby.com/].
+This is a Ruby kernel for IPython/Jupyter and is part of SciRuby[http://sciruby.com/].
 
 link:screenshot.png
 
 === Quick start
 
-At first install IPython. I recommend an installation using virtualenv.
+At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
     apt-get install python3-dev virtualenv libzmq3-dev
     virtualenv -p python3 venv
@@ -28,7 +28,7 @@ Take a look at the Example[http://nbviewer.ipython.org/urls/raw.github.com/SciRu
 
 === Required dependencies
 
-* IPython >= 3.0.0
+* IPython/Jupyter >= 3.0.0
 * libzmq >= 3.2
 * Ruby >= 2.0.0
 
