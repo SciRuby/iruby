@@ -3,4 +3,9 @@
 $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'iruby/command'
 
+begin
+  require 'bundler/setup'
+rescue Exception
+end
+
 IRuby::Command.new(ARGV).run
