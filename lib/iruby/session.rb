@@ -41,6 +41,7 @@ module IRuby
              MultiJson.dump(@last_received_header || {}),
              '{}',
              MultiJson.dump(content || {})]
+      #STDERR.puts "SEND #{(([ident].flatten.compact << DELIM << sign(msg)) + msg).inspect}"
       ZMQ::Message(*(([ident].flatten.compact << DELIM << sign(msg)) + msg))
     end
 
@@ -49,6 +50,7 @@ module IRuby
       while frame = msg.popstr
         parts << frame
       end
+      #STDERR.puts "RECV #{parts.inspect}"
 
       i = parts.index(DELIM)
       idents, msg_list = parts[0..i-1], parts[i+1..-1]
