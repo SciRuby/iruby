@@ -1,11 +1,52 @@
 module IRuby
+  In, Out = [], []
+  ::In, ::Out = In, Out
+
+  module HistoryVariables
+    def eval(code, store_history)
+      out = super
+
+      # TODO Add IRuby.cache_size which controls the size of the In, Out array
+      # and sets the oldest entries, _<n> and _i<n> variables to nil.
+      if store_history
+        if binding.local_variable_defined?(:_)
+          if binding.local_variable_defined?(:__)
+            binding.eval('___ = __')
+            binding.eval('_iii = _ii')
+          end
+          binding.eval('__ = _')
+          binding.eval('_ii = _i')
+        end
+        binding.local_variable_set(:_, out)
+        binding.local_variable_set(:_i, code)
+
+        oh = binding.local_variable_defined?(:_oh) ? binding.local_variable_get(:_oh) : binding.local_variable_set(:_oh, Out)
+        ih = binding.local_variable_defined?(:_ih) ? binding.local_variable_get(:_ih) : binding.local_variable_set(:_ih, In)
+
+        binding.local_variable_set("_i#{ih.size}", code)
+        binding.local_variable_set("_#{oh.size}", out)
+
+        ih << code
+        oh << out
+      end
+
+      out
+    end
+  end
+
   class PlainBackend
+    prepend HistoryVariables
+
     def initialize
       Bond.start(debug: true)
     end
 
-    def eval(code)
-      TOPLEVEL_BINDING.eval(code)
+    def binding
+      TOPLEVEL_BINDING
+    end
+
+    def eval(code, store_history)
+      binding.eval(code)
     end
 
     def complete(code)
@@ -14,6 +55,8 @@ module IRuby
   end
 
   class PryBackend
+    prepend HistoryVariables
+
     def initialize
       require 'pry'
       Pry.pager = false # Don't use the pager
@@ -23,11 +66,16 @@ module IRuby
       raise 'Falling back to plain backend since your version of Pry is too old (the Pry instance doesn\'t support #eval). You may need to install the pry gem with --pre enabled.' unless @pry.respond_to?(:eval)
     end
 
-    def eval(code)
+    def binding
+      @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
+      @pry.current_binding
+    end
+
+    def eval(code, store_history)
       @pry.last_result = nil
       raise SystemExit unless @pry.eval(code)
       raise @pry.last_exception if @pry.last_result_is_exception?
-      @pry.push_initial_binding unless @pry.current_binding
+      binding # HACK ensure that we have a binding
       @pry.last_result
     end
 

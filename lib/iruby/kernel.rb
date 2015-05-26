@@ -74,12 +74,15 @@ module IRuby
         IRuby.logger.fatal "Got bad message: #{msg.inspect}"
         return
       end
-      @execution_count += 1 unless msg[:content].fetch('silent', false)
+
+      store_history = !msg[:content].fetch('silent', false)
+      @execution_count += 1 if @store_history
+
       @session.send(:publish, 'execute_input', {code: code, execution_count: @execution_count}, ident)
 
       result = nil
       begin
-        result = @backend.eval(code)
+        result = @backend.eval(code, store_history)
         content = {
           status: 'ok',
           payload: [],
