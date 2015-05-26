@@ -11,13 +11,11 @@ module IRuby
     attr_reader :session, :comms
 
     def initialize(config_file)
-      config = MultiJson.load(File.read(config_file))
-
-      IRuby.logger.debug("IRuby kernel start with config #{config}")
-
+      @config = MultiJson.load(File.read(config_file))
+      IRuby.logger.debug("IRuby kernel start with config #{@config}")
       Kernel.instance = self
 
-      @session = Session.new(config)
+      @session = Session.new(@config)
       $stdout = OStream.new(@session, 'stdout')
       $stderr = OStream.new(@session, 'stderr')
 
@@ -117,13 +115,7 @@ module IRuby
     end
 
     def connect_request(ident, msg)
-      content = {
-        shell_port: config['shell_port'],
-        iopub_port: config['iopub_port'],
-        stdin_port: config['stdin_port'],
-        hb_port:    config['hb_port']
-      }
-      @session.send(:reply, 'connect_reply', content, ident)
+      @session.send(:reply, 'connect_reply', Hash[%w(shell_port iopub_port stdin_port hb_port).map {|k| [k, @config[k]] }], ident)
     end
 
     def shutdown_request(ident, msg)
