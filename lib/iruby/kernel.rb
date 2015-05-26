@@ -134,24 +134,15 @@ module IRuby
     end
 
     def inspect_request(ident, msg)
-      o = @backend.eval(msg[:content]['oname'])
+      result = @backend.eval(msg[:content]['code'])
       content = {
-        oname: msg[:content]['oname'],
-        found: true,
-        ismagic: false,
-        isalias: false,
-        docstring: '', # TODO
-        type_class: o.class.superclass.to_s,
-        string_form: o.inspect
+        status: 'ok',
+        data: Display.display(result),
+        metadata: {}
       }
-      content[:length] = o.length if o.respond_to?(:length)
       @session.send(:reply, 'inspect_reply', content, ident)
     rescue Exception
-      content = {
-        oname: msg[:content]['oname'],
-        found: false
-      }
-      @session.send(:reply, 'inspect_reply', content, ident)
+      @session.send(:reply, 'inspect_reply', status: 'error', ident)
     end
 
     def comm_open(ident, msg)
