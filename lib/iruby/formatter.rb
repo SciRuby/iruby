@@ -92,8 +92,8 @@ module IRuby
       table = '<table>'
 
       if header1 && options[:header] != false
-        table << '<tr>' << header1.map {|k| "<th>#{k}</th>" }.join
-        table << "<th>&#8230;</th>" << header2.map {|k| "<th>#{k}</th>" }.join if keys2
+        table << '<tr>' << header1.map {|k| "<th>#{cell k}</th>" }.join
+        table << "<th>&#8230;</th>" << header2.map {|k| "<th>#{cell k}</th>" }.join if keys2
         table << '</tr>'
       end
 
@@ -112,16 +112,24 @@ module IRuby
 
     private
 
+    def cell(obj)
+      obj.respond_to?(:to_html) ? obj.to_html : obj
+    end
+
+    def elem(row, k)
+      cell((row[k] rescue nil))
+    end
+
     def row_block(table, rows, keys1, keys2)
       cols = keys1.size
       cols += keys2.size + 1 if keys2
       rows.each_with_index do |row, i|
         table << '<tr>'
         if row.respond_to?(:map)
-          row_html = keys1.map {|k| "<td>#{row[k] rescue nil}</td>" }.join
+          row_html = keys1.map {|k| "<td>#{elem row, k}</td>" }.join
           if keys2
             row_html << "<td#{rows.size > 1 ? " rowspan='#{rows.size}'" : ''}>&#8230;</td>" if i == 0
-            row_html << keys2.map {|k| "<td>#{row[k] rescue nil}</td>" }.join
+            row_html << keys2.map {|k| "<td>#{elem row, k}</td>" }.join
           end
           if row_html.empty?
             table << "<td#{cols > 1 ? " colspan='#{cols}'" : ''}></td>"
@@ -129,7 +137,7 @@ module IRuby
             table << row_html
           end
         else
-          table << "<td#{cols > 1 ? " colspan='#{cols}'" : ''}>#{row}</td>"
+          table << "<td#{cols > 1 ? " colspan='#{cols}'" : ''}>#{cell row}</td>"
         end
         table << '</tr>'
       end
