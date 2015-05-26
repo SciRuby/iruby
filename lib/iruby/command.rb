@@ -107,7 +107,7 @@ Try `ipython help` for more information.
   "language":     "ruby"
 }
 })
-      Dir[File.join(__dir__, 'logo', 'logo-*.png')].each do |file|
+      Dir[File.join(__dir__, 'assets', '*')].each do |file|
         FileUtils.copy(File.expand_path(file), File.join(@kernel_dir, File.basename(file))) rescue nil
       end
     end
