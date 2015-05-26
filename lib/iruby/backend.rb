@@ -4,30 +4,30 @@ module IRuby
 
   module HistoryVariables
     def eval(code, store_history)
+      if store_history
+        if binding.local_variable_defined?(:_i)
+          binding.eval('_iii = _ii') if binding.local_variable_defined?(:_ii)
+          binding.eval('_ii = _i')
+        end
+        binding.local_variable_set(:_i, code)
+        ih = binding.local_variable_defined?(:_ih) ? binding.local_variable_get(:_ih) : binding.local_variable_set(:_ih, In)
+        binding.local_variable_set("_i#{ih.size}", code)
+        ih << code
+      end
+
       out = super
 
       # TODO Add IRuby.cache_size which controls the size of the Out array
       # and sets the oldest entries and _<n> variables to nil.
       if store_history
         if binding.local_variable_defined?(:_)
-          if binding.local_variable_defined?(:__)
-            binding.eval('___ = __')
-            binding.eval('_iii = _ii')
-          end
+          binding.eval('___ = __') if binding.local_variable_defined?(:__)
           binding.eval('__ = _')
-          binding.eval('_ii = _i')
         end
         binding.local_variable_set(:_, out)
-        binding.local_variable_set(:_i, code)
-
         oh = binding.local_variable_defined?(:_oh) ? binding.local_variable_get(:_oh) : binding.local_variable_set(:_oh, Out)
-        ih = binding.local_variable_defined?(:_ih) ? binding.local_variable_get(:_ih) : binding.local_variable_set(:_ih, In)
-
-        binding.local_variable_set("_i#{ih.size}", code)
         binding.local_variable_set("_#{ih.size}", out)
-
-        oh[ih.size] = out
-        ih << code
+        oh[ih.size - 1] = out
       end
 
       out
