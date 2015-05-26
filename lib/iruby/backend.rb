@@ -1,34 +1,31 @@
 module IRuby
-  In, Out = [nil], {}
+  In, Out = [nil], [nil]
   ::In, ::Out = In, Out
 
   module HistoryVariables
     def eval(code, store_history)
-      if store_history
-        ih = binding.local_variable_defined?(:_ih) ? binding.local_variable_get(:_ih) : binding.local_variable_set(:_ih, In)
-        binding.local_variable_set("_i#{ih.size}", code)
-        ih << code
-      end
+      b = TOPLEVEL_BINDING
+
+      b.local_variable_set(:_ih, In)  unless b.local_variable_defined?(:_ih)
+      b.local_variable_set(:_oh, Out) unless b.local_variable_defined?(:_oh)
 
       out = super
 
       # TODO Add IRuby.cache_size which controls the size of the Out array
       # and sets the oldest entries and _<n> variables to nil.
       if store_history
-        if binding.local_variable_defined?(:_i)
-          if binding.local_variable_defined?(:_ii)
-            binding.eval('___ = __')
-            binding.eval('_iii = _ii')
-          end
-          binding.eval('__ = _')
-          binding.eval('_ii = _i')
-        end
-        binding.local_variable_set(:_i, code)
-        binding.local_variable_set(:_, out)
+        b.local_variable_set("_#{Out.size}", out)
+        b.local_variable_set("_i#{In.size}", code)
 
-        oh = binding.local_variable_defined?(:_oh) ? binding.local_variable_get(:_oh) : binding.local_variable_set(:_oh, Out)
-        binding.local_variable_set("_#{ih.size - 1}", out)
-        oh[ih.size - 1] = out
+        Out << out
+        In << code
+
+        b.local_variable_set(:___,  Out[-3])
+        b.local_variable_set(:__,   Out[-2])
+        b.local_variable_set(:_,    Out[-1])
+        b.local_variable_set(:_iii, In[-3])
+        b.local_variable_set(:_ii,  In[-2])
+        b.local_variable_set(:_i,   In[-1])
       end
 
       out
@@ -42,12 +39,8 @@ module IRuby
       Bond.start(debug: true)
     end
 
-    def binding
-      TOPLEVEL_BINDING
-    end
-
     def eval(code, store_history)
-      binding.eval(code)
+      TOPLEVEL_BINDING.eval(code)
     end
 
     def complete(code)
@@ -67,16 +60,10 @@ module IRuby
       raise 'Falling back to plain backend since your version of Pry is too old (the Pry instance doesn\'t support #eval). You may need to install the pry gem with --pre enabled.' unless @pry.respond_to?(:eval)
     end
 
-    def binding
-      @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
-      @pry.current_binding
-    end
-
     def eval(code, store_history)
-      @pry.last_result = nil
       raise SystemExit unless @pry.eval(code)
       raise @pry.last_exception if @pry.last_result_is_exception?
-      binding # HACK ensure that we have a binding
+      @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
       @pry.last_result
     end
 
