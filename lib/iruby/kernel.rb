@@ -33,14 +33,14 @@ module IRuby
     end
 
     def run
-      send_status('starting')
+      send_status 'starting'
       while @running
         ident, msg = @session.recv(:reply)
         type = msg[:header]['msg_type']
         if type =~ /comm_|_request\Z/ && respond_to?(type)
-          send_status('busy')
+          send_status 'busy'
           send(type, ident, msg)
-          send_status('idle')
+          send_status 'idle'
         else
           IRuby.logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
         end
@@ -48,23 +48,22 @@ module IRuby
     end
 
     def kernel_info_request(ident, msg)
-      content = {
-        protocol_version: '5.0',
-        implementation: 'iruby',
-        implementation_version: IRuby::VERSION,
-        language_info: {
-          name: 'ruby',
-          version: RUBY_VERSION,
-          mimetype: 'text/ruby',
-          file_extension: 'rb',
-        },
-        banner: "IRuby #{IRuby::VERSION}"
-      }
-      @session.send(:reply, 'kernel_info_reply', content, ident)
+      @session.send(:reply, 'kernel_info_reply', {
+                      protocol_version: '5.0',
+                      implementation: 'iruby',
+                      implementation_version: IRuby::VERSION,
+                      language_info: {
+                        name: 'ruby',
+                        version: RUBY_VERSION,
+                        mimetype: 'text/ruby',
+                        file_extension: 'rb',
+                      },
+                      banner: "IRuby #{IRuby::VERSION}"
+                    }, ident)
     end
 
     def send_status(status)
-      @session.send(:publish, 'status', {execution_state: status})
+      @session.send(:publish, 'status', execution_state: status)
     end
 
     def execute_request(ident, msg)
@@ -106,13 +105,12 @@ module IRuby
     end
 
     def complete_request(ident, msg)
-      content = {
-        matches: @backend.complete(msg[:content]['code']),
-        status: 'ok',
-        cursor_start: 0,
-        cursor_end: msg[:content]['cursor_pos']
-      }
-      @session.send(:reply, 'complete_reply', content, ident)
+      @session.send(:reply, 'complete_reply', {
+                      matches: @backend.complete(msg[:content]['code']),
+                      status: 'ok',
+                      cursor_start: 0,
+                      cursor_end: msg[:content]['cursor_pos']
+                    }, ident)
     end
 
     def connect_request(ident, msg)
@@ -127,20 +125,16 @@ module IRuby
     def history_request(ident, msg)
       # we will just send back empty history for now, pending clarification
       # as requested in ipython/ipython#3806
-      content = {
-        history: []
-      }
-      @session.send(:reply, 'history_reply', content, ident)
+      @session.send(:reply, 'history_reply', history: [], ident)
     end
 
     def inspect_request(ident, msg)
       result = @backend.eval(msg[:content]['code'])
-      content = {
-        status: 'ok',
-        data: Display.display(result),
-        metadata: {}
-      }
-      @session.send(:reply, 'inspect_reply', content, ident)
+      @session.send(:reply, 'inspect_reply', {
+                      status: 'ok',
+                      data: Display.display(result),
+                      metadata: {}
+                    }, ident)
     rescue Exception
       @session.send(:reply, 'inspect_reply', status: 'error', ident)
     end
