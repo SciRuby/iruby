@@ -18,7 +18,7 @@ module IRuby
       case @args.first
       when 'version', '-v', '--version'
         require 'iruby/version'
-        puts IRuby::VERSION
+        puts "IRuby #{IRuby::VERSION}, Ruby #{RUBY_VERSION}"
       when 'help', '-h', '--help'
         print_help
       when 'register'
