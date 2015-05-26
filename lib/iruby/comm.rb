@@ -5,9 +5,8 @@ module IRuby
     attr_writer :on_msg, :on_close
 
     class << self
-      def targets
-        @targets ||= {}
-      end
+      def target; @target ||= {} end
+      def comm;   @comm   ||= {} end
     end
 
     def initialize(target_name, comm_id = SecureRandom.uuid)
@@ -16,7 +15,7 @@ module IRuby
 
     def open(**data)
       Kernel.instance.session.send(:publish, :comm_open, comm_id: @comm_id, data: data, target_name: @target_name)
-      Kernel.instance.comms[@comm_id] = self
+      Comm.comm[@comm_id] = self
     end
 
     def send(**data)
@@ -25,7 +24,7 @@ module IRuby
 
     def close(**data)
       Kernel.instance.session.send(:publish, :comm_close, comm_id: @comm_id, data: data)
-      Kernel.instance.comms.delete(@comm_id)
+      Comm.comm.delete(@comm_id)
     end
 
     def on_msg(&b)
@@ -36,12 +35,12 @@ module IRuby
       @on_close = b
     end
 
-    def comm_msg(msg)
-      @on_msg.call(msg) if @on_msg
+    def handle_msg(data)
+      @on_msg.call(data) if @on_msg
     end
 
-    def comm_close
-      @on_close.call if @on_close
+    def handle_close(data)
+      @on_close.call(data) if @on_close
     end
   end
 end

@@ -8,7 +8,7 @@ module IRuby
       attr_accessor :instance
     end
 
-    attr_reader :session, :comms
+    attr_reader :session
 
     def initialize(config_file)
       @config = MultiJson.load(File.read(config_file))
@@ -22,7 +22,6 @@ module IRuby
       @execution_count = 0
       @backend = create_backend
       @running = true
-      @comms = {}
     end
 
     def create_backend
@@ -133,18 +132,17 @@ module IRuby
     def comm_open(msg)
       comm_id = msg[:content]['comm_id']
       target_name = msg[:content]['target_name']
-      target = Comm.targets[target_name]
-      @comms[comm_id] = target.new(target_name, comm_id)
+      Comm.comm[comm_id] = Comm.target[target_name].new(target_name, comm_id)
     end
 
     def comm_msg(msg)
-      @comms[msg[:content]['comm_id']].comm_msg(msg[:content]['data'])
+      Comm.comm[msg[:content]['comm_id']].handle_msg(msg[:content]['data'])
     end
 
     def comm_close(msg)
       comm_id = msg[:content]['comm_id']
-      @comms[comm_id].comm_close
-      @comms.delete(comm_id)
+      Comm.comm[comm_id].handle_close(msg[:content]['data'])
+      Comm.comm.delete(comm_id)
     end
   end
 end
