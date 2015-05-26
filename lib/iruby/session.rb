@@ -32,6 +32,12 @@ module IRuby
 
     # Build and send a message
     def send(socket, type, content)
+      idents =
+        if socket == :reply && @last_recvd_msg
+          @last_recvd_msg[:idents]
+        else
+          type == :stream ? "stream.#{content[:name]}" : type
+        end
       header = {
         msg_type: type,
         msg_id:   SecureRandom.uuid,
@@ -39,14 +45,7 @@ module IRuby
         session:  @session,
         version:  '5.0'
       }
-
-      if socket == :reply && @last_recvd_msg
-        idents = @last_recvd_msg[:idents]
-      else
-        idents = msg_type == :stream ? "stream.#{content[:name]}" : msg_type
-      end
-
-      @sockets[socket].send_message(serialize(header, content))
+      @sockets[socket].send_message(serialize(idents, header, content))
     end
 
     # Receive a message and decode it
@@ -58,11 +57,11 @@ module IRuby
 
     def serialize(idents, header, content)
       msg = [MultiJson.dump(header),
-             MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] || {}),
+             MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
              '{}',
              MultiJson.dump(content || {})]
       #STDERR.puts "SEND #{(([*idents].compact << DELIM << sign(msg)) + msg).inspect}"
-      ZMQ::Message(*(([*idents].compact << DELIM << sign(msg)) + msg))
+      ZMQ::Message(*(([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg))
     end
 
     def unserialize(msg)

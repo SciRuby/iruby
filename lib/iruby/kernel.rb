@@ -51,7 +51,7 @@ module IRuby
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
                     implementation: 'iruby',
-                    banner: "IRuby #{IRuby::VERSION}"
+                    banner: "IRuby #{IRuby::VERSION}",
                     implementation_version: IRuby::VERSION,
                     language_info: {
                       name: 'ruby',

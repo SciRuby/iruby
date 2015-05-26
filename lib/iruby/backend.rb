@@ -15,8 +15,8 @@ module IRuby
       # TODO Add IRuby.cache_size which controls the size of the Out array
       # and sets the oldest entries and _<n> variables to nil.
       if store_history
-        if binding.local_variable_defined?(:_)
-          if binding.local_variable_defined?(:__)
+        if binding.local_variable_defined?(:_i)
+          if binding.local_variable_defined?(:_ii)
             binding.eval('___ = __')
             binding.eval('_iii = _ii')
           end

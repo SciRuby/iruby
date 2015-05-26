@@ -27,7 +27,7 @@ module IRuby
 
     def write(s)
       raise 'I/O operation on closed file' unless @session
-      @session.send(:publish, stream, name: @name, text: s.to_s)
+      @session.send(:publish, :stream, name: @name, text: s.to_s)
       nil
     end
     alias_method :<<, :write
