@@ -103,7 +103,7 @@ Try `ipython help` for more information.
       FileUtils.mkpath(@kernel_dir)
       File.write(@kernel_file, %{{
   "argv":         [ "#{File.expand_path $0}", "kernel", "{connection_file}" ],
-  "display_name": "Ruby",
+  "display_name": "Ruby #{RUBY_VERSION}",
   "language":     "ruby"
 }
 })
