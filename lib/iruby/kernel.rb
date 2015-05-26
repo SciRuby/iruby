@@ -75,14 +75,12 @@ module IRuby
         return
       end
 
-      store_history = !msg[:content].fetch('silent', false)
-      @execution_count += 1 if store_history
-
+      @execution_count += 1 if msg[:content]['store_history']
       @session.send(:publish, 'execute_input', {code: code, execution_count: @execution_count}, ident)
 
       result = nil
       begin
-        result = @backend.eval(code, store_history)
+        result = @backend.eval(code, msg[:content]['store_history'])
         content = {
           status: 'ok',
           payload: [],
