@@ -11,33 +11,13 @@ module IRuby
     attr_reader :session, :comms
 
     def initialize(config_file)
-      @config = MultiJson.load(File.read(config_file))
+      config = MultiJson.load(File.read(config_file))
 
-      IRuby.logger.debug("IRuby kernel start with config #{@config}")
+      IRuby.logger.debug("IRuby kernel start with config #{config}")
 
       Kernel.instance = self
 
-      c = ZMQ::Context.new
-
-      connection = "#{@config['transport']}://#{@config['ip']}:%d"
-      reply_socket = c.socket(:ROUTER)
-      reply_socket.bind(connection % @config['shell_port'])
-
-      pub_socket = c.socket(:PUB)
-      pub_socket.bind(connection % @config['iopub_port'])
-
-      Thread.new do
-        begin
-          hb_socket = c.socket(:REP)
-          hb_socket.bind(connection % @config['hb_port'])
-          ZMQ.proxy(hb_socket, hb_socket)
-        rescue Exception => ex
-          IRuby.logger.fatal "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
-        end
-      end
-
-      @session = Session.new('kernel', @config, publish: pub_socket, reply: reply_socket)
-
+      @session = Session.new(config)
       $stdout = OStream.new(@session, 'stdout')
       $stderr = OStream.new(@session, 'stderr')
 

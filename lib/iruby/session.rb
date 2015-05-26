@@ -2,9 +2,27 @@ module IRuby
   class Session
     DELIM = '<IDS|MSG>'
 
-    def initialize(username, config, sockets)
-      @username = username
-      @sockets = sockets
+    def initialize(config)
+      c = ZMQ::Context.new
+
+      connection = "#{config['transport']}://#{config['ip']}:%d"
+      reply_socket = c.socket(:ROUTER)
+      reply_socket.bind(connection % config['shell_port'])
+
+      pub_socket = c.socket(:PUB)
+      pub_socket.bind(connection % config['iopub_port'])
+
+      Thread.new do
+        begin
+          hb_socket = c.socket(:REP)
+          hb_socket.bind(connection % config['hb_port'])
+          ZMQ.proxy(hb_socket, hb_socket)
+        rescue Exception => ex
+          IRuby.logger.fatal "Kernel heartbeat died: #{ex.message}\n"#{ex.backtrace.join("\n")}"
+        end
+      end
+
+      @sockets = { publish: pub_socket, reply: reply_socket }
       @session = SecureRandom.uuid
       @msg_id = 0
       if config['key'] && config['signature_scheme']
@@ -18,7 +36,7 @@ module IRuby
       header = {
         msg_type: type,
         msg_id:   @msg_id,
-        username: @username,
+        username: 'kernel',
         session:  @session,
         version:  '5.0'
       }
