@@ -1,6 +1,7 @@
-master
+0.2.2
 
   * Support history variables In, Out, _, _i etc
+  * Internal refactoring and minor bugfixes
 
 0.2.1
 
