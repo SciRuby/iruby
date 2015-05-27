@@ -2,7 +2,7 @@ module IRuby
   In, Out = [nil], [nil]
   ::In, ::Out = In, Out
 
-  module HistoryVariables
+  module History
     def eval(code, store_history)
       b = TOPLEVEL_BINDING
 
@@ -33,9 +33,10 @@ module IRuby
   end
 
   class PlainBackend
-    prepend HistoryVariables
+    prepend History
 
     def initialize
+      require 'bond'
       Bond.start(debug: true)
     end
 
@@ -49,7 +50,7 @@ module IRuby
   end
 
   class PryBackend
-    prepend HistoryVariables
+    prepend History
 
     def initialize
       require 'pry'
