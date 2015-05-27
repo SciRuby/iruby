@@ -2,7 +2,7 @@
 
 = IRuby
 
-This is a Ruby kernel for IPython/Jupyter and is part of SciRuby[http://sciruby.com/].
+This is a Ruby kernel for IPython/Jupyter and is part of SciRuby[http://sciruby.com/]. You can try it at http://try.jupyter.org/.
 
 link:screenshot.png
 

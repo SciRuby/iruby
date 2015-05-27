@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version       = IRuby::VERSION
   s.authors       = ['Daniel Mendler', 'The SciRuby developers']
   s.email         = ['mail@daniel-mendler.de']
-  s.description   = 'Ruby Kernel for IPython'
-  s.summary       = 'A Ruby kernel for IPython frontends (notebook console, etc.)'
+  s.summary       = 'Ruby Kernel for Jupyter/IPython'
+  s.description   = 'A Ruby kernel for Jupyter/IPython frontends (e.g. notebook). Try it at try.jupyter.org.'
   s.homepage      = 'https://github.com/SciRuby/iruby'
   s.license       = 'MIT'
 
