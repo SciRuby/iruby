@@ -1,3 +1,8 @@
+0.2.3
+
+  * Fix notebook indentation
+  * Fix tab completion for multiple lines
+
 0.2.2
 
   * Support history variables In, Out, _, _i etc
