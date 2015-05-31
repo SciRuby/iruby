@@ -97,10 +97,16 @@ module IRuby
     end
 
     def complete_request(msg)
+      # HACK for #26, only complete last line
+      code = msg[:content]['code']
+      if start = code.rindex("\n")
+        code = code[start+1..-1]
+        start += 1
+      end
       @session.send(:reply, :complete_reply,
-                    matches: @backend.complete(msg[:content]['code']),
+                    matches: @backend.complete(code),
                     status: :ok,
-                    cursor_start: 0,
+                    cursor_start: start.to_i,
                     cursor_end: msg[:content]['cursor_pos'])
     end
 
