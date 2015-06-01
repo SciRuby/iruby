@@ -10,10 +10,9 @@ module IRuby
         options = obj.options
         obj = obj.object
 
-        exact_mime = options[:mime]
         fuzzy_mime = options[:format] # Treated like a fuzzy mime type
         raise 'Invalid argument :format' unless !fuzzy_mime || String === fuzzy_mime
-        if exact_mime
+        if exact_mime = options[:mime]
           raise 'Invalid argument :mime' unless String === exact_mime
           raise 'Invalid mime type' unless exact_mime.include?('/')
         end
