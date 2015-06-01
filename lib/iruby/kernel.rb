@@ -55,7 +55,7 @@ module IRuby
                     language_info: {
                       name: 'ruby',
                       version: RUBY_VERSION,
-                      mimetype: 'text/ruby',
+                      mimetype: 'application/x-ruby',
                       file_extension: 'rb'
                     })
     end
