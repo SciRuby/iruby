@@ -1,3 +1,9 @@
+0.2.4
+
+  * Better exception handling
+  * Fix ctrl-C issue #17
+  * Fix timeout issue #19
+
 0.2.3
 
   * Fix notebook indentation
