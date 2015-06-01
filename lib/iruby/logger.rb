@@ -6,6 +6,8 @@ module IRuby
   end
 
   class MultiLogger < BasicObject
+    attr_reader :loggers
+
     def initialize(*loggers)
       @loggers = loggers
     end
