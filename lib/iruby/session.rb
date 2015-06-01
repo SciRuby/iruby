@@ -60,20 +60,18 @@ module IRuby
              MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
              '{}',
              MultiJson.dump(content || {})]
-      #STDERR.puts "SEND #{(([*idents].compact << DELIM << sign(msg)) + msg).inspect}"
-      ZMQ::Message(*(([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg))
+      frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
+      IRuby.logger.debug "Sent #{frames.inspect}"
+      ZMQ::Message(*frames)
     end
 
     def unserialize(msg)
       raise 'no message received' unless msg
-      parts = []
-      while frame = msg.popstr
-        parts << frame
-      end
-      #STDERR.puts "RECV #{parts.inspect}"
+      frames = msg.to_a.map(&:to_s)
+      IRuby.logger.debug "Received #{frames.inspect}"
 
-      i = parts.index(DELIM)
-      idents, msg_list = parts[0..i-1], parts[i+1..-1]
+      i = frames.index(DELIM)
+      idents, msg_list = frames[0..i-1], frames[i+1..-1]
 
       minlen = 5
       raise 'malformed message, must have at least #{minlen} elements' unless msg_list.length >= minlen
