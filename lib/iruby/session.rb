@@ -17,8 +17,8 @@ module IRuby
           hb_socket = c.socket(:REP)
           hb_socket.bind(connection % config['hb_port'])
           ZMQ.proxy(hb_socket, hb_socket)
-        rescue Exception => ex
-          IRuby.logger.fatal "Kernel heartbeat died: #{ex.message}\n#{ex.backtrace.join("\n")}"
+        rescue Exception => e
+          IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}"
         end
       end
 

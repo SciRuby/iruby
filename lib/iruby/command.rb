@@ -66,13 +66,14 @@ Try `ipython help` for more information.
 
       begin
         require 'bundler/setup'
-      rescue Exception
+      rescue Exception => e
+        IRuby.logger.warn "Could not load bundler: #{e.message}\n#{e.backtrace.join("\n")}" unless LoadError === e
       end
 
       require 'iruby'
       Kernel.new(config_file).run
-    rescue Exception => ex
-      IRuby.logger.fatal "Kernel died: #{ex.message}\n#{ex.backtrace.join("\n")}"
+    rescue Exception => e
+      IRuby.logger.fatal "Kernel died: #{e.message}\n#{e.backtrace.join("\n")}"
       raise
     end
 

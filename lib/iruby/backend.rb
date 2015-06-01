@@ -57,12 +57,14 @@ module IRuby
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
-      @pry = Pry.new(output: $stdout, target: TOPLEVEL_BINDING)
-      raise 'Falling back to plain backend since your version of Pry is too old (the Pry instance doesn\'t support #eval). You may need to install the pry gem with --pre enabled.' unless @pry.respond_to?(:eval)
+      reset
     end
 
     def eval(code, store_history)
-      raise SystemExit unless @pry.eval(code)
+      unless @pry.eval(code)
+        reset
+        raise SystemExit
+      end
       raise @pry.last_exception if @pry.last_result_is_exception?
       @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
       @pry.last_result
@@ -70,6 +72,10 @@ module IRuby
 
     def complete(code)
       @pry.complete(code)
+    end
+
+    def reset
+      @pry = Pry.new(output: $stdout, target: TOPLEVEL_BINDING)
     end
   end
 end

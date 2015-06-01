@@ -26,24 +26,31 @@ module IRuby
 
     def create_backend
       PryBackend.new
-    rescue Exception => ex
-      IRuby.logger.warn ex.message unless LoadError === ex
+    rescue Exception => e
+      IRuby.logger.warn "Could not load PryBackend: #{e.message}\n#{e.backtrace.join("\n")}" unless LoadError === e
       PlainBackend.new
     end
 
     def run
       send_status :starting
       while @running
-        msg = @session.recv(:reply)
-        type = msg[:header]['msg_type']
-        if type =~ /comm_|_request\Z/ && respond_to?(type)
-          send_status :busy
-          send(type, msg)
-          send_status :idle
-        else
-          IRuby.logger.error "Unknown message type: #{msg[:header]['msg_type']} #{msg.inspect}"
-        end
+        dispatch
       end
+    end
+
+    def dispatch
+      msg = @session.recv(:reply)
+      type = msg[:header]['msg_type']
+      raise "Unknown message type: #{msg.inspect}" unless type =~ /comm_|_request\Z/ && respond_to?(type)
+      begin
+        send_status :busy
+        send(type, msg)
+      ensure
+        send_status :idle
+      end
+    rescue Exception => e
+      IRuby.logger.debug "Kernel error: #{e.message}\n#{e.backtrace.join("\n")}"
+      @session.send(:publish, :error, error_message(e))
     end
 
     def kernel_info_request(msg)
@@ -69,31 +76,34 @@ module IRuby
       @execution_count += 1 if msg[:content]['store_history']
       @session.send(:publish, :execute_input, code: code, execution_count: @execution_count)
 
+      content = {
+        status: :ok,
+        payload: [],
+        user_expressions: {},
+        execution_count: @execution_count
+      }
       result = nil
       begin
         result = @backend.eval(code, msg[:content]['store_history'])
-        content = {
-          status: :ok,
-          payload: [],
-          user_expressions: {},
-          execution_count: @execution_count
-        }
       rescue SystemExit
-        raise
+        content[:payload] << { source: :ask_exit }
       rescue Exception => e
-        content = {
-          status: :error,
-          ename: e.class.to_s,
-          evalue: e.message,
-          traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
-          execution_count: @execution_count
-        }
+        content = error_message(e)
         @session.send(:publish, :error, content)
       end
       @session.send(:reply, :execute_reply, content)
-      unless result.nil? || msg[:content]['silent']
-        @session.send(:publish, :execute_result, data: Display.display(result), metadata: {}, execution_count: @execution_count)
-      end
+      @session.send(:publish, :execute_result,
+                    data: Display.display(result),
+                    metadata: {},
+                    execution_count: @execution_count) unless result.nil? || msg[:content]['silent']
+    end
+
+    def error_message(e)
+      { status: :error,
+        ename: e.class.to_s,
+        evalue: e.message,
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
+        execution_count: @execution_count }
     end
 
     def complete_request(msg)
@@ -131,8 +141,9 @@ module IRuby
                     status: :ok,
                     data: Display.display(result),
                     metadata: {})
-    rescue Exception
-      @session.send(:reply, :inspect_reply, status: 'error')
+    rescue Exception => e
+      IRuby.logger.warn "Inspection error: #{e.message}\n#{e.backtrace.join("\n")}"
+      @session.send(:reply, :inspect_reply, status: :error)
     end
 
     def comm_open(msg)
