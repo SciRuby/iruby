@@ -61,6 +61,7 @@ module IRuby
     end
 
     def eval(code, store_history)
+      @pry.last_result = nil
       unless @pry.eval(code)
         reset
         raise SystemExit
