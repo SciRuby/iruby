@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   File.read('Gemfile').scan(/gem\s+'(.*?)'/) { m << "  * #{$1}\n" }
   s.post_install_message = m << "\n"
 
-  s.required_ruby_version = '>= 2.0.0'
+  s.required_ruby_version = '>= 2.1.0'
 
   s.add_development_dependency 'rake', '~> 10.4'
   s.add_development_dependency 'minitest', '~> 5.6'
