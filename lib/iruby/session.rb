@@ -24,7 +24,7 @@ module IRuby
 
       @sockets = { publish: pub_socket, reply: reply_socket }
       @session = SecureRandom.uuid
-      if config['key'] && config['signature_scheme']
+      unless config['key'].to_s.empty? || config['signature_scheme'].to_s.empty?
         raise 'Unknown signature scheme' unless config['signature_scheme'] =~ /\Ahmac-(.*)\Z/
         @hmac = OpenSSL::HMAC.new(config['key'], OpenSSL::Digest.new($1))
       end
@@ -89,13 +89,10 @@ module IRuby
 
     # Sign using HMAC
     def sign(list)
-      if @hmac
-        @hmac.reset
-        list.each {|m| @hmac.update(m) }
-        @hmac.hexdigest
-      else
-        ''
-      end
+      return '' unless @hmac
+      @hmac.reset
+      list.each {|m| @hmac.update(m) }
+      @hmac.hexdigest
     end
   end
 end
