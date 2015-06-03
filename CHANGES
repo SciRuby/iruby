@@ -2,27 +2,27 @@ master
 
   * Fix #29, empty signatures
 
-0.2.4
+0.2.4 (2015-06-02)
 
   * Better exception handling
   * Fix ctrl-C issue #17
   * Fix timeout issue #19
 
-0.2.3
+0.2.3 (2015-05-31)
 
   * Fix notebook indentation
   * Fix tab completion for multiple lines
 
-0.2.2
+0.2.2 (2015-05-26)
 
   * Support history variables In, Out, _, _i etc
   * Internal refactoring and minor bugfixes
 
-0.2.1
+0.2.1 (2015-05-26)
 
   * Copy Ruby logo to kernel specification
 
-0.2.0
+0.2.0 (2015-05-25)
 
   * Dropped IPython2 support
   * Dropped Ruby < 2.0.0 support
@@ -31,29 +31,29 @@ master
   * Added IRuby::Conn (experimental, to be used by widgets)
   * iruby register/unregister commands to register IRuby kernel in Jupyter
 
-0.1.13
+0.1.13 (2014-08-19)
 
   * Improved IRuby.table, supports :maxrows and :maxcols
   * IRuby#javascript workaround (https://github.com/ipython/ipython/issues/6259)
 
-0.1.12
+0.1.12 (2014-08-01)
 
   * IRuby#table add option maxrows
   * powerful display system with format and datatype registry, see #25
   * Add IRuby#javascript
   * Add IRuby#svg
 
-0.1.11
+0.1.11 (2014-07-08)
 
   * Push binding if pry binding stack is empty
 
-0.1.10
+0.1.10 (2014-07-08)
 
   * Fix #19 (pp)
   * Handle exception when symlink cannot be created
   * Fix dependencies and Pry backend
 
-0.1.9
+0.1.9 (2014-02-28)
 
   * Check IPython version
 
@@ -61,34 +61,34 @@ master
 
   * Bugfixes #11, #12, #13
 
-0.1.6
+0.1.6 (2013-10-11)
 
   * Print Matrix and GSL::Matrix as LaTeX
   * Add check for Pry version
 
-0.1.5
+0.1.5 (2013-10-03)
 
   * Implement a rich display system
   * Fix error output
 
-0.1.4
+0.1.4 (2013-10-03)
 
   * Extract display handler from kernel
   * Always return a text/plain response
 
-0.1.3
+0.1.3 (2013-10-03)
 
   * Implement missing request handlers
   * Detect if Bundler is running and set kernel_cmd appropriately
   * Improve Pry integration
   * Add support for the gems gnuplot, gruff, rmagick and mini_magick
 
-0.1.2
+0.1.2 (2013-10-02)
 
   * Support for Pry added
   * Launch `iruby console` if plain `iruby` is started
 
-0.1.0
+0.1.0 (2013-10-02)
 
   * Cleanup and rewrite of some parts
 
