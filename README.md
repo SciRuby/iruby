@@ -2,9 +2,9 @@
 
 # IRuby
 
-This is a Ruby kernel for IPython/Jupyter and is part of SciRuby[http://sciruby.com/]. You can try it at http://try.jupyter.org/.
+This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://sciruby.com/). You can try it at [try.jupyter.org](http://try.jupyter.org/).
 
-![Screenshot](https://gist.github.com/minad/059b3ee36fb4c72223cb/raw/09525617c381d0587bdf45bf73d083a0cc5ea417/screenshot.png)
+![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ### Quick start
 
@@ -34,7 +34,7 @@ Take a look at the [Example](http://nbviewer.ipython.org/urls/raw.github.com/Sci
 
 ### Authors
 
-See the {file:CONTRIBUTORS CONTRIBUTORS} file.
+See the [CONTRIBUTORS](CONTRIBUTORS) file.
 
 === License
 
@@ -42,4 +42,4 @@ Copyright © 2013-15, IRuby contributors and the Ruby Science Foundation.
 
 All rights reserved.
 
-IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the {file:LICENSE.txt LICENSE.txt} file for details.
+IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the [LICENSE.txt](LICENSE.txt) file for details.
