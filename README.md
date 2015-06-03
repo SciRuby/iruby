@@ -36,7 +36,7 @@ Take a look at the [Example](http://nbviewer.ipython.org/urls/raw.github.com/Sci
 
 See the [CONTRIBUTORS](CONTRIBUTORS) file.
 
-=== License
+### License
 
 Copyright © 2013-15, IRuby contributors and the Ruby Science Foundation.
 
