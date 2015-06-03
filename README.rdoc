@@ -4,7 +4,7 @@
 
 This is a Ruby kernel for IPython/Jupyter and is part of SciRuby[http://sciruby.com/]. You can try it at http://try.jupyter.org/.
 
-link:https://gist.github.com/minad/059b3ee36fb4c72223cb/raw/09525617c381d0587bdf45bf73d083a0cc5ea417/screenshot.png
+<img src="https://gist.github.com/minad/059b3ee36fb4c72223cb/raw/09525617c381d0587bdf45bf73d083a0cc5ea417/screenshot.png"/>
 
 === Quick start
 
