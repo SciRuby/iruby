@@ -210,7 +210,7 @@ module IRuby
       type { Gnuplot::Plot }
       format 'image/svg+xml' do |obj|
         Tempfile.open('plot') do |f|
-          terminal = (obj['terminal'] || '').split(' ')
+          terminal = obj['terminal'].to_s.split(' ')
           terminal[0] = 'svg'
           terminal << 'enhanced' unless terminal.include?('noenhanced')
           obj.terminal terminal.join(' ')
