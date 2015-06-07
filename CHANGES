@@ -1,8 +1,9 @@
-master
+0.2.5 (2015-06-07)
 
   * Fix #29, empty signatures
   * Move iruby utils to IRuby::Utils module
   * Add IRuby.tex alias for IRuby.latex
+  * Remove example notebooks from gem
 
 0.2.4 (2015-06-02)
 
