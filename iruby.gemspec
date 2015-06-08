@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/SciRuby/iruby'
   s.license       = 'MIT'
 
-  s.files         = `git ls-files`.split($/).reject {|f| f =~ /\Aattic/ }
+  s.files         = `git ls-files`.split($/)
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w(lib)
