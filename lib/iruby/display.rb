@@ -247,6 +247,11 @@ module IRuby
         obj.to_latex
       end
 
+      respond_to :to_tex
+      format 'text/latex' do |obj|
+        obj.to_tex
+      end
+
       respond_to :to_javascript
       format 'text/javascript' do |obj|
         obj.to_javascript
