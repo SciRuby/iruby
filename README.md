@@ -45,4 +45,4 @@ Copyright © 2013-15, IRuby contributors and the Ruby Science Foundation.
 
 All rights reserved.
 
-IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the [LICENSE.txt](LICENSE.txt) file for details.
+IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
