@@ -1,5 +1,5 @@
 # coding: utf-8
-require File.dirname(__FILE__) + '/lib/iruby/version'
+require_relative 'lib/iruby/version'
 require 'date'
 
 Gem::Specification.new do |s|
