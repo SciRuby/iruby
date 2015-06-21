@@ -1,3 +1,8 @@
+0.2.6 (2015-06-21)
+
+  * Check registered kernel and Gemfile to prevent gem loading problems
+  * Support to_tex method for the rendering
+
 0.2.5 (2015-06-07)
 
   * Fix #29, empty signatures
