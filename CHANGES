@@ -1,3 +1,7 @@
+0.2.7 (2015-07-02)
+
+  * Fix problem with autoloaded constants in Display, problem with sciruby gem
+
 0.2.6 (2015-06-21)
 
   * Check registered kernel and Gemfile to prevent gem loading problems
