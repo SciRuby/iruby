@@ -134,7 +134,9 @@ module IRuby
         match do |obj|
           begin
             block.call === obj
-          rescue NameError
+          # We have to rescue all exceptions since constant autoloading could fail with a different error
+          rescue Exception
+          rescue #NameError
             false
           end
         end
