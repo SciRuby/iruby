@@ -63,7 +63,7 @@ module IRuby
                       name: 'ruby',
                       version: RUBY_VERSION,
                       mimetype: 'application/x-ruby',
-                      file_extension: 'rb'
+                      file_extension: '.rb'
                     })
     end
 
