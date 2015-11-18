@@ -44,7 +44,11 @@ module IRuby
         session:  @session,
         version:  '5.0'
       }
-      @sockets[socket].send_message(serialize(idents, header, content))
+      socket = @sockets[socket]
+      list = serialize(header, content, idents)
+      list.each_with_index do |part, i|
+        socket.send_string(part, i == list.size - 1 ? 0 : ZMQ::SNDMORE)
+      end
     end
 
     # Receive a message and decode it
