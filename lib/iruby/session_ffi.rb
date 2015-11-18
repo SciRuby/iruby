@@ -53,7 +53,19 @@ module IRuby
 
     # Receive a message and decode it
     def recv(socket)
-      @last_recvd_msg = unserialize(@sockets[socket].recv_message)
+      socket = @sockets[socket]
+      msg = []
+      while msg.empty? || socket.more_parts?
+        begin
+          frame = ''
+          rc = socket.recv_string(frame, 1)
+          ZMQ::Util.error_check('zmq_msg_send', rc)
+          msg << frame
+        rescue
+        end
+      end
+
+      @last_recvd_msg = unserialize(msg)
     end
 
     private
