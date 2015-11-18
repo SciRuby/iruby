@@ -45,7 +45,7 @@ module IRuby
         version:  '5.0'
       }
       socket = @sockets[socket]
-      list = serialize(header, content, idents)
+      list = serialize(idents, header, content)
       list.each_with_index do |part, i|
         socket.send_string(part, i == list.size - 1 ? 0 : ZMQ::SNDMORE)
       end
