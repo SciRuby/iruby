@@ -5,15 +5,15 @@ module IRuby
       c = ZMQ::Context.new
 
       connection = "#{config['transport']}://#{config['ip']}:%d"
-      reply_socket = c.socket(:ROUTER)
+      reply_socket = c.socket(ZMQ::XREP)
       reply_socket.bind(connection % config['shell_port'])
 
-      pub_socket = c.socket(:PUB)
+      pub_socket = c.socket(ZMQ::PUB)
       pub_socket.bind(connection % config['iopub_port'])
 
       Thread.new do
         begin
-          hb_socket = c.socket(:REP)
+          hb_socket = c.socket(ZMQ::REP)
           hb_socket.bind(connection % config['hb_port'])
           ZMQ.proxy(hb_socket, hb_socket)
         rescue Exception => e
