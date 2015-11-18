@@ -115,8 +115,15 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.dependen
 
     def register_kernel
       FileUtils.mkpath(@kernel_dir)
-      File.write(@kernel_file, MultiJson.dump(argv: [ @iruby_path, 'kernel', '{connection_file}' ],
+      unless RUBY_PLATFORM =~ /mswin(?!ce)|mingw|cygwin/
+        File.write(@kernel_file, MultiJson.dump(argv: [ @iruby_path, 'kernel', '{connection_file}' ],
                                               display_name: "Ruby #{RUBY_VERSION}", language: 'ruby'))
+      else
+        ruby_path, iruby_path = [RbConfig.ruby, @iruby_path].map{|path| path.gsub('/', '\\\\')}
+        File.write(@kernel_file, MultiJson.dump(argv: [ ruby_path, iruby_path, 'kernel', '{connection_file}' ],
+                                                display_name: "Ruby #{RUBY_VERSION}", language: 'ruby'))
+      end
+
       FileUtils.copy(Dir[File.join(__dir__, 'assets', '*')], @kernel_dir) rescue nil
     end
 
