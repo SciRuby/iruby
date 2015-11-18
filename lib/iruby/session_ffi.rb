@@ -77,7 +77,7 @@ module IRuby
              MultiJson.dump(content || {})]
       frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
       IRuby.logger.debug "Sent #{frames.inspect}"
-      ZMQ::Message(*frames)
+      frames
     end
   end
 end
