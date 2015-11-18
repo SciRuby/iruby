@@ -1,4 +1,3 @@
-require 'rbczmq'
 require 'mimemagic'
 require 'multi_json'
 require 'securerandom'
@@ -14,3 +13,10 @@ require 'iruby/formatter'
 require 'iruby/utils'
 require 'iruby/display'
 require 'iruby/comm'
+
+begin
+  require 'rbczmq'
+rescue LoadError => e
+  require 'ffi-rzmq'
+  require 'iruby/session_ffi'
+end
