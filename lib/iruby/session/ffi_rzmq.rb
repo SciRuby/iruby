@@ -1,6 +1,10 @@
-# This file is for the compativility with ffi-rzmq which was replaced by rbczmq in IRuby v0.2.0
+require 'ffi-rzmq'
+require_relative 'base.rb'
+
 module IRuby
   class Session
+    include SessionBase
+    
     def initialize(config)
       c = ZMQ::Context.new
 
