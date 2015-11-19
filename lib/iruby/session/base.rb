@@ -1,5 +1,5 @@
 module IRuby
-  class SessionBase
+  module SessionBase
     DELIM = '<IDS|MSG>'
     
     private
