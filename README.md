@@ -7,7 +7,9 @@ This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://scirub
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ### Quick start
+The installation instructions are dividid according to environments mainly because of ZeroMQ.
 
+#### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
     apt-get install python3-dev virtualenv libzmq3-dev
@@ -17,11 +19,11 @@ At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
 After that, install the Ruby gem.
 
+    gem install rbczmq
     gem install iruby
 
 Now you can run iruby with:
 
-    iruby
     iruby notebook
 
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
