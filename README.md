@@ -26,6 +26,24 @@ Now you can run iruby with:
 
     iruby notebook
 
+#### Windows
+At first install IPython/Jupyter. I reccomend an installation using [Enthought Canopy](https://www.enthought.com/).
+
+After that install libzmq.dll (v3.2.x, x86) from [the website of ZeroMQ](http://zeromq.org/area:download).
+
+Rename `libzmq-v100-mt-3_x_x.dll` to `libzmq.dll`.
+
+Add the path to /bin to the PATH system variable.
+
+Run two commands below:
+
+    gem install ffi-rzmq
+    gem install iruby
+
+Now you can run iruby with:
+
+    iruby notebook
+
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
 and other scientific gems. You can find the prebuild image at [dockerhub](https://registry.hub.docker.com/u/minad/sciruby-notebooks/).
