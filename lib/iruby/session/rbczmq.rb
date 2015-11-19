@@ -1,9 +1,8 @@
 require 'rbczmq'
-require_relative 'base.rb'
+require_relative './base.rb'
 
 module IRuby
-  class Session
-    include SessionBase
+  class Session < SessionBase
     DELIM = '<IDS|MSG>'
 
     def initialize(config)

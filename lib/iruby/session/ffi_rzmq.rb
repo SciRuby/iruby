@@ -2,9 +2,7 @@ require 'ffi-rzmq'
 require_relative 'base.rb'
 
 module IRuby
-  class Session
-    include SessionBase
-    
+  class Session < SessionBase
     def initialize(config)
       c = ZMQ::Context.new
 
