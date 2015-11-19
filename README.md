@@ -7,7 +7,9 @@ This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://scirub
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ### Quick start
+The installation instructions are divided according to environments mainly because of ZeroMQ.
 
+#### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
     apt-get install python3-dev virtualenv libzmq3-dev
@@ -17,12 +19,43 @@ At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
 After that, install the Ruby gem.
 
+    gem install rbczmq
     gem install iruby
 
 Now you can run iruby with:
 
-    iruby
     iruby notebook
+
+#### Windows
+At first install IPython/Jupyter. I recommend an installation using [Enthought Canopy](https://www.enthought.com/).
+
+After that install libzmq.dll (v3.2.x, x86) from [the website of ZeroMQ](http://zeromq.org/area:download).
+
+Rename `libzmq-v100-mt-3_x_x.dll` to `libzmq.dll`.
+
+Add the path to /bin to the PATH system variable.
+
+Run two commands below:
+
+    gem install ffi-rzmq
+    gem install iruby
+
+Now you can run iruby with:
+
+    iruby notebook
+
+#### Mac
+I recommend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
+I have not checked the installation to MacOS X, but four lines below were necessary in v0.1.x.
+
+    conda remove zeromq (If you installed anaconda)
+    brew install zeromq
+    gem install ffi-rzmq
+    gem install iruby
+
+Send us pull-request if you Mac users successed in installing IRuby in another way.
+
+### After the installation
 
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
@@ -32,8 +65,9 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 ### Required dependencies
 
 * IPython/Jupyter >= 3.0.0
-* libzmq >= 3.2
 * Ruby >= 2.1.0
+
+If you install IRuby with ffi-rzmq instead of rbczmq, libzmq >= 3.2 is added to the list above.
 
 ### Authors
 
