@@ -1,5 +1,5 @@
 require 'ffi-rzmq'
-require_relative 'base.rb'
+require_relative './base'
 
 module IRuby
   class Session < SessionBase
