@@ -65,8 +65,9 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 ### Required dependencies
 
 * IPython/Jupyter >= 3.0.0
-* libzmq >= 3.2
 * Ruby >= 2.1.0
+
+If you install IRuby with ffi-rzmq instead of rbczmq, libzmq >= 3.2 is added to the list above.
 
 ### Authors
 
