@@ -1,5 +1,18 @@
 module IRuby
   class SessionBase
+    DELIM = '<IDS|MSG>'
+    
+    private
+    def serialize(idents, header, content)
+      msg = [MultiJson.dump(header),
+             MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
+             '{}',
+             MultiJson.dump(content || {})]
+      frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
+      IRuby.logger.debug "Sent #{frames.inspect}"
+      frames
+    end
+    
     def unserialize(msg)
       raise 'no message received' unless msg
       frames = msg.to_a.map(&:to_s)

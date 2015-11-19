@@ -3,8 +3,6 @@ require_relative './base'
 
 module IRuby
   class Session < SessionBase
-    DELIM = '<IDS|MSG>'
-
     def initialize(config)
       c = ZMQ::Context.new
 
@@ -48,24 +46,12 @@ module IRuby
         session:  @session,
         version:  '5.0'
       }
-      @sockets[socket].send_message(serialize(idents, header, content))
+      @sockets[socket].send_message(ZMQ::Message(*serialize(idents, header, content)))
     end
 
     # Receive a message and decode it
     def recv(socket)
       @last_recvd_msg = unserialize(@sockets[socket].recv_message)
-    end
-
-    private
-
-    def serialize(idents, header, content)
-      msg = [MultiJson.dump(header),
-             MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
-             '{}',
-             MultiJson.dump(content || {})]
-      frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
-      IRuby.logger.debug "Sent #{frames.inspect}"
-      ZMQ::Message(*frames)
     end
   end
 end
