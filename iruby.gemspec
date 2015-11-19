@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest', '~> 5.6'
 
   s.add_runtime_dependency 'bond', '~> 0.5'
-  s.add_runtime_dependency 'rbczmq', '~> 1.7'
   s.add_runtime_dependency 'multi_json', '~> 1.11'
   s.add_runtime_dependency 'mimemagic', '~> 0.3'
 end
