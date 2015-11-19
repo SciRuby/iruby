@@ -1,7 +1,7 @@
 module IRuby
-  module SessionBase
+  module SessionSerialize
     DELIM = '<IDS|MSG>'
-    
+
     private
     def serialize(idents, header, content)
       msg = [MultiJson.dump(header),
@@ -12,7 +12,7 @@ module IRuby
       IRuby.logger.debug "Sent #{frames.inspect}"
       frames
     end
-    
+
     def unserialize(msg)
       raise 'no message received' unless msg
       frames = msg.to_a.map(&:to_s)
@@ -34,6 +34,8 @@ module IRuby
         buffers:       buffers
       }
     end
+
+    private
 
     # Sign using HMAC
     def sign(list)

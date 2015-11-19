@@ -12,6 +12,7 @@ require 'iruby/formatter'
 require 'iruby/utils'
 require 'iruby/display'
 require 'iruby/comm'
+require 'iruby/session/mixin'
 
 begin
   require 'iruby/session/rbczmq'
