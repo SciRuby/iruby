@@ -7,7 +7,7 @@ This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://scirub
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ### Quick start
-The installation instructions are dividid according to environments mainly because of ZeroMQ.
+The installation instructions are divided according to environments mainly because of ZeroMQ.
 
 #### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
@@ -27,7 +27,7 @@ Now you can run iruby with:
     iruby notebook
 
 #### Windows
-At first install IPython/Jupyter. I reccomend an installation using [Enthought Canopy](https://www.enthought.com/).
+At first install IPython/Jupyter. I recommend an installation using [Enthought Canopy](https://www.enthought.com/).
 
 After that install libzmq.dll (v3.2.x, x86) from [the website of ZeroMQ](http://zeromq.org/area:download).
 
@@ -45,8 +45,8 @@ Now you can run iruby with:
     iruby notebook
 
 #### Mac
-I reccomend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
-I has not chacked the installation to MacOS X, but four lines below were necessary in v0.1.x.
+I recommend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
+I have not checked the installation to MacOS X, but four lines below were necessary in v0.1.x.
 
     conda remove zeromq (If you installed anaconda)
     brew install zeromq
