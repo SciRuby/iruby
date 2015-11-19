@@ -3,6 +3,7 @@ module IRuby
     DELIM = '<IDS|MSG>'
 
     private
+
     def serialize(idents, header, content)
       msg = [MultiJson.dump(header),
              MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
@@ -34,8 +35,6 @@ module IRuby
         buffers:       buffers
       }
     end
-
-    private
 
     # Sign using HMAC
     def sign(list)
