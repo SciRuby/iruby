@@ -15,10 +15,10 @@ require 'iruby/comm'
 
 begin
   require 'iruby/session/rbczmq'
-rescue LoadeError => e
+rescue LoadError
   begin
     require 'iruby/session/ffi_rzmq'
-  rescue LoadeError => e
+  rescue LoadError
     STDERR.puts "You should install rbczmq or ffi_rzmq before running iruby notebook. See README."
   end
 end
