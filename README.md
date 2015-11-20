@@ -55,6 +55,41 @@ I have not checked the installation to MacOS X, but four lines below were necess
 
 Send us pull-request if you Mac users successed in installing IRuby in another way.
 
+#### FreeBSD
+
+At first install IPython/Jupyter. 
+There is a pyzmq ports (ports/net/py-pyzmq) which depends on libzmq4, however, it doesn't works with ipython.
+Therefore we use libzmq3 like the following:
+
+1. make your ports tree up-to-date.
+2. replace LIBDEPENDS line in ports/net/py-pyzmq/Makefile
+
+    LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq4
+
+with
+
+    LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq3
+
+3. install related packages
+
+    $ sudo pkg install libzmq3 py27-qt4-gui py27-pexpect-3.3 py27-qt4-svg py27-pygments py27-Jinja2 py27-tornado py27-jsonschema
+
+4. make install using ports
+
+    $ cd /usr/ports/net/py-pyzmq
+    $ sudo make install
+    $ cd /usr/ports/devel/ipython
+    $ sudo make install
+
+Then, install iruby and related ports and gems.
+
+    $ sudo pkg install rubygem-mimemagic
+    $ sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
+    $ git clone https://github.com/SciRuby/iruby.git
+    $ cd iruby
+    $ gem build iruby.gemspec
+    $ sudo gem install iruby-0.2.7.gem
+
 ### After the installation
 
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
