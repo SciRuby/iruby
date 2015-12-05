@@ -1,3 +1,8 @@
+0.2.8 (2015-12-06)
+
+  * Add compatibility with ffi-rzmq
+  * Windows support
+
 0.2.7 (2015-07-02)
 
   * Fix problem with autoloaded constants in Display, problem with sciruby gem
