@@ -32,6 +32,10 @@ module IRuby
         data
       end
 
+      def clear_output(wait=false)
+        IRuby::Kernel.instance.session.send(:publish, :clear_output, {wait: wait})
+      end
+
       private
 
       def protect(mime, data)
