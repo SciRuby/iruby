@@ -93,6 +93,26 @@ Then, install iruby and related ports and gems.
     $ gem build iruby.gemspec
     $ sudo gem install iruby-0.2.7.gem
     ```
+### Installation for jRuby
+
+Since jRuby is fully compatible with Ruby version 2.2, it is possible to use iruby with jRuby. 
+It can be helpful if you want to use java classes in your iruby notebook.
+This will require the following software:
+* jRuby version >= 9.0.4.0
+* ZeroMQ version >= 4.1.4 (You may have to build it from source.)
+* ffi-rzmq gem
+* this iruby gem
+
+After installation, make sure that your `env` is set up to jruby.
+```shell
+$ env ruby -v
+```
+If you use RVM, it is enough to switch the current version to jruby.
+If you have already used iruby with a different version, you need to generate a new kernel:
+```shell
+$ iruby register --force
+```
+After that you can use iruby with jRuby in usual way.
 
 ### After the installation
 
