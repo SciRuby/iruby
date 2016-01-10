@@ -29,6 +29,8 @@ Now you can run iruby with:
 #### Windows
 At first install IPython/Jupyter. I recommend an installation using [Enthought Canopy](https://www.enthought.com/).
 
+Please update your PATH to include build tools or download the DevKit from http://rubyinstaller.org/downloads and follow [this instructions](http://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
+
 After that install libzmq.dll (v3.2.x, x86) from [the website of ZeroMQ](http://zeromq.org/area:download).
 
 Rename `libzmq-v100-mt-3_x_x.dll` to `libzmq.dll`.
