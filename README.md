@@ -31,11 +31,11 @@ At first install IPython/Jupyter. I recommend an installation using [Enthought C
 
 Please update your PATH to include build tools or download the DevKit from http://rubyinstaller.org/downloads and follow [this instructions](http://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
-After that install libzmq.dll (v3.2.x, x86) from [the website of ZeroMQ](http://zeromq.org/area:download).
+After that install ZeroMQ Legacy Stable Release 3.2.4 [x86 build for Windows XP SP3 and newer](http://miru.hk/archive/ZeroMQ-3.2.4~miru1.0-x86.exe).
 
-Rename `libzmq-v100-mt-3_x_x.dll` to `libzmq.dll`.
+Rename `libzmq-v100-mt-3_2_4.dll` to `libzmq.dll`.
 
-Add the path to /bin to the PATH system variable.
+Add the dll path to the PATH system variable.
 
 Run two commands below:
 
