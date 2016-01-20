@@ -66,6 +66,11 @@ module IRuby
         reset
         raise SystemExit
       end
+      unless @pry.eval_string.empty?
+        syntax_error = @pry.eval_string
+        @pry.reset_eval_string
+        @pry.evaluate_ruby syntax_error
+      end
       raise @pry.last_exception if @pry.last_result_is_exception?
       @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
       @pry.last_result
