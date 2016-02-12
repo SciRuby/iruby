@@ -48,14 +48,11 @@ Now you can run iruby with:
 
 #### Mac
 I recommend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
-I have not checked the installation to MacOS X, but four lines below were necessary in v0.1.x.
 
-    conda remove zeromq (If you installed anaconda)
-    brew install zeromq
-    gem install ffi-rzmq
+After that, run two commands shown below.
+
+    gem install rbczmq
     gem install iruby
-
-Send us pull-request if you Mac users successed in installing IRuby in another way.
 
 #### FreeBSD
 
