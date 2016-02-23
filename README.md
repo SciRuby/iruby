@@ -49,8 +49,9 @@ Now you can run iruby with:
 #### Mac
 I recommend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
 
-After that, run two commands shown below.
+After that, run three commands shown below.
 
+    brew install libtool autoconf automake autogen
     gem install rbczmq
     gem install iruby
 
