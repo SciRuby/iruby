@@ -28,6 +28,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest', '~> 5.6'
 
   s.add_runtime_dependency 'bond', '~> 0.5'
+  s.add_runtime_dependency 'erector', '~> 0.10'
   s.add_runtime_dependency 'multi_json', '~> 1.11'
   s.add_runtime_dependency 'mimemagic', '~> 0.3'
+  s.add_runtime_dependency 'data_uri', '~> 0.1'
 end
