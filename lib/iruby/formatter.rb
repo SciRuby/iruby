@@ -61,7 +61,8 @@ module IRuby
           rows << row
         end
 
-        if header = keys
+        if keys
+          header = keys.to_a
           keys.merge(0...array_size)
         else
           keys = 0...array_size
