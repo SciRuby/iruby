@@ -1,5 +1,3 @@
-require 'erector'
-
 module IRuby
   module Input
     class Widget < Erector::Widget

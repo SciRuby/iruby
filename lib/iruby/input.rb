@@ -1,20 +1,9 @@
-require 'iruby/input/widget'
-require 'iruby/input/builder'
-require 'iruby/input/form'
-require 'iruby/input/label'
-require 'iruby/input/field'
-require 'iruby/input/popup'
-require 'iruby/input/button'
-require 'iruby/input/cancel'
-require 'iruby/input/file'
-require 'iruby/input/select'
-require 'iruby/input/checkbox'
-require 'iruby/input/radio'
-require 'iruby/input/textarea'
-require 'iruby/input/date'
-
 module IRuby
   module Input
+    # autoload so that erector is not a required
+    # runtime dependency of IRuby
+    autoload :Builder, 'iruby/input/autoload'
+
     def input prompt='Input'
       result = form{input label: prompt}
       result[:input] unless result.nil?
