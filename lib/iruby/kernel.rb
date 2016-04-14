@@ -19,6 +19,12 @@ module IRuby
       $stdout = OStream.new(@session, :stdout)
       $stderr = OStream.new(@session, :stderr)
 
+      Object.send :remove_const, :STDOUT
+      Object.send :const_set, :STDOUT, $stdout
+
+      Object.send :remove_const, :STDERR
+      Object.send :const_set, :STDERR, $stderr
+
       @execution_count = 0
       @backend = create_backend
       @running = true
