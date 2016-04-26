@@ -14,6 +14,9 @@ module IRuby
       pub_socket = c.socket(:PUB)
       pub_socket.bind(connection % config['iopub_port'])
 
+      stdin_socket = c.socket(:ROUTER)
+      stdin_socket.bind(connection % config['stdin_port'])
+
       Thread.new do
         begin
           hb_socket = c.socket(:REP)
@@ -24,7 +27,10 @@ module IRuby
         end
       end
 
-      @sockets = { publish: pub_socket, reply: reply_socket }
+      @sockets = { 
+        publish: pub_socket, reply: reply_socket, stdin: stdin_socket
+      }
+
       @session = SecureRandom.uuid
       unless config['key'].to_s.empty? || config['signature_scheme'].to_s.empty?
         raise 'Unknown signature scheme' unless config['signature_scheme'] =~ /\Ahmac-(.*)\Z/
@@ -53,6 +59,10 @@ module IRuby
     # Receive a message and decode it
     def recv(socket)
       @last_recvd_msg = unserialize(@sockets[socket].recv_message)
+    end
+
+    def recv_input 
+      unserialize(@sockets[:stdin].recv_message)[:content]["value"]
     end
   end
 end
