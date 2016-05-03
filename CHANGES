@@ -6,6 +6,7 @@
 
   Enhnacements:
     * Add an IRuby::Input class which provides widgets for getting inputs from users. (@kylekyle)
+    * Add data_uri dependency (@kylekyle)
     * Added a clear_output display function (@mrkn)
     * Doc fixes for installation (@kozo2, @generall)
 
