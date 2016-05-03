@@ -1,3 +1,14 @@
+0.2.9 (2016-05-02)
+  
+  Bug Fixes:
+    * Fix an error where a NoMethodError was being raised where a table rendered using an Array of Hashes has more than `maxcols` columns. (@CGamesPlay)
+    * Patch PryBackend to throw unterminated string and unexpected end-of-file syntax errors (@kylekyle)
+
+  Enhnacements:
+    * Add an IRuby::Input class which provides widgets for getting inputs from users. (@kylekyle)
+    * Added a clear_output display function (@mrkn)
+    * Doc fixes for installation (@kozo2, @generall)
+
 0.2.8 (2015-12-06)
 
   * Add compatibility with ffi-rzmq
