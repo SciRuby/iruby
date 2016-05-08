@@ -106,7 +106,7 @@ This might not work. Run 'iruby register --force' to fix it." if @iruby_path != 
     def check_bundler
       require 'bundler'
       raise %q{iruby is missing from Gemfile. This might not work.
-Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.dependencies.any? {|s| s.name == 'iruby' }
+Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.any? {|s| s.name == 'iruby' }
       Bundler.setup
     rescue LoadError
     rescue Exception => e
