@@ -54,6 +54,7 @@ module IRuby
 
     def initialize
       require 'pry'
+      Pry.memory_size = 3 
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
