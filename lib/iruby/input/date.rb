@@ -9,7 +9,7 @@ module IRuby
       end
 
       def widget_css
-        '#ui-datepicker-div { z-index: 2000; }'
+        '#ui-datepicker-div { z-index: 2000 !important; }'
       end
 
       def widget_js 
