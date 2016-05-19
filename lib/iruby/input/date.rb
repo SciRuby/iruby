@@ -7,7 +7,7 @@ module IRuby
         params[:key] = unique_key key
         add_field Date.new(**params)
 
-        process key do |result,key,value|
+        process params[:key] do |result,key,value|
           result[key.to_sym] = Time.parse(value)
         end
       end
