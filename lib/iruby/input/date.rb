@@ -6,6 +6,10 @@ module IRuby
       builder :date do |key='date', **params|
         params[:key] = unique_key key
         add_field Date.new(**params)
+
+        process key do |result,key,value|
+          result[key.to_sym] = Time.parse(value)
+        end
       end
 
       def widget_css
@@ -16,7 +20,7 @@ module IRuby
         <<-JS
           $('.iruby-date').datepicker({
             onClose: function(date) {
-              $('.iruby-date').data('iruby-value', date);
+              $(this).data('iruby-value', date);
             }  
           });
         JS
