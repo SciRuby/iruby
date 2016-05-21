@@ -8,7 +8,7 @@ module IRuby
         add_field Date.new(**params)
 
         process params[:key] do |result,key,value|
-          result[key.to_sym] = Time.parse(value)
+          result[key.to_sym] = Time.strptime(value,'%m/%d/%Y')
         end
       end
 
@@ -19,6 +19,7 @@ module IRuby
       def widget_js 
         <<-JS
           $('.iruby-date').datepicker({
+            dateFormat: 'mm/dd/yy',
             onClose: function(date) {
               $(this).data('iruby-value', date);
             }  
