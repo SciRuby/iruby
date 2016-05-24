@@ -1,14 +1,21 @@
 module IRuby
   module Input
     class Select < Label
-      needs :options
+      needs :options, :default
 
       builder :select do |*args, **params|
         key = :select
         key, *args = args if args.first.is_a? Symbol
 
-        key = unique_key(key)
-        add_field Select.new(key: key, options: args)
+        params[:key] = unique_key(key)
+        params[:options] = args
+        params[:default] ||= false
+
+        unless params[:options].include? params[:default]
+          params[:options] = [nil, *params[:options].compact]
+        end
+
+        add_field Select.new(**params)
       end
 
       def widget_css
@@ -31,11 +38,13 @@ module IRuby
             params = {
               class: 'iruby-select', 
               :'data-iruby-key' => @key,
-              :'data-iruby-value' => @options.first
+              :'data-iruby-value' => @default
             }
             
             select **params do 
-              @options.each {|o| option o }
+              @options.each do |o| 
+                option o, selected: @default == o
+              end
             end
           end
         end

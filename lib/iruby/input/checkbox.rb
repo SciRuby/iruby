@@ -1,7 +1,7 @@
 module IRuby
   module Input
     class Checkbox < Label
-      needs :options
+      needs :options, :default
 
       builder :checkbox do |*args, **params|
         key = :checkbox
@@ -9,11 +9,24 @@ module IRuby
 
         params[:key] = unique_key(key)
         params[:options] = args
+
+        params[:default] = case params[:default]
+        when false, nil
+          []
+        when true
+          [*params[:options]]
+        else
+          [*params[:default]]
+        end
+
         add_field Checkbox.new(**params)
       end
 
       def widget_css
-        '.iruby-checkbox-container { margin-left: 10px; }'
+        <<-CSS
+          .iruby-checkbox.form-control { display: inline-table; }
+          .iruby-checkbox .checkbox-inline { margin: 0 15px 0 0; }
+        CSS
       end
 
       def widget_js
@@ -30,6 +43,8 @@ module IRuby
               $(parent).data('iruby-value', null);
             }
           });
+
+          $('.iruby-checkbox input').trigger('change');
         JS
       end
 
@@ -43,7 +58,10 @@ module IRuby
             @options.each do |option|
               label class: 'checkbox-inline' do 
                 input(
-                  name: @key, value: option, type: 'checkbox'
+                  name: @key, 
+                  value: option, 
+                  type: 'checkbox',
+                  checked: @default.include?(option)
                 )
                 text option
               end

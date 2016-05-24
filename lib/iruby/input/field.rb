@@ -1,7 +1,7 @@
 module IRuby
   module Input
     class Field < Label
-      needs :type => 'text', js_class: 'iruby-field'
+      needs default: nil, type: 'text', js_class: 'iruby-field'
 
       builder :input do |key='input', **params|
         params[:key] = unique_key key
@@ -21,7 +21,8 @@ module IRuby
           input(
             type: @type, 
             :'data-iruby-key' => @key,
-            class: "form-control #{@js_class}"
+            class: "form-control #{@js_class}",
+            value: @default
           )
         end
       end

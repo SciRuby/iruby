@@ -5,6 +5,12 @@ module IRuby
 
       builder :date do |key='date', **params|
         params[:key] = unique_key key
+        params[:default] ||= false
+
+        if params[:default].is_a? Time
+          params[:default] = params[:default].strftime('%m/%d/%Y')
+        end
+
         add_field Date.new(**params)
 
         process params[:key] do |result,key,value|

@@ -1,7 +1,7 @@
 module IRuby
   module Input
     class Radio < Label
-      needs :options
+      needs :options, :default
 
       builder :radio do |*args, **params|
         key = :radio
@@ -9,7 +9,15 @@ module IRuby
         
         params[:key] = unique_key(key)
         params[:options] = args
+        params[:default] ||= false
         add_field Radio.new(**params)
+      end
+
+      def widget_css
+        <<-CSS
+          .iruby-radio.form-control { display: inline-table; }
+          .iruby-radio .radio-inline { margin: 0 15px 0 0; }
+        CSS
       end
 
       def widget_js
@@ -20,6 +28,7 @@ module IRuby
               $(parent).find(':checked').val()
             );
           });
+          $('.iruby-radio input').trigger('change');
         JS
       end
 
@@ -34,7 +43,10 @@ module IRuby
             @options.each do |option|
               label class: 'radio-inline' do 
                 input(
-                  name: @key, value: option, type: 'radio'
+                  name: @key, 
+                  value: option, 
+                  type: 'radio',
+                  checked: @default == option
                 )
                 text option
               end

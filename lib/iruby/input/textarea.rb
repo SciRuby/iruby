@@ -11,6 +11,7 @@ module IRuby
       def widget_html
         widget_label do 
           textarea(
+            @default,
             rows: @rows,
             :'data-iruby-key' => @key,
             class: 'form-control iruby-field'
