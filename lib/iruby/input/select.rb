@@ -19,7 +19,12 @@ module IRuby
       end
 
       def widget_css
-        '.iruby-select { margin-left: 0 !important }'
+        <<-CSS
+          .iruby-select { 
+            min-width: 25%;
+            margin-left: 0 !important;
+          }
+        CSS
       end
 
       def widget_js
