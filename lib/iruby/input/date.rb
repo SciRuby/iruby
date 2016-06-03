@@ -1,12 +1,12 @@
 module IRuby
   module Input
     class Date < Field
-      needs js_class: 'iruby-date'
+      needs js_class: 'iruby-date', icon: '📅'
 
       builder :date do |key='date', **params|
-        params[:key] = unique_key key
         params[:default] ||= false
-
+        params[:key] = unique_key key
+        
         if params[:default].is_a? Time
           params[:default] = params[:default].strftime('%m/%d/%Y')
         end

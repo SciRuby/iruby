@@ -1,13 +1,19 @@
 module IRuby
   module Input
     class Label < Widget
-      needs label: nil
+      needs label: nil, icon: nil
 
       def widget_label
-        label = @label || to_label(@key)
-        div class: 'iruby-label input-group' do
-          span label, class: 'input-group-addon'
+        div class: 'iruby-label input-group' do 
+          span class: 'input-group-addon' do 
+            text @label || to_label(@key)
+          end
+          
           yield
+          
+          if @icon
+            span @icon, class: "input-group-addon"
+          end
         end
       end
 
