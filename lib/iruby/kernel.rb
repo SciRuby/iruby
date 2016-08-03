@@ -109,7 +109,7 @@ module IRuby
     def complete_request(msg)
       # HACK for #26, only complete last line
       code = msg[:content]['code']
-      if start = code.rindex("\n")
+      if start = code.rindex(/\s|\R/)
         code = code[start+1..-1]
         start += 1
       end
