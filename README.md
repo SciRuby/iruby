@@ -12,7 +12,7 @@ The installation instructions are divided according to environments mainly becau
 #### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
-    apt-get install python3-dev virtualenv libzmq3-dev
+    sudo apt-get install python3-dev python-virtualenv libzmq3-dev
     virtualenv -p python3 venv
     source venv/bin/activate
     pip install 'ipython[notebook]'
