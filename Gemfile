@@ -10,6 +10,6 @@ end
 group :plot do
   gem 'gnuplot'
   gem 'rubyvis'
-  gem 'nyaplot', github: 'domitry/nyaplot'
+  gem 'nyaplot', github: 'sciruby/nyaplot'
 end
 
