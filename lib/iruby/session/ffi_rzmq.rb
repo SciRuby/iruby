@@ -67,7 +67,7 @@ module IRuby
       while msg.empty? || socket.more_parts?
         begin
           frame = ''
-          rc = socket.recv_string(frame, 1)
+          rc = socket.recv_string(frame)
           ZMQ::Util.error_check('zmq_msg_send', rc)
           msg << frame
         rescue
