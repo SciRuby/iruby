@@ -16,11 +16,15 @@ require 'iruby/comm'
 require 'iruby/session/mixin'
 
 begin
-  require 'iruby/session/rbczmq'
+  require 'iruby/session/cztop'
 rescue LoadError
   begin
-    require 'iruby/session/ffi_rzmq'
+    require 'iruby/session/rbczmq'
   rescue LoadError
-    STDERR.puts "You should install rbczmq or ffi_rzmq before running iruby notebook. See README."
+    begin
+      require 'iruby/session/ffi_rzmq'
+    rescue LoadError
+      STDERR.puts "You should install cztop, rbczmq or ffi_rzmq before running iruby notebook. See README."
+    end
   end
 end
