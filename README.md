@@ -12,14 +12,14 @@ The installation instructions are divided according to environments mainly becau
 #### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
-    sudo apt-get install python3-dev python-virtualenv libzmq3-dev
+    sudo apt-get install python3-dev python-virtualenv
     virtualenv -p python3 venv
     source venv/bin/activate
     pip install 'ipython[notebook]'
 
 After that, install the Ruby gem.
 
-    gem install rbczmq
+    gem install cztop
     gem install iruby
 
 Now you can run iruby with:
@@ -29,17 +29,9 @@ Now you can run iruby with:
 #### Windows
 At first install IPython/Jupyter. I recommend an installation using [Enthought Canopy](https://www.enthought.com/).
 
-Please update your PATH to include build tools or download the DevKit from http://rubyinstaller.org/downloads and follow [this instructions](http://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
-
-After that install ZeroMQ Legacy Stable Release 3.2.4 [x86 build for Windows XP SP3 and newer](http://miru.hk/archive/ZeroMQ-3.2.4~miru1.0-x86.exe).
-
-Rename `libzmq-v100-mt-3_2_4.dll` to `libzmq.dll`.
-
-Add the dll path to the PATH system variable.
-
 Run two commands below:
 
-    gem install ffi-rzmq
+    gem install cztop
     gem install iruby
 
 Now you can run iruby with:
@@ -52,7 +44,7 @@ I recommend an installation using [Anaconda](https://store.continuum.io/cshop/an
 After that, run three commands shown below.
 
     brew install libtool autoconf automake autogen
-    gem install rbczmq
+    gem install cztop
     gem install iruby
 
 #### FreeBSD
@@ -99,8 +91,7 @@ Since jRuby is fully compatible with Ruby version 2.2, it is possible to use iru
 It can be helpful if you want to use java classes in your iruby notebook.
 This will require the following software:
 * jRuby version >= 9.0.4.0
-* ZeroMQ version >= 4.1.4 (You may have to build it from source.)
-* ffi-rzmq gem
+* cztop gem
 * this iruby gem
 
 After installation, make sure that your `env` is set up to jruby.
@@ -126,7 +117,9 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 * IPython/Jupyter >= 3.0.0
 * Ruby >= 2.1.0
 
-If you install IRuby with ffi-rzmq instead of rbczmq, libzmq >= 3.2 is added to the list above.
+If you install IRuby with CZTop, CZMQ >= 4.0.0 is added to the list above.
+
+If you install IRuby with ffi-rzmq, libzmq >= 3.2 is added to the list above.
 
 ### Authors
 
