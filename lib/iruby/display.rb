@@ -287,7 +287,11 @@ module IRuby
       match {|obj| obj.respond_to?(:path) && File.readable?(obj.path) }
       format do |obj|
         mime = MimeMagic.by_path(obj.path).to_s
-        [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
+        if mime  =~ /image\/(jpeg|png)/ && RUBY_PLATFORM =~ /mswin(?!ce)|mingw|cygwin/
+          [mime, File.binread(obj.path)] if SUPPORTED_MIMES.include?(mime)
+        else
+          [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
+        end
       end
 
       type { Object }
