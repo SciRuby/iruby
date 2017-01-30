@@ -9,6 +9,19 @@ This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://scirub
 ### Quick start
 The installation instructions are divided according to environments mainly because of ZeroMQ.
 
+#### Docker
+
+If you're familiar with Docker, the following commands should work in most cases:
+
+```
+docker pull sciruby/iruby-notebook
+docker run -d -p 8888:8888 sciruby/iruby-notebook start-notebook.sh --NotebookApp.token=''
+```
+
+and open a web browser to http://localhost:8888 .
+
+`sciruby/iruby-notebook` is based on Minimal Jupyter Notebook Stack. See https://github.com/jupyter/docker-stacks/tree/master/base-notebook for more details on the Docker command options.
+
 #### Ubuntu/Debian
 At first install IPython/Jupyter. I recommend an installation using virtualenv.
 
