@@ -114,7 +114,7 @@ module IRuby
         start += 1
       end
       @session.send(:reply, :complete_reply,
-                    matches: @backend.complete(code),
+                    matches: @backend.complete(code).take(500),
                     status: :ok,
                     cursor_start: start.to_i,
                     cursor_end: msg[:content]['cursor_pos'])
