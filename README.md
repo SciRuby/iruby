@@ -1,51 +1,70 @@
-***The current master branch and gem version >= 0.2 are compatible with IPython3/Jupyter. If you require IPython2 support, please install an older gem version < 0.2 or use the branch ipython2***
-
 # IRuby
 
-This is a Ruby kernel for IPython/Jupyter and is part of [SciRuby](http://sciruby.com/). You can try it at [try.jupyter.org](http://try.jupyter.org/).
+This is a Ruby kernel for Jupyter and is part of [SciRuby](http://sciruby.com/).
 
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ### Quick start
 The installation instructions are divided according to environments mainly because of ZeroMQ.
 
-#### Ubuntu/Debian
-At first install IPython/Jupyter. I recommend an installation using virtualenv.
-
-    sudo apt-get install python3-dev python-virtualenv
-    virtualenv -p python3 venv
-    source venv/bin/activate
-    pip install 'ipython[notebook]'
+#### Ubuntu 16.04
+At first install Jupyter. I recommend an installation using [Anaconda](https://www.continuum.io/downloads) Python 3.6 version.
 
 After that, install the Ruby gem.
 
-    gem install cztop
-    gem install iruby
+```shell
+apt install libtool libffi-dev ruby ruby-dev make
+gem install cztop
 
-Now you can run iruby with:
+apt install git libzmq-dev autoconf pkg-config
+git clone https://github.com/zeromq/czmq
+cd czmq
+./autogen.sh && ./configure && make && make install
 
-    iruby notebook
+gem install specific_install
+gem specific_install https://github.com/SciRuby/iruby.git
+iruby register --force
+```
+
+Now you can select Ruby kernel in Jupyter Notebook with:
+
+    jupyter-notebook
 
 #### Windows
-At first install IPython/Jupyter. I recommend an installation using [Enthought Canopy](https://www.enthought.com/).
+At first install **git** and Jupyter. I recommend an installation using [Anaconda](https://www.continuum.io/downloads).
 
-Run two commands below:
+Run the following commands on **Ruby command prompt**:
 
-    gem install cztop
-    gem install iruby
+```shell
+gem install cztop
+gem install specific_install
+gem specific_install https://github.com/SciRuby/iruby.git
+iruby register --force
+```
 
-Now you can run iruby with:
+Now you can select Ruby kernel in Jupyter Notebook with:
 
-    iruby notebook
+    jupyter-notebook
 
 #### Mac
-I recommend an installation using [Anaconda](https://store.continuum.io/cshop/anaconda/).
+I recommend an installation using [Anaconda](https://www.continuum.io/downloads).
 
-After that, run three commands shown below.
+After that, run the following commands.
 
-    brew install libtool autoconf automake autogen
-    gem install cztop
-    gem install iruby
+```shell
+brew install rbenv automake gmp libtool wget
+rbenv install 2.4.0
+rbenv global 2.4.0
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+source ~/.bashrc
+
+brew install zeromq --HEAD
+brew install czmq --HEAD
+gem install cztop
+gem install specific_install
+gem specific_install https://github.com/SciRuby/iruby.git
+iruby register --force
+```
 
 #### FreeBSD
 
@@ -114,7 +133,7 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 
 ### Required dependencies
 
-* IPython/Jupyter >= 3.0.0
+* Jupyter >= 3.0.0
 * Ruby >= 2.1.0
 
 If you install IRuby with CZTop, CZMQ >= 4.0.0 is added to the list above.
