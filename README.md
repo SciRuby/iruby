@@ -47,6 +47,12 @@ After that, run three commands shown below.
     gem install cztop
     gem install iruby
 
+If you are using macports, run the following commands.
+    port install libtool autoconf automake autogen
+    gem install ffi-rzmq
+    gem install iruby
+
+
 #### FreeBSD
 
 At first install IPython/Jupyter. 
