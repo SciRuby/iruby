@@ -1,6 +1,6 @@
 # IRuby
 
-This is a Ruby kernel for Jupyter and is part of [SciRuby](http://sciruby.com/).
+This is a Ruby kernel for Jupyter and is part of [SciRuby](http://sciruby.com/). You can try it at [try.jupyter.org](http://try.jupyter.org/).
 
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
