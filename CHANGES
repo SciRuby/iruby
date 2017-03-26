@@ -1,3 +1,24 @@
+0.3 (2017-03-26)
+
+  Bug Fixes:
+    * Disable Jupyter keyboard manager for all popups made using IRuby.popup (@kylekyle).
+    * Fix Iruby/Input date values bug that set date fields to whatever the last date value was (@kylekyle).
+    * Fix a bug where time strings put into prompter would give an 'out of range' error (@kylekyle).
+
+  Enhancements:
+    * Improvements to IRuby dependency detection using `Bundler::Dependencies#specs` (@kou).
+    * Use less memory forcing pry to store only the last 3 commands in memory (@kylekyle).
+    * Use bigger z-index that is used accross all browsers (@kylekyle).
+    * Ability to input date values as DateTime objects in IRuby/Input (@kylekyle).
+    * Add option to have check boxes checked by default (@kylekyle).
+    * Option for multi-select in drop down menus in the prompter (@kylekyle).
+    * Add support for multiple widgets using `IRuby::Input::Multiple` (@kylekyle).
+    * Calender icon for date selector icon (@kylekyle).
+    * Add support for Numo/NArray (@zalt50).
+    * Text now only completes after a space (@zalt50).
+    * Remove the DONTWAIT flag when receiving a message (@cloud-oak).
+    * Add support for CZTop (@kou).
+
 0.2.9 (2016-05-02)
   
   Bug Fixes:
