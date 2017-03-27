@@ -21,8 +21,7 @@ git clone https://github.com/zeromq/czmq
 cd czmq
 ./autogen.sh && ./configure && make && make install
 
-gem install specific_install
-gem specific_install https://github.com/SciRuby/iruby.git
+gem install iruby
 iruby register --force
 ```
 
@@ -37,8 +36,7 @@ Run the following commands on **Ruby command prompt**:
 
 ```shell
 gem install cztop
-gem install specific_install
-gem specific_install https://github.com/SciRuby/iruby.git
+gem install iruby
 iruby register --force
 ```
 
@@ -53,16 +51,14 @@ After that, run the following commands.
 
 ```shell
 brew install rbenv automake gmp libtool wget
-rbenv install 2.4.0
-rbenv global 2.4.0
+rbenv install 2.4.1
+rbenv global 2.4.1
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 source ~/.bashrc
 
-brew install zeromq --HEAD
+brew install zeromq
 brew install czmq --HEAD
-gem install cztop
-gem install specific_install
-gem specific_install https://github.com/SciRuby/iruby.git
+gem install cztop iruby
 iruby register --force
 ```
 
