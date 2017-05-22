@@ -106,6 +106,12 @@ module IRuby
         execution_count: @execution_count }
     end
 
+    def is_complete_request(msg)
+      # FIXME: the code completeness should be judged by using ripper or other Ruby parser
+      @session.send(:reply, :is_complete_reply,
+                    status: :unknown)
+    end
+
     def complete_request(msg)
       # HACK for #26, only complete last line
       code = msg[:content]['code']
