@@ -1,0 +1,1 @@
+c.InteractiveShell.colors = 'NoColor'

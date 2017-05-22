@@ -1,14 +1,23 @@
 language: ruby
 
+addons:
+  apt:
+    sources:
+    - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/ ./'
+      key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/Release.key'
+    packages:
+    - libsodium-dev
+    - libczmq-dev
+
 rvm:
   - ruby-head
-  - 2.2.2
-  - 2.1.6
-  - 2.0.0
+  - 2.4.0
+  - 2.3.1
+  - 2.2.5
+  - 2.1.10
 
 before_install:
-  - "sudo apt-get install libzmq3-dev"
-  - "sudo pip install 'ipython[notebook]'"
+  - "sudo pip install 'jupyter'"
 
 script: bundle exec rake
 
