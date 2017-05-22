@@ -27,19 +27,24 @@ class IntegrationTest < IRubyTest
     assert @in.expect(pattern, timeout), "#{pattern} expected, but timeout"
   end
 
+  def wait_prompt
+    expect 'In ['
+    expect ']:'
+  end
+
   def test_interaction
     write '"Hello, world!"'
     expect '"Hello, world!"'
 
-    sleep 1
+    wait_prompt
     write 'puts "Hello!"'
     expect 'Hello!'
 
-    sleep 1
+    wait_prompt
     write '12 + 12'
     expect '24'
 
-    sleep 1
+    wait_prompt
     write 'ls'
     expect 'self.methods'
   end
