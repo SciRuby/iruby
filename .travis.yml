@@ -11,9 +11,10 @@ addons:
 
 rvm:
   - ruby-head
-  - 2.2.2
-  - 2.1.6
-  - 2.0.0
+  - 2.4.0
+  - 2.3.1
+  - 2.2.5
+  - 2.1.10
 
 before_install:
   - "sudo pip install 'jupyter'"
