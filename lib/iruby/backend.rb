@@ -1,3 +1,5 @@
+require 'iruby/redirect_output'
+
 module IRuby
   In, Out = [nil], [nil]
   ::In, ::Out = In, Out
@@ -34,14 +36,18 @@ module IRuby
 
   class PlainBackend
     prepend History
+    include RedirectOutput
 
-    def initialize
+    def initialize stdout, stderr
       require 'bond'
       Bond.start(debug: true)
+      @stdout, @stderr = stdout, stderr
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code)
+      redirect_output do 
+        TOPLEVEL_BINDING.eval(code)
+      end
     end
 
     def complete(code)
@@ -51,19 +57,22 @@ module IRuby
 
   class PryBackend
     prepend History
+    include RedirectOutput
 
-    def initialize
+    def initialize stdout, stderr
       require 'pry'
       Pry.memory_size = 3 
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
       reset
+      @stdout, @stderr = stdout, stderr
     end
 
     def eval(code, store_history)
       @pry.last_result = nil
-      unless @pry.eval(code)
+      result = redirect_output { @pry.eval(code) }
+      unless result
         reset
         raise SystemExit
       end

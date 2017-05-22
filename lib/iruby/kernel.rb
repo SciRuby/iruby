@@ -16,8 +16,14 @@ module IRuby
       Kernel.instance = self
 
       @session = Session.new(@config)
-      $stdout = OStream.new(@session, :stdout)
-      $stderr = OStream.new(@session, :stderr)
+      @stdout = OStream.new(@session, :stdout)
+      @stderr = OStream.new(@session, :stderr)
+
+      Object.send :remove_const, :STDOUT
+      Object.send :const_set, :STDOUT, $stdout
+
+      Object.send :remove_const, :STDERR
+      Object.send :const_set, :STDERR, $stderr
 
       @execution_count = 0
       @backend = create_backend
@@ -25,10 +31,10 @@ module IRuby
     end
 
     def create_backend
-      PryBackend.new
+      PryBackend.new @stdout, @stderr
     rescue Exception => e
       IRuby.logger.warn "Could not load PryBackend: #{e.message}\n#{e.backtrace.join("\n")}" unless LoadError === e
-      PlainBackend.new
+      PlainBackend.new @stdout, @stderr
     end
 
     def run
