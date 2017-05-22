@@ -239,6 +239,12 @@ module IRuby
         end
       end
 
+      type { GnuplotRB::Plottable }
+      format 'image/svg+xml' do |obj|
+        options = obj.term ? obj.term[1] : {}
+        obj.to_svg(options)
+      end
+
       match do |obj|
         defined?(Magick::Image) && Magick::Image === obj ||
         defined?(MiniMagick::Image) && MiniMagick::Image === obj
