@@ -13,13 +13,13 @@ At first install Jupyter. I recommend an installation using [Anaconda](https://w
 After that, install the Ruby gem.
 
 ```shell
-apt install libtool libffi-dev ruby ruby-dev make
+sudo apt install libtool libffi-dev ruby ruby-dev make
 gem install cztop
 
-apt install git libzmq-dev autoconf pkg-config
+sudo apt install git libzmq-dev autoconf pkg-config
 git clone https://github.com/zeromq/czmq
 cd czmq
-./autogen.sh && ./configure && make && make install
+./autogen.sh && ./configure && sudo make && sudo make install
 
 gem install iruby
 iruby register --force
