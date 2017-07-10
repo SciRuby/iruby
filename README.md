@@ -7,21 +7,33 @@ This is a Ruby kernel for Jupyter and is part of [SciRuby](http://sciruby.com/).
 ## Quick start
 The installation instructions are divided according to environments mainly because of ZeroMQ.
 
-### Ubuntu 16.04
+### Ubuntu
 At first install Jupyter. I recommend an installation using [Anaconda](https://www.continuum.io/downloads) Python 3.6 version.
 
-After that, install the Ruby gem.
+#### Preparing dependencies on 16.04
+CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0.  The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
 
 ```shell
 sudo apt install libtool libffi-dev ruby ruby-dev make
-gem install cztop
-
 sudo apt install git libzmq-dev autoconf pkg-config
 git clone https://github.com/zeromq/czmq
 cd czmq
 ./autogen.sh && ./configure && sudo make && sudo make install
+```
 
-gem install iruby
+#### Preparing dependencies on 17.04
+In 17.04, you can use official packages.
+
+```shell
+sudo apt install libtool libffi-dev ruby ruby-dev make
+sudo apt install libzmq3-dev libczmq-dev
+```
+
+#### Version-independent things
+After preparing dependencies, install the Ruby gem.
+
+```shell
+gem install cztop iruby
 iruby register --force
 ```
 
