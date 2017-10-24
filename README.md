@@ -75,9 +75,12 @@ iruby register --force
 ```
 
 If you are using macports, run the following commands.
-    port install libtool autoconf automake autogen
-    gem install ffi-rzmq
-    gem install iruby
+
+```shell
+port install libtool autoconf automake autogen
+gem install ffi-rzmq
+gem install iruby
+```
 
 
 ### FreeBSD
