@@ -284,7 +284,7 @@ module IRuby
         obj.to_iruby
       end
 
-      match {|obj| obj.respond_to?(:path) && File.readable?(obj.path) }
+      match {|obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
       format do |obj|
         mime = MimeMagic.by_path(obj.path).to_s
         [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
