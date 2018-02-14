@@ -11,12 +11,7 @@ module IRuby
 
         def inherited(base) #:nodoc:
           super
-          if base.name && base.name =~ /Base$/
-            IRuby.logger.info "Ignore Magic Class #{base}"
-          else
-            IRuby.logger.info "Find Magic #{base}"
-            subclasses << base
-          end
+          subclasses << base if !base.name || base.name !~ /Base$/
         end
 
       end
