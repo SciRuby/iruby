@@ -31,23 +31,17 @@ module IRuby
 
       out
     end
-  end
 
-  class PlainBackend
-    prepend History
-
-    def initialize
-      require 'bond'
+    def initialize_magics
       @magics = {}
       IRuby::Magic::Base.subclasses.each do|clazz|
         magic = clazz.new(self)
         @magics[magic.name] = clazz.new(self)
+        IRuby::Magic::AVAILABLE_MAGIC_NAMES << magic.name
       end
-      IRuby.logger.info @magics
-      Bond.start(debug: true)
     end
 
-    def eval(code, store_history)
+    def eval_with_magic(code)
       first_line = code.lines.first.strip
       if first_line[0] == '%'
         cmd, *args = first_line.sub(/^[\s%]+/, '').split(/[\s]/).reject(&:empty?)
@@ -58,6 +52,23 @@ module IRuby
           "Unknown magic [#{cmd}]"
         end
       else
+        yield code
+      end
+    end
+
+  end
+
+  class PlainBackend
+    prepend History
+
+    def initialize
+      require 'bond'
+      initialize_magics
+      Bond.start(debug: true)
+    end
+
+    def eval(code, store_history)
+      eval_with_magic(code) do
         TOPLEVEL_BINDING.eval(code)
       end
     end
@@ -73,6 +84,7 @@ module IRuby
 
     def initialize
       require 'pry'
+      initialize_magics
       Pry.memory_size = 3 
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
@@ -82,10 +94,14 @@ module IRuby
 
     def eval(code, store_history)
       @pry.last_result = nil
-      unless @pry.eval(code)
-        reset
-        raise SystemExit
+
+      eval_with_magic(code) do
+        unless @pry.eval(code)
+          reset
+          raise SystemExit
+        end
       end
+
       unless @pry.eval_string.empty?
         syntax_error = @pry.eval_string
         @pry.reset_eval_string

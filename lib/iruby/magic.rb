@@ -2,6 +2,8 @@ module IRuby
 
   module Magic
 
+    AVAILABLE_MAGIC_NAMES = []
+
     class Base
 
       class << self
@@ -36,5 +38,13 @@ module IRuby
   end
 
   Dir[File.dirname(__FILE__) + '/magic/*.rb'].each {|magic_file| require magic_file }
+
+  module ::Kernel
+
+    def lsmagic
+      puts "Available line magics:\n#{IRuby::Magic::AVAILABLE_MAGIC_NAMES.collect{|name| "%#{name}" }.join(' ')}"
+    end
+
+  end
 
 end
