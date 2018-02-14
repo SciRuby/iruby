@@ -1,6 +1,7 @@
 module IRuby
   In, Out = [nil], [nil]
   ::In, ::Out = In, Out
+  MAGICS = {}
 
   module History
     def eval(code, store_history)
@@ -37,16 +38,34 @@ module IRuby
 
     def initialize
       require 'bond'
+      @magics = {}
+      IRuby::Magic::Base.subclasses.each do|clazz|
+        magic = clazz.new(self)
+        @magics[magic.name] = clazz.new(self)
+      end
+      IRuby.logger.info @magics
       Bond.start(debug: true)
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code)
+      first_line = code.lines.first.strip
+      if first_line[0] == '%'
+        cmd, *args = first_line.sub(/^[\s%]+/, '').split(/[\s]/).reject(&:empty?)
+        magic = @magics[cmd]
+        if magic
+          magic.execute(args, code)
+        else
+          "Unknown magic [#{cmd}]"
+        end
+      else
+        TOPLEVEL_BINDING.eval(code)
+      end
     end
 
     def complete(code)
       Bond.agent.call(code, code)
     end
+
   end
 
   class PryBackend

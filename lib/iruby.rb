@@ -14,6 +14,7 @@ require 'iruby/utils'
 require 'iruby/display'
 require 'iruby/comm'
 require 'iruby/session/mixin'
+require 'iruby/magic'
 
 begin
   require 'iruby/session/cztop'
