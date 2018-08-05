@@ -5,13 +5,7 @@ module IRuby
   class Command
     def initialize(args)
       @args = args
-
-      ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
-      @args.each do |arg|
-        ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
-      end
-      @kernel_dir = File.join(File.expand_path(ipython_dir), 'kernels', 'ruby')
-      @kernel_file = File.join(@kernel_dir, 'kernel.json')
+      @kernel_name = 'ruby'
       @iruby_path = File.expand_path $0
     end
 
@@ -23,10 +17,6 @@ module IRuby
       when 'help', '-h', '--help'
         print_help
       when 'register'
-        if registered_iruby_path && !@args.include?('--force')
-          STDERR.puts "#{@kernel_file} already exists!\nUse --force to force a register."
-          exit 1
-        end
         register_kernel
       when 'unregister'
         unregister_kernel
@@ -64,7 +54,6 @@ Try `ipython help` for more information.
       Dir.chdir(working_dir) if working_dir
 
       require boot_file if boot_file
-      check_bundler {|e| IRuby.logger.warn "Could not load bundler: #{e.message}\n#{e.backtrace.join("\n")}" }
 
       require 'iruby'
       Kernel.new(config_file).run
@@ -88,51 +77,29 @@ Try `ipython help` for more information.
       @args += %w(--kernel ruby) if %w(console qtconsole).include? @args.first
 
       check_version
-      check_registered_kernel
-      check_bundler {|e| STDERR.puts "Could not load bundler: #{e.message}" }
 
-      Kernel.exec('ipython', *@args)
-    end
-
-    def check_registered_kernel
-      if kernel = registered_iruby_path
-        STDERR.puts "#{@iruby_path} differs from registered path #{registered_iruby_path}.
-This might not work. Run 'iruby register --force' to fix it." if @iruby_path != kernel
-      else
-        register_kernel
-      end
-    end
-
-    def check_bundler
-      require 'bundler'
-      raise %q{iruby is missing from Gemfile. This might not work.
-Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.any? {|s| s.name == 'iruby' }
-      Bundler.setup
-    rescue LoadError
-    rescue Exception => e
-      yield(e)
+      Kernel.exec('jupyter', *@args)
     end
 
     def register_kernel
-      FileUtils.mkpath(@kernel_dir)
-      unless RUBY_PLATFORM =~ /mswin(?!ce)|mingw|cygwin/
-        File.write(@kernel_file, MultiJson.dump(argv: [ @iruby_path, 'kernel', '{connection_file}' ],
-                                              display_name: "Ruby #{RUBY_VERSION}", language: 'ruby'))
-      else
-        ruby_path, iruby_path = [RbConfig.ruby, @iruby_path].map{|path| path.gsub('/', '\\\\')}
-        File.write(@kernel_file, MultiJson.dump(argv: [ ruby_path, iruby_path, 'kernel', '{connection_file}' ],
-                                                display_name: "Ruby #{RUBY_VERSION}", language: 'ruby'))
+      require 'tmpdir'
+
+      Dir.mktmpdir do |dir|
+        kernel_file = File.join(dir, 'kernel.json')
+
+        File.write(kernel_file, MultiJson.dump(
+          argv: [ @iruby_path, 'kernel', '{connection_file}' ],
+          display_name: "Ruby #{RUBY_VERSION}", language: 'ruby'
+        ))
+
+        FileUtils.copy(Dir[File.join(__dir__, 'assets', '*')], dir) rescue nil
+
+        `jupyter kernelspec install --user --replace --name=#{@kernel_name} #{dir}`
       end
-
-      FileUtils.copy(Dir[File.join(__dir__, 'assets', '*')], @kernel_dir) rescue nil
-    end
-
-    def registered_iruby_path
-      File.exist?(@kernel_file) && MultiJson.load(File.read(@kernel_file))['argv'].first
     end
 
     def unregister_kernel
-      FileUtils.rm_rf(@kernel_dir)
+      `jupyter kernelspec uninstall -f #{@kernel_name}`
     end
   end
 end
