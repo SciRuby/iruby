@@ -34,7 +34,7 @@ After preparing dependencies, install the Ruby gem.
 
 ```shell
 gem install cztop iruby
-iruby register --force
+iruby register
 ```
 
 Now you can select Ruby kernel in Jupyter Notebook with:
@@ -49,12 +49,14 @@ Run the following commands on **Ruby command prompt**:
 ```shell
 gem install cztop
 gem install iruby
-iruby register --force
+iruby register
 ```
 
 Now you can select Ruby kernel in Jupyter Notebook with:
 
-    jupyter-notebook
+```shell
+jupyter-notebook
+```
 
 ### Mac
 I recommend an installation using [Anaconda](https://www.continuum.io/downloads).
