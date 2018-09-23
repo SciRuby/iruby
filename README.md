@@ -8,7 +8,7 @@ This is a Ruby kernel for Jupyter and is part of [SciRuby](http://sciruby.com/).
 The installation instructions are divided according to environments mainly because of ZeroMQ.
 
 ### Ubuntu
-At first install Jupyter. I recommend an installation using [Anaconda](https://www.continuum.io/downloads) Python 3.6 version.
+At first install Jupyter. I recommend an installation using [Anaconda](https://www.anaconda.com/download/) Python 3.6 version.
 
 #### Preparing dependencies on 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0.  The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
@@ -42,7 +42,7 @@ Now you can select Ruby kernel in Jupyter Notebook with:
     jupyter-notebook
 
 ### Windows
-At first install **git** and Jupyter. I recommend an installation using [Anaconda](https://www.continuum.io/downloads).
+At first install **git** and Jupyter. I recommend an installation using [Anaconda](https://www.anaconda.com/download/).
 
 Run the following commands on **Ruby command prompt**:
 
@@ -57,7 +57,7 @@ Now you can select Ruby kernel in Jupyter Notebook with:
     jupyter-notebook
 
 ### Mac
-I recommend an installation using [Anaconda](https://www.continuum.io/downloads).
+I recommend an installation using [Anaconda](https://www.anaconda.com/download/).
 
 After that, run the following commands.
 
@@ -83,7 +83,7 @@ If you are using macports, run the following commands.
 
 ### FreeBSD
 
-At first install IPython/Jupyter. 
+At first install IPython/Jupyter.
 There is a pyzmq ports (ports/net/py-pyzmq) which depends on libzmq4, however, it doesn't works with ipython.
 Therefore we use libzmq3 like the following:
 
@@ -121,7 +121,7 @@ Then, install iruby and related ports and gems.
     ```
 ## Installation for jRuby
 
-Since jRuby is fully compatible with Ruby version 2.2, it is possible to use iruby with jRuby. 
+Since jRuby is fully compatible with Ruby version 2.2, it is possible to use iruby with jRuby.
 It can be helpful if you want to use java classes in your iruby notebook.
 This will require the following software:
 * jRuby version >= 9.0.4.0
