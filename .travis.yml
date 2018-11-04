@@ -1,31 +1,23 @@
+sudo: required
+
 language: ruby
 
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/ ./'
-      key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/Release.key'
-    packages:
-    - libsodium-dev
-    - libczmq-dev
-    - python3
-    - "python3-pip"
+services:
+  - docker
 
-rvm:
-  # As of now(2019-01-30), the build seems to fail at ruby-head
-  # - ruby-head
-  - 2.6.0
-  - 2.5.3
-  - 2.4.0
-  - 2.3.1
-  - 2.2.5
-  - 2.1.10
+env:
+  - ruby_version=2.6.1
 
 before_install:
-  - "sudo pip3 install --upgrade setuptools pip"
-  - "sudo pip3 install 'jupyter'"
+  - docker images
+  - rake ci:docker:before_install
 
-script: bundle exec rake
+install: 
+  - rake ci:docker:install
+  - docker images
 
-notifications:
-  irc: "chat.freenode.net#sciruby"
+after_install:
+  - rake ci:docker:install
+  - docker images
+
+script: rake ci:docker:script
