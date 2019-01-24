@@ -80,6 +80,16 @@ If you are using macports, run the following commands.
     gem install ffi-rzmq
     gem install iruby
 
+#### Homebrew
+
+Alternatively, if you are using [Homebrew](https://brew.sh/), run the following commands:
+
+```
+brew install czmq
+gem install iruby
+gem install ffi-rzmq
+iruby register
+```
 
 ### FreeBSD
 
