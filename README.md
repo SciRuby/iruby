@@ -8,44 +8,14 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 ![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
 
 ## Installation
-How to set up ZeroMQ depends on your environment.
-You can use one of the following. 
-* CZTOP and CZMQ >= 4.0.0
-* ffi-qmz and libzmq >= 3.2
-
-### Windows
-Install git and Jupyter with Anaconda(recommended). 
-
-```shell
-gem install cztop
-gem install iruby --pre
-iruby register --force
-```
-
-### Mac
-Install ruby with rbenv or rvm.
-Install Jupyter with Anaconda(recommended). 
-
-```shell
-brew install automake gmp libtool wget
-
-brew install zeromq
-brew install czmq --HEAD
-gem install cztop
-gem install iruby --pre
-iruby register --force
-```
-
-If you are using macports, run the following commands.
-
-```shell
-port install libtool autoconf automake autogen
-gem install ffi-rzmq
-gem install iruby
-```
+How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
+You can use one of the following libraries. 
+* [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
+* [ffi-rqmz](https://github.com/chuckremes/ffi-rzmq) and [libzmq
+](https://github.com/zeromq/libzmq) >= 3.2
 
 ### Ubuntu
-Install Jupyter with Anaconda(recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
 
 #### Setup ZeroMQ on Ubuntu 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
@@ -71,6 +41,46 @@ sudo apt install libzmq3-dev libczmq-dev
 gem install cztop
 gem install iruby --pre
 iruby register --force
+```
+
+### Windows
+Install git and Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+
+```shell
+gem install cztop
+gem install iruby --pre
+iruby register --force
+```
+
+### Mac
+Install ruby with rbenv or rvm.
+Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+
+#### Homebrew
+```shell
+bredw install automake gmp libtool wget
+brew install zeromq --HEAD
+brew install czmq --HEAD
+```
+
+Setup environment variables. 
+```
+export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
+export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
+```
+
+```shell
+gem install cztop
+# gem install ffi-rzmq
+gem install iruby --pre
+iruby register --force
+```
+
+#### MacPorts
+```shell
+port install libtool autoconf automake autogen
+gem install ffi-rzmq
+gem install iruby
 ```
 
 ### FreeBSD
@@ -128,7 +138,6 @@ $ iruby register --force
 ```
 
 ## Notebooks
-
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
 and other scientific gems. You can find the prebuild image at [dockerhub](https://registry.hub.docker.com/u/minad/sciruby-notebooks/).
@@ -137,11 +146,9 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 We welcome contributions from everyone.
 
 ## Authors
-
 See the [CONTRIBUTORS](CONTRIBUTORS) file.
 
 ## License
-
 Copyright © 2013-19, IRuby contributors and the Ruby Science Foundation.
 
 All rights reserved.
