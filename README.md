@@ -57,11 +57,6 @@ git clone https://github.com/zeromq/czmq
 cd czmq
 ./autogen.sh && ./configure && sudo make && sudo make install
 ```
-```shell
-gem install cztop
-gem install iruby --pre
-iruby register --force
-```
 
 #### Setup ZeroMQ on Ubuntu 17.04 to 18.10
 Use official packages.
@@ -70,6 +65,8 @@ Use official packages.
 sudo apt install libtool libffi-dev ruby ruby-dev make
 sudo apt install libzmq3-dev libczmq-dev
 ```
+
+#### Install CZTop and IRuby
 ```shell
 gem install cztop
 gem install iruby --pre
@@ -94,27 +91,27 @@ LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq3
 3. install related packages
 
 ```shell
-$ sudo pkg install libzmq3 py27-qt4-gui py27-pexpect-3.3 py27-qt4-svg py27-pygments py27-Jinja2 py27-tornado py27-jsonschema
+sudo pkg install libzmq3 py27-qt4-gui py27-pexpect-3.3 py27-qt4-svg py27-pygments py27-Jinja2 py27-tornado py27-jsonschema
 ```
 4. make install using ports
 
 ```shell
-$ cd /usr/ports/net/py-pyzmq
-$ sudo make install
-$ cd /usr/ports/devel/ipython
-$ sudo make install
+cd /usr/ports/net/py-pyzmq
+sudo make install
+cd /usr/ports/devel/ipython
+sudo make install
 ```
 Then, install iruby and related ports and gems.
 ```shell
-$ sudo pkg install rubygem-mimemagic
-$ sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
-$ git clone https://github.com/SciRuby/iruby.git
-$ cd iruby
-$ gem build iruby.gemspec
-$ sudo gem install iruby-0.2.7.gem
+sudo pkg install rubygem-mimemagic
+sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
+git clone https://github.com/SciRuby/iruby.git
+cd iruby
+gem build iruby.gemspec
+sudo gem install iruby-0.2.7.gem
 ```
 
-## Installation for jRuby
+### Installation for JRuby
 You can use java classes in your iruby notebook. 
 * jRuby version >= 9.0.4.0
 * cztop gem
@@ -137,7 +134,7 @@ and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/)
 and other scientific gems. You can find the prebuild image at [dockerhub](https://registry.hub.docker.com/u/minad/sciruby-notebooks/).
 
 ## Contributing
-
+We welcome contributions from everyone.
 
 ## Authors
 
