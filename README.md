@@ -58,7 +58,7 @@ Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended).
 
 #### Homebrew
 ```shell
-bredw install automake gmp libtool wget
+brew install automake gmp libtool wget
 brew install zeromq --HEAD
 brew install czmq --HEAD
 ```
