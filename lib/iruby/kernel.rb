@@ -6,6 +6,18 @@ module IRuby
 
     class<< self
       attr_accessor :instance
+
+      def after_initialize_hooks
+        @after_initialize_hooks ||= []
+      end
+
+      def after_initialize(&block)
+        after_initialize_hooks << block
+      end
+
+      def run_after_initialize_hooks
+        after_initialize_hooks.each(&:call)
+      end
     end
 
     attr_reader :session
@@ -22,6 +34,8 @@ module IRuby
       @execution_count = 0
       @backend = create_backend
       @running = true
+
+      Kernel.run_after_initialize_hooks
     end
 
     def create_backend
