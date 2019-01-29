@@ -8,6 +8,8 @@ addons:
     packages:
     - libsodium-dev
     - libczmq-dev
+    - python3
+    - "python3-pip"
 
 rvm:
   - ruby-head
@@ -17,7 +19,7 @@ rvm:
   - 2.1.10
 
 before_install:
-  - "sudo pip install 'jupyter'"
+  - "sudo pip3 install 'jupyter'"
 
 script: bundle exec rake
 
