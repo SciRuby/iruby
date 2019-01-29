@@ -19,8 +19,8 @@ rvm:
   - 2.1.10
 
 before_install:
-  - "pip3 install --upgrade setuptools pip"
-  - "pip3 install 'jupyter'"
+  - "sudo pip3 install --upgrade setuptools pip"
+  - "sudo pip3 install 'jupyter'"
 
 script: bundle exec rake
 
