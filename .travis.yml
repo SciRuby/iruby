@@ -8,16 +8,22 @@ addons:
     packages:
     - libsodium-dev
     - libczmq-dev
+    - python3
+    - "python3-pip"
 
 rvm:
-  - ruby-head
+  # As of now(2019-01-30), the build seems to fail at ruby-head
+  # - ruby-head
+  - 2.6.0
+  - 2.5.3
   - 2.4.0
   - 2.3.1
   - 2.2.5
   - 2.1.10
 
 before_install:
-  - "sudo pip install 'jupyter'"
+  - "sudo pip3 install --upgrade setuptools pip"
+  - "sudo pip3 install 'jupyter'"
 
 script: bundle exec rake
 
