@@ -24,8 +24,8 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_development_dependency 'rake', '~> 10.4'
-  s.add_development_dependency 'minitest', '~> 5.6'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'minitest'
 
   s.add_runtime_dependency 'bond', '~> 0.5'
   s.add_runtime_dependency 'multi_json', '~> 1.11'
