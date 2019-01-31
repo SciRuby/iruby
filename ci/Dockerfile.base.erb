@@ -1,0 +1,13 @@
+FROM rubylang/ruby:<%= ruby_version %>-bionic
+
+ADD ci/requirements.txt /tmp
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+               libczmq-dev \
+               python3 \
+               python3-pip \
+               python3-setuptools \
+    && pip3 install wheel \
+    && pip3 install -r /tmp/requirements.txt \
+    && rm -f /tmp/requirements.txt

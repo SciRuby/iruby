@@ -6,7 +6,7 @@ class IntegrationTest < IRubyTest
   def setup
     $expect_verbose = false # make true if you want to dump the output of iruby console
 
-    @in, @out, pid = PTY.spawn('bin/iruby --config=jupyter_console_config.py')
+    @in, @out, pid = PTY.spawn('bin/iruby --simple-prompt')
     @waiter = Thread.start { Process.waitpid(pid) }
     expect 'In [', 30
     expect '1'
