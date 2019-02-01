@@ -11,7 +11,7 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
 You can use one of the following libraries. 
 * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
-* [ffi-rqmz](https://github.com/chuckremes/ffi-rzmq) and [libzmq
+* [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq
 ](https://github.com/zeromq/libzmq) >= 3.2
 
 ### Ubuntu
