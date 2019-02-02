@@ -36,3 +36,6 @@ matrix:
     - name: "Ruby 2.3"
       env:
         - ruby_version=2.3.8
+
+  allow_failures:
+    - name: "Ruby trunk-nightly"
