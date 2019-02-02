@@ -4,7 +4,7 @@ require 'expect'
 
 class IRubyTest::IntegrationTest < IRubyTest::TestBase
   def setup
-    $expect_verbose = false # make true if you want to dump the output of iruby console
+    $expect_verbose = true # make true if you want to dump the output of iruby console
 
     @in, @out, pid = PTY.spawn('bin/iruby --simple-prompt')
     @waiter = Thread.start { Process.waitpid(pid) }
@@ -19,6 +19,7 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
 
   def write(input)
     @out.puts input
+    @out.flush
   end
 
   def expect(pattern, timeout = 30)
@@ -30,17 +31,21 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
   end
 
   def test_interaction
+    puts '(1)'
     write '"Hello, world!"'
     expect '"Hello, world!"'
 
+    puts '(2)'
     wait_prompt
     write 'puts "Hello!"'
     expect 'Hello!'
 
+    puts '(3)'
     wait_prompt
     write '12 + 12'
     expect '24'
 
+    puts '(4)'
     wait_prompt
     write 'ls'
     expect 'self.methods'
