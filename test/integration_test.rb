@@ -8,9 +8,7 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
 
     @in, @out, pid = PTY.spawn('bin/iruby --simple-prompt')
     @waiter = Thread.start { Process.waitpid(pid) }
-    expect 'In [', 30
-    expect '1'
-    expect ']:'
+    expect 'In [1]:', 30
   end
 
   def teardown
@@ -23,13 +21,12 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
     @out.puts input
   end
 
-  def expect(pattern, timeout = 10)
+  def expect(pattern, timeout = 30)
     assert @in.expect(pattern, timeout), "#{pattern} expected, but timeout"
   end
 
   def wait_prompt
-    expect 'In ['
-    expect ']:'
+    expect /^In \[\d+\]:/
   end
 
   def test_interaction
