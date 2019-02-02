@@ -13,7 +13,7 @@ module IRubyTest
         @command = IRuby::Command.new([])
         ipython_dir = File.expand_path('~/.ipython')
         kernel_dir = File.join(ipython_dir, 'kernels', 'ruby')
-        assert_equal(kernel_dir, @command.instance_variable_get(:@kernel_dir))
+        assert_equal(kernel_dir, @command.kernel_dir)
       end
     end
 
@@ -22,7 +22,7 @@ module IRubyTest
         with_env('IPYTHONDIR' => tmpdir) do
           @command = IRuby::Command.new([])
           kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-          assert_equal(kernel_dir, @command.instance_variable_get(:@kernel_dir))
+          assert_equal(kernel_dir, @command.kernel_dir)
         end
       end
     end

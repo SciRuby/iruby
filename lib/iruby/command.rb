@@ -10,10 +10,12 @@ module IRuby
       @args.each do |arg|
         ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
       end
-      @kernel_dir = File.join(File.expand_path(ipython_dir), 'kernels', 'ruby')
-      @kernel_file = File.join(@kernel_dir, 'kernel.json')
+      @kernel_dir = File.join(File.expand_path(ipython_dir), 'kernels', 'ruby').freeze
+      @kernel_file = File.join(@kernel_dir, 'kernel.json').freeze
       @iruby_path = File.expand_path $0
     end
+
+    attr_reader :kernel_dir, :kernel_file
 
     def run
       case @args.first
