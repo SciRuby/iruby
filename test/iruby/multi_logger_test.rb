@@ -2,7 +2,7 @@ require 'stringio'
 require 'test_helper'
 require 'iruby/logger'
 
-class MultiLoggerTest < IRubyTest
+class IRubyTest::MultiLoggerTest < IRubyTest::TestBase
   def test_multilogger
     out, err = StringIO.new, StringIO.new
     logger = IRuby::MultiLogger.new(Logger.new(out), Logger.new(err))
