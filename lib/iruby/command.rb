@@ -1,3 +1,5 @@
+require 'iruby/jupyter'
+
 require 'fileutils'
 require 'multi_json'
 
@@ -6,11 +8,7 @@ module IRuby
     def initialize(args)
       @args = args
 
-      ipython_dir = ENV['IPYTHONDIR'] || '~/.ipython'
-      @args.each do |arg|
-        ipython_dir = $1 if arg =~ /\A--ipython-dir=(.*)\Z/
-      end
-      @kernel_dir = File.join(File.expand_path(ipython_dir), 'kernels', 'ruby').freeze
+      @kernel_dir = resolve_kernelspec_dir.freeze
       @kernel_file = File.join(@kernel_dir, 'kernel.json').freeze
       @iruby_path = File.expand_path $0
     end
@@ -40,6 +38,34 @@ module IRuby
     end
 
     private
+
+    def resolve_kernelspec_dir
+      if ENV.has_key?('JUPYTER_DATA_DIR')
+        if ENV.has_key?('IPYTHONDIR')
+          warn 'both JUPYTER_DATA_DIR and IPYTHONDIR are supplied; IPYTHONDIR is ignored.'
+        end
+        jupyter_data_dir = ENV['JUPYTER_DATA_DIR']
+        return File.join(jupyter_data_dir, 'kernels', 'ruby')
+      end
+
+      if ENV.has_key?('IPYTHONDIR')
+        warn 'IPYTHONDIR is deprecated. Use JUPYTER_DATA_DIR instead.'
+        ipython_dir = ENV['IPYTHONDIR']
+      end
+
+      @args.each do |arg|
+        next unless arg =~ /\A--ipython-dir=(.*)\Z/
+        warn '--ipython-dir is deprecated. Use JUPYTER_DATA_DIR environment variable instead.'
+        ipython_dir = $1
+        break
+      end
+
+      if ipython_dir
+        File.join(File.expand_path(ipython_dir), 'kernels', 'ruby')
+      else
+        File.join(Jupyter.kernelspec_dir, 'ruby')
+      end
+    end
 
     def print_help
       puts %{
