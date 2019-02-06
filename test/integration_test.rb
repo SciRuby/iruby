@@ -2,6 +2,7 @@ require 'test_helper'
 require 'pty'
 require 'expect'
 
+__END__
 class IRubyTest::IntegrationTest < IRubyTest::TestBase
   def setup
     $expect_verbose = false # make true if you want to dump the output of iruby console
