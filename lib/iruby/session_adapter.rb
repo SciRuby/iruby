@@ -21,16 +21,24 @@ module IRuby
     require_relative 'session_adapter/pyzmq_adapter'
 
     def self.select_adapter_class
-      classes = [
-        SessionAdapter::RbczmqAdapter,
-        SessionAdapter::CztopAdapter,
-        SessionAdapter::FfirzmqAdapter,
-        SessionAdapter::PyzmqAdapter
-      ]
-      classes.each do |cls|
+      classes = {
+        'rbczmq' => SessionAdapter::RbczmqAdapter,
+        'cztop' => SessionAdapter::CztopAdapter,
+        'ffi-rzmq' => SessionAdapter::FfirzmqAdapter,
+        'pyzmq' => SessionAdapter::PyzmqAdapter
+      }
+      if (name = ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
+        cls = classes[name]
+        unless cls.available?
+          raise SessionAdapterNotFound,
+                "Session adapter `#{name}` from IRUBY_SESSION_ADAPTER is unavailable"
+        end
+        return cls
+      end
+      classes.each_value do |cls|
         return cls if cls.available?
       end
-      raise SessionAdapterNotFound
+      raise SessionAdapterNotFound, "No session adapter is available"
     end
   end
 end
