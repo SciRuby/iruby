@@ -30,3 +30,5 @@ rescue LoadError
     end
   end
 end
+
+require 'iruby/session'
