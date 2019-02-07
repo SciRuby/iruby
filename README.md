@@ -5,8 +5,6 @@
 
 IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
-![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
-
 ## Installation
 How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
 You can use one of the following libraries. 
