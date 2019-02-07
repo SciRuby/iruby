@@ -12,6 +12,57 @@ module IRubyTest
       refute subclass.available?
     end
 
+    def test_select_adapter_class_with_rbczmq
+      IRuby::SessionAdapter::RbczmqAdapter.stub :available?, true do
+        IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
+          IRuby::SessionAdapter::FfirzmqAdapter.stub :available?, false do
+            IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
+              cls = IRuby::SessionAdapter.select_adapter_class
+              assert_equal IRuby::SessionAdapter::RbczmqAdapter, cls
+            end
+          end
+        end
+      end
+    end
+
+    def test_select_adapter_class_with_cztop
+      IRuby::SessionAdapter::CztopAdapter.stub :available?, true do
+        IRuby::SessionAdapter::RbczmqAdapter.stub :available?, false do
+          IRuby::SessionAdapter::FfirzmqAdapter.stub :available?, false do
+            IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
+              cls = IRuby::SessionAdapter.select_adapter_class
+              assert_equal IRuby::SessionAdapter::CztopAdapter, cls
+            end
+          end
+        end
+      end
+    end
+
+    def test_select_adapter_class_with_ffirzmq
+      IRuby::SessionAdapter::FfirzmqAdapter.stub :available?, true do
+        IRuby::SessionAdapter::RbczmqAdapter.stub :available?, false do
+          IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
+            IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
+              cls = IRuby::SessionAdapter.select_adapter_class
+              assert_equal IRuby::SessionAdapter::FfirzmqAdapter, cls
+            end
+          end
+        end
+      end
+    end
+
+    def test_select_adapter_class_with_pyzmq
+      IRuby::SessionAdapter::PyzmqAdapter.stub :available?, true do
+        IRuby::SessionAdapter::RbczmqAdapter.stub :available?, false do
+          IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
+            IRuby::SessionAdapter::FfirzmqAdapter.stub :available?, false do
+              cls = IRuby::SessionAdapter.select_adapter_class
+              assert_equal IRuby::SessionAdapter::PyzmqAdapter, cls
+            end
+          end
+        end
+      end
+    end
     def test_select_adapter_class_with_env
       with_env('IRUBY_SESSION_ADAPTER' => 'rbczmq') do
         IRuby::SessionAdapter::RbczmqAdapter.stub :available?, true do

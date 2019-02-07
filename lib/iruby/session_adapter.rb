@@ -13,6 +13,25 @@ module IRuby
       def initialize(config)
         @config = config
       end
+
+      def name
+        self.class.name[/::(\w+)Adapter\Z/, 1].downcase
+      end
+
+      def make_router_socket(protocol, host, port)
+        socket, port = make_socket(:ROUTER, protocol, host, port)
+        [socket, port]
+      end
+
+      def make_pub_socket(protocol, host, port)
+        socket, port = make_socket(:PUB, protocol, host, port)
+        [socket, port]
+      end
+
+      def make_rep_socket(protocol, host, port)
+        socket, port = make_socket(:REP, protocol, host, port)
+        [socket, port]
+      end
     end
 
     require_relative 'session_adapter/rbczmq_adapter'

@@ -40,6 +40,7 @@ module IRuby
 
     def dispatch
       msg = @session.recv(:reply)
+      IRuby.logger.debug "Kernel#dispatch: msg = #{msg}"
       type = msg[:header]['msg_type']
       raise "Unknown message type: #{msg.inspect}" unless type =~ /comm_|_request\Z/ && respond_to?(type)
       begin
@@ -57,7 +58,7 @@ module IRuby
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
                     implementation: 'iruby',
-                    banner: "IRuby #{IRuby::VERSION}",
+                    banner: "IRuby #{IRuby::VERSION} (with #{@session.description})",
                     implementation_version: IRuby::VERSION,
                     language_info: {
                       name: 'ruby',
@@ -68,6 +69,7 @@ module IRuby
     end
 
     def send_status(status)
+      IRuby.logger.debug "Send status: #{status}"
       @session.send(:publish, :status, execution_state: status)
     end
 
