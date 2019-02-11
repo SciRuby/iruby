@@ -4,6 +4,7 @@ require 'securerandom'
 require 'openssl'
 require 'tempfile'
 require 'set'
+
 require 'iruby/version'
 require 'iruby/kernel'
 require 'iruby/backend'
@@ -19,12 +20,12 @@ begin
   require 'iruby/session/cztop'
 rescue LoadError
   begin
-    require 'iruby/session/rbczmq'
+    require 'iruby/session/ffi_rzmq'
   rescue LoadError
     begin
-      require 'iruby/session/ffi_rzmq'
+      require 'iruby/session/rbczmq'
     rescue LoadError
-      STDERR.puts "You should install cztop, rbczmq or ffi_rzmq before running iruby notebook. See README."
+      STDERR.puts "You should install cztop, fi_rzmq or rbczmq before running iruby notebook. See README."
     end
   end
 end
