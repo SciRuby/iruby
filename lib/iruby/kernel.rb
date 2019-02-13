@@ -102,8 +102,7 @@ module IRuby
       { status: :error,
         ename: e.class.to_s,
         evalue: e.message,
-        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
-        execution_count: @execution_count }
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }] }
     end
 
     def is_complete_request(msg)
