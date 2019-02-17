@@ -6,6 +6,7 @@ require 'tempfile'
 require 'set'
 
 require 'iruby/version'
+require 'iruby/jupyter'
 require 'iruby/kernel'
 require 'iruby/backend'
 require 'iruby/ostream'
