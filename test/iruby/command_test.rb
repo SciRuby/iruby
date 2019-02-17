@@ -3,11 +3,6 @@ require 'iruby/command'
 
 module IRubyTest
   class CommandTest < TestBase
-    def setup
-      ipython_dir = File.expand_path('~/.ipython')
-      @kernel_dir = File.join(ipython_dir, 'kernels', 'ruby')
-    end
-
     def test_with_empty_argv
       with_env('JUPYTER_DATA_DIR' => nil,
                'IPYTHONDIR' => nil) do

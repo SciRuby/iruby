@@ -123,7 +123,7 @@ Try `ipython help` for more information.
     end
 
     def check_registered_kernel
-      if kernel = registered_iruby_path
+      if (kernel = registered_iruby_path)
         STDERR.puts "#{@iruby_path} differs from registered path #{registered_iruby_path}.
 This might not work. Run 'iruby register --force' to fix it." if @iruby_path != kernel
       else
