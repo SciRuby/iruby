@@ -16,6 +16,10 @@ module IRuby
 
     attr_reader :ipython_dir, :kernel_dir, :kernel_file
 
+    def ipython_kernel_dir
+      File.join(File.expand_path(@ipython_dir), 'kernels', 'ruby')
+    end
+
     def run
       case @args.first
       when 'version', '-v', '--version'
@@ -24,11 +28,12 @@ module IRuby
       when 'help', '-h', '--help'
         print_help
       when 'register'
-        if registered_iruby_path && !@args.include?('--force')
+        force_p = @args.include?('--force')
+        if registered_iruby_path && !force_p
           STDERR.puts "#{@kernel_file} already exists!\nUse --force to force a register."
           exit 1
         end
-        register_kernel
+        register_kernel(force_p)
       when 'unregister'
         unregister_kernel
       when 'kernel'
@@ -66,7 +71,7 @@ module IRuby
 
       if ipython_dir
         @ipython_dir = ipython_dir
-        File.join(File.expand_path(@ipython_dir), 'kernels', 'ruby')
+        ipython_kernel_dir
       else
         File.join(Jupyter.kernelspec_dir, 'ruby')
       end
@@ -146,8 +151,12 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.an
       yield(e)
     end
 
-    def register_kernel
-      return unless check_existing_kernel_in_ipythondir
+    def register_kernel(force_p=false)
+      if force_p
+        unregister_kernel_in_ipython_dir
+      else
+        return unless check_existing_kernel_in_ipython_dir
+      end
       FileUtils.mkpath(@kernel_dir)
       unless RUBY_PLATFORM =~ /mswin(?!ce)|mingw|cygwin/
         File.write(@kernel_file, MultiJson.dump(argv: [ @iruby_path, 'kernel', '{connection_file}' ],
@@ -161,8 +170,8 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.an
       FileUtils.copy(Dir[File.join(__dir__, 'assets', '*')], @kernel_dir) rescue nil
     end
 
-    def check_existing_kernel_in_ipythondir
-      return true unless File.file?(File.join(@ipython_dir, 'kernels', 'ruby', 'kernel.json'))
+    def check_existing_kernel_in_ipython_dir
+      return true unless File.file?(File.join(ipython_kernel_dir, 'kernel.json'))
       warn "IRuby kernel file already exists in the deprecated IPython's data directory."
       warn "Using --force, you can replace the old kernel file with the new one in Jupyter's data directory."
       false
@@ -174,6 +183,10 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.an
 
     def unregister_kernel
       FileUtils.rm_rf(@kernel_dir)
+    end
+
+    def unregister_kernel_in_ipython_dir
+      FileUtils.rm_rf(ipython_kernel_dir)
     end
   end
 end

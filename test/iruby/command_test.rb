@@ -110,7 +110,15 @@ module IRubyTest
             assert_output(nil, /IRuby kernel file already exists in the deprecated IPython's data directory\.\nUsing --force, you can replace the old kernel file with the new one in Jupyter's data directory\./) do
               @command.run
             end
+            assert(File.file?(File.join(@command.ipython_kernel_dir, 'kernel.json')))
             refute(File.file?(@command.kernel_file))
+
+            @command = IRuby::Command.new(["register", "--force"])
+            assert_output(nil, nil) do
+              @command.run
+            end
+            refute(File.exist?(@command.ipython_kernel_dir))
+            assert(File.file?(@command.kernel_file))
           end
         end
       end
@@ -155,11 +163,19 @@ module IRubyTest
           with_env('JUPYTER_DATA_DIR' => tmpdir,
                    'IPYTHONDIR' => nil,
                    'HOME' => tmpdir2) do
+            @command = IRuby::Command.new(["register"])
             assert_output(nil, /IRuby kernel file already exists in the deprecated IPython's data directory\.\nUsing --force, you can replace the old kernel file with the new one in Jupyter's data directory\./) do
-              @command = IRuby::Command.new(["register"])
               @command.run
-              refute(File.file?(@command.kernel_file))
             end
+            assert(File.file?(File.join(@command.ipython_kernel_dir, 'kernel.json')))
+            refute(File.file?(@command.kernel_file))
+
+            @command = IRuby::Command.new(["register", "--force"])
+            assert_output(nil, nil) do
+              @command.run
+            end
+            refute(File.file?(File.join(@command.ipython_kernel_dir, 'kernel.json')))
+            assert(File.file?(@command.kernel_file))
           end
         end
       end
