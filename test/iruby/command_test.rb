@@ -73,6 +73,22 @@ module IRubyTest
       end
     end
 
+    def test_with_JUPYTER_DATA_DIR_and_ipython_dir_option
+      Dir.mktmpdir do |tmpdir|
+        Dir.mktmpdir do |tmpdir2|
+          with_env('JUPYTER_DATA_DIR' => tmpdir,
+                   'IPYTHONDIR' => nil) do
+            assert_output(nil, /both JUPYTER_DATA_DIR and --ipython-dir are supplied; --ipython-dir is ignored\./) do
+              @command = IRuby::Command.new(%W[--ipython-dir=#{tmpdir2}])
+              kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
+              assert_equal(kernel_dir, @command.kernel_dir)
+              assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
+            end
+          end
+        end
+      end
+    end
+
     def test_register_and_unregister_with_JUPYTER_DATA_DIR
       Dir.mktmpdir do |tmpdir|
         with_env('JUPYTER_DATA_DIR' => tmpdir) do

@@ -44,6 +44,9 @@ module IRuby
         if ENV.has_key?('IPYTHONDIR')
           warn 'both JUPYTER_DATA_DIR and IPYTHONDIR are supplied; IPYTHONDIR is ignored.'
         end
+        if @args.find {|x| /\A--ipython-dir=/ =~ x }
+          warn 'both JUPYTER_DATA_DIR and --ipython-dir are supplied; --ipython-dir is ignored.'
+        end
         jupyter_data_dir = ENV['JUPYTER_DATA_DIR']
         return File.join(jupyter_data_dir, 'kernels', 'ruby')
       end
