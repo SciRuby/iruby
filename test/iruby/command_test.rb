@@ -10,6 +10,7 @@ module IRubyTest
           @command = IRuby::Command.new([])
           kernel_dir = File.join(IRuby::Jupyter.kernelspec_dir, 'ruby')
           assert_equal(kernel_dir, @command.kernel_dir)
+          assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
         end
       end
     end
@@ -22,6 +23,7 @@ module IRubyTest
             @command = IRuby::Command.new([])
             kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
             assert_equal(kernel_dir, @command.kernel_dir)
+            assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
           end
         end
       end
@@ -35,6 +37,7 @@ module IRubyTest
             @command = IRuby::Command.new([])
             kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
             assert_equal(kernel_dir, @command.kernel_dir)
+            assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
           end
         end
       end
@@ -47,7 +50,8 @@ module IRubyTest
           assert_output(nil, /both JUPYTER_DATA_DIR and IPYTHONDIR are supplied; IPYTHONDIR is ignored\./) do
             @command = IRuby::Command.new([])
             kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-            assert_equal(kernel_dir, @command.instance_variable_get(:@kernel_dir))
+            assert_equal(kernel_dir, @command.kernel_dir)
+            assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
           end
         end
       end
@@ -60,7 +64,8 @@ module IRubyTest
           assert_output(nil, /--ipython-dir is deprecated\. Use JUPYTER_DATA_DIR environment variable instead\./) do
             @command = IRuby::Command.new(%W[--ipython-dir=#{tmpdir}])
             kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-            assert_equal(kernel_dir, @command.instance_variable_get(:@kernel_dir))
+            assert_equal(kernel_dir, @command.kernel_dir)
+            assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
           end
         end
       end
