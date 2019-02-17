@@ -8,12 +8,13 @@ module IRuby
     def initialize(args)
       @args = args
 
+      @ipython_dir = File.expand_path("~/.ipython")
       @kernel_dir = resolve_kernelspec_dir.freeze
       @kernel_file = File.join(@kernel_dir, 'kernel.json').freeze
       @iruby_path = File.expand_path $0
     end
 
-    attr_reader :kernel_dir, :kernel_file
+    attr_reader :ipython_dir, :kernel_dir, :kernel_file
 
     def run
       case @args.first
@@ -57,14 +58,15 @@ module IRuby
       end
 
       @args.each do |arg|
-        next unless arg =~ /\A--ipython-dir=(.*)\Z/
+        next unless /\A--ipython-dir=(.*)\Z/ =~ arg
+        ipython_dir = Regexp.last_match[1]
         warn '--ipython-dir is deprecated. Use JUPYTER_DATA_DIR environment variable instead.'
-        ipython_dir = $1
         break
       end
 
       if ipython_dir
-        File.join(File.expand_path(ipython_dir), 'kernels', 'ruby')
+        @ipython_dir = ipython_dir
+        File.join(File.expand_path(@ipython_dir), 'kernels', 'ruby')
       else
         File.join(Jupyter.kernelspec_dir, 'ruby')
       end
@@ -145,6 +147,7 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.an
     end
 
     def register_kernel
+      return unless check_existing_kernel_in_ipythondir
       FileUtils.mkpath(@kernel_dir)
       unless RUBY_PLATFORM =~ /mswin(?!ce)|mingw|cygwin/
         File.write(@kernel_file, MultiJson.dump(argv: [ @iruby_path, 'kernel', '{connection_file}' ],
@@ -156,6 +159,13 @@ Add `gem 'iruby'` to your Gemfile to fix it.} unless Bundler.definition.specs.an
       end
 
       FileUtils.copy(Dir[File.join(__dir__, 'assets', '*')], @kernel_dir) rescue nil
+    end
+
+    def check_existing_kernel_in_ipythondir
+      return true unless File.file?(File.join(@ipython_dir, 'kernels', 'ruby', 'kernel.json'))
+      warn "IRuby kernel file already exists in the deprecated IPython's data directory."
+      warn "Using --force, you can replace the old kernel file with the new one in Jupyter's data directory."
+      false
     end
 
     def registered_iruby_path

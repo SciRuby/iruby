@@ -89,21 +89,77 @@ module IRubyTest
       end
     end
 
+    def test_register_when_there_is_kernel_in_ipython_dir
+      Dir.mktmpdir do |tmpdir|
+        Dir.mktmpdir do |tmpdir2|
+          with_env('JUPYTER_DATA_DIR' => nil,
+                   'IPYTHONDIR' => nil,
+                   'HOME' => tmpdir2) do
+            ignore_warning do
+              @command = IRuby::Command.new(["register", "--ipython-dir=~/.ipython"])
+              assert_equal("#{tmpdir2}/.ipython/kernels/ruby/kernel.json", @command.kernel_file)
+              @command.run
+              assert(File.file?("#{tmpdir2}/.ipython/kernels/ruby/kernel.json"))
+            end
+          end
+
+          with_env('JUPYTER_DATA_DIR' => nil,
+                   'IPYTHONDIR' => nil,
+                   'HOME' => tmpdir2) do
+            @command = IRuby::Command.new(["register"])
+            assert_output(nil, /IRuby kernel file already exists in the deprecated IPython's data directory\.\nUsing --force, you can replace the old kernel file with the new one in Jupyter's data directory\./) do
+              @command.run
+            end
+            refute(File.file?(@command.kernel_file))
+          end
+        end
+      end
+    end
+
     def test_register_and_unregister_with_JUPYTER_DATA_DIR
       Dir.mktmpdir do |tmpdir|
-        with_env('JUPYTER_DATA_DIR' => tmpdir) do
-          assert_output(nil, nil) do
-            @command = IRuby::Command.new(['register'])
-            kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-            kernel_file = File.join(kernel_dir, 'kernel.json')
-            assert(!File.file?(kernel_file))
+        Dir.mktmpdir do |tmpdir2|
+          with_env('JUPYTER_DATA_DIR' => tmpdir,
+                   'IPYTHONDIR' => nil,
+                   'HOME' => tmpdir2) do
+            assert_output(nil, nil) do
+              @command = IRuby::Command.new(['register'])
+              kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
+              kernel_file = File.join(kernel_dir, 'kernel.json')
+              assert(!File.file?(kernel_file))
 
-            @command.run
-            assert(File.file?(kernel_file))
+              @command.run
+              assert(File.file?(kernel_file))
 
-            @command = IRuby::Command.new(['unregister'])
-            @command.run
-            assert(!File.file?(kernel_file))
+              @command = IRuby::Command.new(['unregister'])
+              @command.run
+              assert(!File.file?(kernel_file))
+            end
+          end
+        end
+      end
+    end
+
+    def test_register_and_unregister_with_JUPYTER_DATA_DIR_when_there_is_kernel_in_ipython_dir
+      Dir.mktmpdir do |tmpdir|
+        Dir.mktmpdir do |tmpdir2|
+          with_env('HOME' => tmpdir2) do
+            ignore_warning do
+              @command = IRuby::Command.new(["register", "--ipython-dir=~/.ipython"])
+              assert_equal("#{tmpdir2}/.ipython/kernels/ruby/kernel.json", @command.kernel_file)
+              @command.run
+              assert(File.file?("#{tmpdir2}/.ipython/kernels/ruby/kernel.json"))
+            end
+          end
+
+          with_env('JUPYTER_DATA_DIR' => tmpdir,
+                   'IPYTHONDIR' => nil,
+                   'HOME' => tmpdir2) do
+            assert_output(nil, /IRuby kernel file already exists in the deprecated IPython's data directory\.\nUsing --force, you can replace the old kernel file with the new one in Jupyter's data directory\./) do
+              @command = IRuby::Command.new(["register"])
+              @command.run
+              refute(File.file?(@command.kernel_file))
+            end
           end
         end
       end
@@ -111,19 +167,23 @@ module IRubyTest
 
     def test_register_and_unregister_with_IPYTHONDIR
       Dir.mktmpdir do |tmpdir|
-        with_env('IPYTHONDIR' => tmpdir) do
-          ignore_warning do
-            @command = IRuby::Command.new(['register'])
-            kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-            kernel_file = File.join(kernel_dir, 'kernel.json')
-            assert(!File.file?(kernel_file))
+        Dir.mktmpdir do |tmpdir2|
+          with_env('JUPYTER_DATA_DIR' => nil,
+                   'IPYTHONDIR' => tmpdir,
+                   'HOME' => tmpdir2) do
+            ignore_warning do
+              @command = IRuby::Command.new(['register'])
+              kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
+              kernel_file = File.join(kernel_dir, 'kernel.json')
+              assert(!File.file?(kernel_file))
 
-            @command.run
-            assert(File.file?(kernel_file))
+              @command.run
+              assert(File.file?(kernel_file))
 
-            @command = IRuby::Command.new(['unregister'])
-            @command.run
-            assert(!File.file?(kernel_file))
+              @command = IRuby::Command.new(['unregister'])
+              @command.run
+              assert(!File.file?(kernel_file))
+            end
           end
         end
       end
