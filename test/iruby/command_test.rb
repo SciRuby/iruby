@@ -45,13 +45,15 @@ module IRubyTest
 
     def test_with_JUPYTER_DATA_DIR_and_IPYTHONDIR
       Dir.mktmpdir do |tmpdir|
-        with_env('JUPYTER_DATA_DIR' => tmpdir,
-                 'IPYTHONDIR' => tmpdir) do
-          assert_output(nil, /both JUPYTER_DATA_DIR and IPYTHONDIR are supplied; IPYTHONDIR is ignored\./) do
-            @command = IRuby::Command.new([])
-            kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
-            assert_equal(kernel_dir, @command.kernel_dir)
-            assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
+        Dir.mktmpdir do |tmpdir2|
+          with_env('JUPYTER_DATA_DIR' => tmpdir,
+                   'IPYTHONDIR' => tmpdir2) do
+            assert_output(nil, /both JUPYTER_DATA_DIR and IPYTHONDIR are supplied; IPYTHONDIR is ignored\./) do
+              @command = IRuby::Command.new([])
+              kernel_dir = File.join(tmpdir, 'kernels', 'ruby')
+              assert_equal(kernel_dir, @command.kernel_dir)
+              assert_equal(File.join(kernel_dir, 'kernel.json'), @command.kernel_file)
+            end
           end
         end
       end
