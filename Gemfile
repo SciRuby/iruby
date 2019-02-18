@@ -16,4 +16,5 @@ end
 group :test do
   gem 'cztop'
   gem 'rbczmq'
+  gem 'ffi-rzmq'
 end

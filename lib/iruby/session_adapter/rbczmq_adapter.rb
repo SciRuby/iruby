@@ -14,7 +14,7 @@ module IRuby
       end
 
       def heartbeat_loop(sock)
-        ZMQ.proxy(socket, socket)
+        ZMQ.proxy(sock, sock)
       end
 
       private

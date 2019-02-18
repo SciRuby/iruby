@@ -59,7 +59,7 @@ namespace :ci do
     task :script do
       volumes = ['-v', "#{Dir.pwd}:/iruby"] if ENV['attach_pwd']
       sh 'docker', 'run', '--rm', '-it', *volumes,
-         iruby_test_image_name, 'bundle', 'exec', 'rake', 'test'
+         iruby_test_image_name, 'bash', 'run-test.sh'
     end
   end
 end

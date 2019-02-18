@@ -7,9 +7,9 @@ module IRuby
   class Session
     include SessionSerialize
 
-    def initialize(config)
+    def initialize(config, adapter_name=nil)
       @config = config
-      @adapter = create_session_adapter(config)
+      @adapter = create_session_adapter(config, adapter_name)
 
       setup
       setup_sockets
@@ -108,8 +108,8 @@ module IRuby
       end
     end
 
-    def create_session_adapter(config)
-      adapter_class = SessionAdapter.select_adapter_class
+    def create_session_adapter(config, adapter_name)
+      adapter_class = SessionAdapter.select_adapter_class(adapter_name)
       adapter_class.new(config)
     end
   end

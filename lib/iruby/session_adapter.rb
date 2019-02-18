@@ -39,18 +39,23 @@ module IRuby
     require_relative 'session_adapter/ffirzmq_adapter'
     require_relative 'session_adapter/pyzmq_adapter'
 
-    def self.select_adapter_class
+    def self.select_adapter_class(name=nil)
       classes = {
         'rbczmq' => SessionAdapter::RbczmqAdapter,
         'cztop' => SessionAdapter::CztopAdapter,
         'ffi-rzmq' => SessionAdapter::FfirzmqAdapter,
         'pyzmq' => SessionAdapter::PyzmqAdapter
       }
-      if (name = ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
+      if (name ||= ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
         cls = classes[name]
         unless cls.available?
-          raise SessionAdapterNotFound,
-                "Session adapter `#{name}` from IRUBY_SESSION_ADAPTER is unavailable"
+          if ENV['IRUBY_SESSION_ADAPTER']
+            raise SessionAdapterNotFound,
+                  "Session adapter `#{name}` from IRUBY_SESSION_ADAPTER is unavailable"
+          else
+            raise SessionAdapterNotFound,
+                  "Session adapter `#{name}` is unavailable"
+          end
         end
         return cls
       end
