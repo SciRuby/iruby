@@ -13,7 +13,7 @@ You can use one of the following libraries.
 ](https://github.com/zeromq/libzmq) >= 3.2
 
 ### Ubuntu
-Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
 
 #### Setup ZeroMQ on Ubuntu 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
@@ -42,7 +42,7 @@ iruby register --force
 ```
 
 ### Windows
-Install git and Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
 
 ```shell
 gem install cztop
@@ -50,9 +50,9 @@ gem install iruby --pre
 iruby register --force
 ```
 
-### Mac
+### macOS
 Install ruby with rbenv or rvm.
-Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
 
 #### Homebrew
 ```shell
@@ -109,7 +109,7 @@ sudo make install
 cd /usr/ports/devel/ipython
 sudo make install
 ```
-Then, install iruby and related ports and gems.
+Then, install IRuby and related ports and gems.
 ```shell
 sudo pkg install rubygem-mimemagic
 sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
@@ -120,17 +120,23 @@ sudo gem install iruby-0.2.7.gem
 ```
 
 ### Installation for JRuby
-You can use java classes in your iruby notebook. 
-* jRuby version >= 9.0.4.0
+
+You can use Java classes in your IRuby notebook. 
+
+* JRuby version >= 9.0.4.0
 * cztop gem
 * iruby gem
 
-After installation, make sure that your `env` is set up to jruby.
+After installation, make sure that your `env` is set up to use jruby.
+
 ```shell
 $ env ruby -v
 ```
+
 If you use RVM, it is enough to switch the current version to jruby.
-If you have already used iruby with a different version, you need to generate a new kernel:
+
+If you have already used IRuby with a different version, you need to generate a new kernel:
+
 ```shell
 $ iruby register --force
 ```
