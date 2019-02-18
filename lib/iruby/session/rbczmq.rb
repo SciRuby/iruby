@@ -57,7 +57,7 @@ module IRuby
         session:  @session,
         version:  '5.0'
       }
-      @sockets[socket].send_message(ZMQ::Message(*serialize(idents, header, content)))
+      @sockets[socket].send_message(ZMQ.Message(*serialize(idents, header, content)))
     end
 
     # Receive a message and decode it

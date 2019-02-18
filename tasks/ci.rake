@@ -57,8 +57,8 @@ namespace :ci do
 
     desc 'main script for CI with Docker'
     task :script do
-      sh 'docker', 'run', '--rm', '-it', iruby_test_image_name,
-         'bundle', 'exec', 'rake', 'test'
+      sh 'docker', 'run', '--rm', '-it', '-v', "#{Dir.pwd}:/iruby",
+         iruby_test_image_name, 'bundle', 'exec', 'rake', 'test'
     end
   end
 end
