@@ -94,6 +94,8 @@ Try `ipython help` for more information.
     def run_kernel
       require 'iruby/logger'
       IRuby.logger = MultiLogger.new(*Logger.new(STDOUT))
+      STDOUT.sync = true # FIXME: This can make the integration test.
+
       @args.reject! {|arg| arg =~ /\A--log=(.*)\Z/ && IRuby.logger.loggers << Logger.new($1) }
       IRuby.logger.level = @args.delete('--debug') ? Logger::DEBUG : Logger::INFO
 
