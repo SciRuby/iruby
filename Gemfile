@@ -16,6 +16,4 @@ end
 group :test do
   gem 'cztop'
   gem 'rbczmq'
-  gem 'ffi-rzmq'
-  gem 'pycall', '>= 1.2.1'
 end
