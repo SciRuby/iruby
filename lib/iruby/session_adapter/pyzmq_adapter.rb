@@ -24,26 +24,29 @@ module IRuby
         make_socket(:REP, protocol, host, port)
       end
 
+      def heartbeat_loop(sock)
+        PyCall.sys.path.append(File.expand_path('../pyzmq', __FILE__))
+        heartbeat = PyCall.import_module('iruby.heartbeat')
+        @heartbeat_thread = heartbeat.Heartbeat.new(sock)
+        @heartbeat_thread.start
+      end
 
       private
 
       def socket_type(type_symbol)
         case type_symbol
-        when :ROUTER, :PUB
-          zmq.__getattr__(type_symbol)
+        when :ROUTER, :PUB, :REP
+          zmq[type_symbol]
         else
-          if zmq.__hasattr__(type_symbol)
-            raise ArgumentError, "Unsupported ZMQ socket type: #{type_symbol}"
-          else
-            raise ArgumentError, "Unknown ZMQ socket type: #{type_symbol}"
-          end
+          raise ArgumentError, "Unknown ZMQ socket type: #{type_symbol}"
         end
       end
 
       def make_socket(type_symbol, protocol, host, port)
         type = socket_type(type_symbol)
-        zmq_context.socket(type)
+        sock = zmq_context.socket(type)
         bind_socket(sock, protocol, host, port)
+        sock
       end
 
       def bind_socket(sock, protocol, host, port)
@@ -62,7 +65,7 @@ module IRuby
       end
 
       def zmq_context
-        zmq.Context.instance.()
+        zmq.Context.instance
       end
 
       def zmq

@@ -8,6 +8,7 @@ RUN apt-get update \
                python3 \
                python3-pip \
                python3-setuptools \
+               libpython3.6 \
     && pip3 install wheel \
     && pip3 install -r /tmp/requirements.txt \
     && rm -f /tmp/requirements.txt
