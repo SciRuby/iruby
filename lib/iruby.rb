@@ -19,15 +19,15 @@ require 'iruby/comm'
 if ENV.fetch('IRUBY_OLD_SESSION', false)
   require 'iruby/session/mixin'
   begin
-    require 'iruby/session/cztop'
+    require 'iruby/session/ffi_rzmq'
   rescue LoadError
     begin
-      require 'iruby/session/ffi_rzmq'
+      require 'iruby/session/cztop'
     rescue LoadError
       begin
         require 'iruby/session/rbczmq'
       rescue LoadError
-        STDERR.puts "You should install cztop, rbczmq or ffi_rzmq before running iruby notebook. See README."
+        STDERR.puts "You should install ffi-rzmq, cztop, or rbczmq before running iruby notebook. See README."
       end
     end
   end

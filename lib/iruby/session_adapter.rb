@@ -34,16 +34,16 @@ module IRuby
       end
     end
 
-    require_relative 'session_adapter/rbczmq_adapter'
-    require_relative 'session_adapter/cztop_adapter'
     require_relative 'session_adapter/ffirzmq_adapter'
+    require_relative 'session_adapter/cztop_adapter'
+    require_relative 'session_adapter/rbczmq_adapter'
     require_relative 'session_adapter/pyzmq_adapter'
 
     def self.select_adapter_class(name=nil)
       classes = {
-        'rbczmq' => SessionAdapter::RbczmqAdapter,
-        'cztop' => SessionAdapter::CztopAdapter,
         'ffi-rzmq' => SessionAdapter::FfirzmqAdapter,
+        'cztop' => SessionAdapter::CztopAdapter,
+        'rbczmq' => SessionAdapter::RbczmqAdapter,
         'pyzmq' => SessionAdapter::PyzmqAdapter
       }
       if (name ||= ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
