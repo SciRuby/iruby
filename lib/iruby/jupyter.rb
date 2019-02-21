@@ -37,7 +37,7 @@ module IRuby
         case call_SHGetFolderPathW(Fiddle::NULL, csidl_appdata, Fiddle::NULL, 0, path)
         when 0
           len = (1 ... (path.size/2)).find {|i| path[2*i, 2] == "\0\0" }
-          path = path.to_str(2*len).force_encoding(Encoding::UTF_16LE)
+          path = path.to_str(2*len).encode(Encoding::UTF_8, Encoding::UTF_16LE)
         else
           ENV.fetch('APPDATA', '')
         end
