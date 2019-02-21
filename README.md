@@ -43,6 +43,7 @@ iruby register --force
 
 ### Windows
 Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
+[DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
 ```shell
 gem install cztop
