@@ -5,6 +5,26 @@ module IRuby
         require 'ffi-rzmq'
       end
 
+      def send(sock, data)
+        data.each_with_index do |part, i|
+          sock.send_string(part, i == data.size - 1 ? 0 : ZMQ::SNDMORE)
+        end
+      end
+
+      def recv(sock)
+        msg = []
+        while msg.empty? || sock.more_parts?
+          begin
+            frame = ''
+            rc = sock.recv_string(frame)
+            ZMQ::Util.error_check('zmq_msg_recv', rc)
+            msg << frame
+          rescue
+          end
+        end
+        msg
+      end
+
       def heartbeat_loop(sock)
         @heartbeat_device = ZMQ::Device.new(sock, sock)
       end
