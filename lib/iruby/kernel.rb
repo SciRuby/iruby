@@ -19,6 +19,8 @@ module IRuby
       $stdout = OStream.new(@session, :stdout)
       $stderr = OStream.new(@session, :stderr)
 
+      init_parent_process_poller
+
       @execution_count = 0
       @backend = create_backend
       @running = true
@@ -167,6 +169,38 @@ module IRuby
       comm_id = msg[:content]['comm_id']
       Comm.comm[comm_id].handle_close(msg[:content]['data'])
       Comm.comm.delete(comm_id)
+    end
+
+    private
+
+    def init_parent_process_poller
+      pid = ENV.fetch('JPY_PARENT_PID', 0).to_i
+      return unless pid > 1
+
+      case RUBY_PLATFORM
+      when /mswin/, /mingw/
+        # TODO
+      else
+        @parent_poller = start_parent_process_pollar_unix
+      end
+    end
+
+    def start_parent_process_pollar_unix
+      Thread.start do
+        IRuby.logger.warn("parent process poller thread started.")
+        loop do
+          begin
+            current_ppid = Process.ppid
+            if current_ppid == 1
+              IRuby.logger.warn("parent process appears to exited, shutting down.")
+              exit!(1)
+            end
+            sleep 1
+          rescue Errno::EINTR
+            # ignored
+          end
+        end
+      end
     end
   end
 end
