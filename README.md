@@ -45,8 +45,13 @@ iruby register --force
 Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
+Install ZeroMQ. 
 ```shell
-gem install cztop
+pacman -S mingw64/mingw-w64-x86_64-zeromq
+```
+
+```shell
+gem install ffi-rzmq
 gem install iruby --pre
 iruby register --force
 ```
@@ -62,15 +67,11 @@ brew install zeromq --HEAD
 brew install czmq --HEAD
 ```
 
-Setup environment variables. 
-```
-export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
-export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
-```
-
 ```shell
-gem install cztop
-# gem install ffi-rzmq
+# export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
+# export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
+# gem install cztop
+gem install ffi-rzmq
 gem install iruby --pre
 iruby register --force
 ```
