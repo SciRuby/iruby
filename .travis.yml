@@ -1,25 +1,41 @@
+sudo: required
+
 language: ruby
 
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/ ./'
-      key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/Release.key'
-    packages:
-    - libsodium-dev
-    - libczmq-dev
-
-rvm:
-  - ruby-head
-  - 2.4.0
-  - 2.3.1
-  - 2.2.5
-  - 2.1.10
+services:
+  - docker
 
 before_install:
-  - "sudo pip install 'jupyter'"
+  - docker images
+  - rake ci:docker:before_install
 
-script: bundle exec rake
+install: 
+  - rake ci:docker:install
+  - docker images
 
-notifications:
-  irc: "chat.freenode.net#sciruby"
+after_install:
+  - rake ci:docker:install
+  - docker images
+
+script: rake ci:docker:script
+
+matrix:
+  include:
+    - name: "Ruby trunk-nightly"
+      env:
+        - ruby_version=trunk-nightly
+    - name: "Ruby 2.6"
+      env:
+        - ruby_version=2.6.1
+    - name: "Ruby 2.5"
+      env:
+        - ruby_version=2.5.3
+    - name: "Ruby 2.4"
+      env:
+        - ruby_version=2.4.5
+    - name: "Ruby 2.3"
+      env:
+        - ruby_version=2.3.8
+
+  allow_failures:
+    - name: "Ruby trunk-nightly"
