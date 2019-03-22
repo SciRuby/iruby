@@ -13,3 +13,7 @@ group :plot do
   gem 'nyaplot', github: 'sciruby/nyaplot'
 end
 
+group :test do
+  gem 'cztop'
+  gem 'rbczmq'
+end

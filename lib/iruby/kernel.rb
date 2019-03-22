@@ -19,6 +19,8 @@ module IRuby
       $stdout = OStream.new(@session, :stdout)
       $stderr = OStream.new(@session, :stderr)
 
+      init_parent_process_poller
+
       @execution_count = 0
       @backend = create_backend
       @running = true
@@ -40,6 +42,7 @@ module IRuby
 
     def dispatch
       msg = @session.recv(:reply)
+      IRuby.logger.debug "Kernel#dispatch: msg = #{msg}"
       type = msg[:header]['msg_type']
       raise "Unknown message type: #{msg.inspect}" unless type =~ /comm_|_request\Z/ && respond_to?(type)
       begin
@@ -57,7 +60,7 @@ module IRuby
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
                     implementation: 'iruby',
-                    banner: "IRuby #{IRuby::VERSION}",
+                    banner: "IRuby #{IRuby::VERSION} (with #{@session.description})",
                     implementation_version: IRuby::VERSION,
                     language_info: {
                       name: 'ruby',
@@ -68,6 +71,7 @@ module IRuby
     end
 
     def send_status(status)
+      IRuby.logger.debug "Send status: #{status}"
       @session.send(:publish, :status, execution_state: status)
     end
 
@@ -102,8 +106,13 @@ module IRuby
       { status: :error,
         ename: e.class.to_s,
         evalue: e.message,
-        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
-        execution_count: @execution_count }
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }] }
+    end
+
+    def is_complete_request(msg)
+      # FIXME: the code completeness should be judged by using ripper or other Ruby parser
+      @session.send(:reply, :is_complete_reply,
+                    status: :unknown)
     end
 
     def complete_request(msg)
@@ -160,6 +169,38 @@ module IRuby
       comm_id = msg[:content]['comm_id']
       Comm.comm[comm_id].handle_close(msg[:content]['data'])
       Comm.comm.delete(comm_id)
+    end
+
+    private
+
+    def init_parent_process_poller
+      pid = ENV.fetch('JPY_PARENT_PID', 0).to_i
+      return unless pid > 1
+
+      case RUBY_PLATFORM
+      when /mswin/, /mingw/
+        # TODO
+      else
+        @parent_poller = start_parent_process_pollar_unix
+      end
+    end
+
+    def start_parent_process_pollar_unix
+      Thread.start do
+        IRuby.logger.warn("parent process poller thread started.")
+        loop do
+          begin
+            current_ppid = Process.ppid
+            if current_ppid == 1
+              IRuby.logger.warn("parent process appears to exited, shutting down.")
+              exit!(1)
+            end
+            sleep 1
+          rescue Errno::EINTR
+            # ignored
+          end
+        end
+      end
     end
   end
 end
