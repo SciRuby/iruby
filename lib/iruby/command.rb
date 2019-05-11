@@ -99,7 +99,7 @@ Try `ipython help` for more information.
       @args.reject! {|arg| arg =~ /\A--log=(.*)\Z/ && IRuby.logger.loggers << Logger.new($1) }
       IRuby.logger.level = @args.delete('--debug') ? Logger::DEBUG : Logger::INFO
 
-      raise(ArgumentError, 'Not enough arguments to the kernel') if @args.size < 2 || @args.size > 4
+      raise(ArgumentError, 'Not enough arguments to the kernel') unless @args.size == 3
       config_file, boot_file, working_dir = @args[1..-1]
       Dir.chdir(working_dir) if working_dir
 
