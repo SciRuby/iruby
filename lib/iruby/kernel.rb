@@ -94,6 +94,7 @@ module IRuby
       rescue Exception => e
         content = error_content(e)
         @session.send(:publish, :error, content)
+        content[:status] = :error
       end
       @session.send(:reply, :execute_reply, content)
       @session.send(:publish, :execute_result,
