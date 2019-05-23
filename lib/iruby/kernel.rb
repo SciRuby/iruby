@@ -53,7 +53,7 @@ module IRuby
       end
     rescue Exception => e
       IRuby.logger.debug "Kernel error: #{e.message}\n#{e.backtrace.join("\n")}"
-      @session.send(:publish, :error, error_message(e))
+      @session.send(:publish, :error, error_content(e))
     end
 
     def kernel_info_request(msg)
@@ -92,8 +92,9 @@ module IRuby
       rescue SystemExit
         content[:payload] << { source: :ask_exit }
       rescue Exception => e
-        content = error_message(e)
+        content = error_content(e)
         @session.send(:publish, :error, content)
+        content[:status] = :error
       end
       @session.send(:reply, :execute_reply, content)
       @session.send(:publish, :execute_result,
@@ -102,9 +103,8 @@ module IRuby
                     execution_count: @execution_count) unless result.nil? || msg[:content]['silent']
     end
 
-    def error_message(e)
-      { status: :error,
-        ename: e.class.to_s,
+    def error_content(e)
+      { ename: e.class.to_s,
         evalue: e.message,
         traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }] }
     end
