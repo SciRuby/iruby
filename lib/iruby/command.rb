@@ -104,7 +104,7 @@ Try `ipython help` for more information.
       Dir.chdir(working_dir) if working_dir
 
       require boot_file if boot_file
-      check_bundler {|e| IRuby.logger.warn "Could not load bundler: #{e.message}\n#{e.backtrace.join("\n")}" }
+      check_bundler {|e| IRuby.logger.warn "Could not load bundler: #{e.message}" }
 
       require 'iruby'
       Kernel.new(config_file).run
