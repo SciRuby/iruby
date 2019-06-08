@@ -78,6 +78,8 @@ iruby register --force
 ```
 
 #### MacPorts
+If you are using macports, run the following commands.
+
 ```shell
 port install libtool autoconf automake autogen
 gem install ffi-rzmq
