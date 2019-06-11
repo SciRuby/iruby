@@ -33,6 +33,10 @@ module IRuby
     alias_method :<<, :write
     alias_method :print, :write
 
+    def printf(*fmt)
+      write sprintf(*fmt)
+    end
+
     def puts(*lines)
       lines = [''] if lines.empty?
       lines.each { |s| write("#{s}\n")}
