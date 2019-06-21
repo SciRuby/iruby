@@ -25,27 +25,33 @@ module IRuby
     alias_method :next, :read
     alias_method :readline, :read
 
-    def write(*args)
-      str = args.join
-      raise 'I/O operation on closed file' unless @session
-      @session.send(:publish, :stream, name: @name, text: str)
-      nil
+    def write(*obj)
+      str = StringIO.open {|sio| sio.write(*obj); sio.string }
+      session_send(str)
     end
     alias_method :<<, :write
     alias_method :print, :write
 
-    def printf(*fmt)
-      write sprintf(*fmt)
+    def printf(format, *obj)
+      str = StringIO.open {|sio| sio.printf(format, *obj); sio.string }
+      session_send(str)
     end
 
-    def puts(*lines)
-      lines = [''] if lines.empty?
-      lines.each { |s| write("#{s}\n")}
-      nil
+    def puts(*obj)
+      str = StringIO.open {|sio| sio.puts(*obj); sio.string }
+      session_send(str)
     end
 
     def writelines(lines)
       lines.each { |s| write(s) }
+    end
+
+    private
+
+    def session_send(str)
+      raise 'I/O operation on closed file' unless @session
+      @session.send(:publish, :stream, name: @name, text: str)
+      nil
     end
   end
 end
