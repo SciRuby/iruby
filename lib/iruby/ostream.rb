@@ -25,9 +25,10 @@ module IRuby
     alias_method :next, :read
     alias_method :readline, :read
 
-    def write(s)
+    def write(*args)
+      str = args.join
       raise 'I/O operation on closed file' unless @session
-      @session.send(:publish, :stream, name: @name, text: s.to_s)
+      @session.send(:publish, :stream, name: @name, text: str)
       nil
     end
     alias_method :<<, :write
