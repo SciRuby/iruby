@@ -94,6 +94,7 @@ module IRuby
         content = error_content(e)
         @session.send(:publish, :error, content)
         content[:status] = :error
+        content[:execution_count] = @execution_count
       end
       @session.send(:reply, :execute_reply, content)
       @session.send(:publish, :execute_result,
