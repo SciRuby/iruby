@@ -1,7 +1,6 @@
 module IRuby
   class Kernel
     RED = "\e[31m"
-    WHITE = "\e[37m"
     RESET = "\e[0m"
 
     class<< self
@@ -106,7 +105,7 @@ module IRuby
     def error_content(e)
       { ename: e.class.to_s,
         evalue: e.message,
-        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }] }
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace] }
     end
 
     def is_complete_request(msg)
