@@ -1,14 +1,19 @@
 module IRuby
   module SessionAdapter
     class PyzmqAdapter < BaseAdapter
-      def self.load_requirements
-        require 'pycall'
-        @zmq = PyCall.import_module('zmq')
-      rescue PyCall::PyError => error
-        raise LoadError, error.message
-      end
 
       class << self
+        def load_requirements
+          require 'pycall'
+          import_pyzmq
+        end
+
+        def import_pyzmq
+          @zmq = PyCall.import_module('zmq')
+        rescue PyCall::PyError => error
+          raise LoadError, error.message
+        end
+
         attr_reader :zmq
       end
 
