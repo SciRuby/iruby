@@ -10,6 +10,10 @@ module IRuby
                                    metadata: {}) unless obj.nil?
     end
 
+    def clear_output(wait=false)
+      Display.clear_output(wait)
+    end
+
     def table(s, **options)
       html(HTML.table(s, options))
     end
