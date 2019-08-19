@@ -44,7 +44,7 @@ module IRuby
         'ffi-rzmq' => SessionAdapter::FfirzmqAdapter,
         'cztop' => SessionAdapter::CztopAdapter,
         'rbczmq' => SessionAdapter::RbczmqAdapter,
-        'pyzmq' => SessionAdapter::PyzmqAdapter
+        # 'pyzmq' => SessionAdapter::PyzmqAdapter
       }
       if (name ||= ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
         cls = classes[name]
