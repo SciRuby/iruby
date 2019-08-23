@@ -66,7 +66,8 @@ module IRuby
                       version: RUBY_VERSION,
                       mimetype: 'application/x-ruby',
                       file_extension: '.rb'
-                    })
+                    },
+                    status: :ok)
     end
 
     def send_status(status)
