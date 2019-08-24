@@ -26,19 +26,19 @@ module IRuby
     alias_method :readline, :read
 
     def write(*obj)
-      str = building_string { |sio| sio.write(*obj) }
+      str = build_string { |sio| sio.write(*obj) }
       session_send(str)
     end
     alias_method :<<, :write
     alias_method :print, :write
 
     def printf(format, *obj)
-      str = building_string { |sio| sio.printf(format, *obj) }
+      str = build_string { |sio| sio.printf(format, *obj) }
       session_send(str)
     end
 
     def puts(*obj)
-      str = building_string { |sio| sio.puts(*obj) }
+      str = build_string { |sio| sio.puts(*obj) }
       session_send(str)
     end
 
@@ -48,7 +48,7 @@ module IRuby
 
     private
 
-    def building_string
+    def build_string
       StringIO.open { |sio| yield(sio); sio.string }
     end
 
