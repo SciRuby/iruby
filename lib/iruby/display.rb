@@ -169,16 +169,6 @@ module IRuby
           LaTeX.vector(obj.to_a)
       end
 
-      type { NArray }
-      format 'text/latex' do |obj|
-        obj.dim == 2 ?
-        LaTeX.matrix(obj.transpose(1, 0), obj.shape[1], obj.shape[0]) :
-          LaTeX.vector(obj.to_a)
-      end
-      format 'text/html' do |obj|
-        HTML.table(obj.to_a)
-      end
-
       type { Matrix }
       format 'text/latex' do |obj|
         LaTeX.matrix(obj, obj.row_size, obj.column_size)
