@@ -12,6 +12,8 @@ You can use one of the following libraries.
 * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq) >= 3.2
 * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
 
+We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
+
 ### Ubuntu
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
 
