@@ -144,18 +144,11 @@ module IRuby
       # as requested in ipython/ipython#3806
       @session.send(:reply, :history_reply, history: [])
     end
-
+    
     def inspect_request(msg)
-      result = @backend.eval(msg[:content]['code'])
-      @session.send(:reply, :inspect_reply,
-                    status: :ok,
-                    data: Display.display(result),
-                    metadata: {})
-    rescue Exception => e
-      IRuby.logger.warn "Inspection error: #{e.message}\n#{e.backtrace.join("\n")}"
-      @session.send(:reply, :inspect_reply, status: :error)
+      @session.send(:reply, :inspect_reply, status: :ok, found: false, data: {}, metadata: {})
     end
-
+    
     def comm_open(msg)
       comm_id = msg[:content]['comm_id']
       target_name = msg[:content]['target_name']
