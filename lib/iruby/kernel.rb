@@ -146,6 +146,7 @@ module IRuby
     end
 
     def inspect_request(msg)
+      # not yet implemented. See (#119).
       @session.send(:reply, :inspect_reply, status: :ok, found: false, data: {}, metadata: {})
     end
 
