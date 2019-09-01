@@ -144,11 +144,11 @@ module IRuby
       # as requested in ipython/ipython#3806
       @session.send(:reply, :history_reply, history: [])
     end
-    
+
     def inspect_request(msg)
       @session.send(:reply, :inspect_reply, status: :ok, found: false, data: {}, metadata: {})
     end
-    
+
     def comm_open(msg)
       comm_id = msg[:content]['comm_id']
       target_name = msg[:content]['target_name']
