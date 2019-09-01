@@ -27,7 +27,7 @@ if ENV.fetch('IRUBY_OLD_SESSION', false)
       begin
         require 'iruby/session/rbczmq'
       rescue LoadError
-        STDERR.puts "You should install ffi-rzmq, cztop, or rbczmq before running iruby notebook. See README."
+        STDERR.puts "Please install ffi-rzmq or cztop before running iruby. See README."
       end
     end
   end
