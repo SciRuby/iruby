@@ -19,7 +19,7 @@ module IRubyTest
     end
   end
 
-  class PryBackend < IRubyTest::TestBase
+  class PryBackendTest < IRubyTest::TestBase
     def setup
       @prybackend = IRuby::PryBackend.new
     end
