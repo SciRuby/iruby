@@ -25,10 +25,6 @@ module IRuby
         make_socket(:PUB, protocol, host, port)
       end
 
-      def make_pub_socket(protocol, host, port)
-        make_socket(:REP, protocol, host, port)
-      end
-
       def heartbeat_loop(sock)
         PyCall.sys.path.append(File.expand_path('../pyzmq', __FILE__))
         heartbeat = PyCall.import_module('iruby.heartbeat')
