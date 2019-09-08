@@ -20,7 +20,7 @@ module IRuby
 
       def widget_css
         <<-CSS
-          .iruby-select { 
+          .iruby-select {
             min-width: 25%;
             margin-left: 0 !important;
           }
@@ -30,7 +30,7 @@ module IRuby
       def widget_js
         <<-JS
           $('.iruby-select').change(function(){
-            $(this).data('iruby-value', 
+            $(this).data('iruby-value',
               $(this).find('option:selected').text()
             );
           });
@@ -38,16 +38,16 @@ module IRuby
       end
 
       def widget_html
-        widget_label do 
-          div class: 'form-control' do 
+        widget_label do
+          div class: 'form-control' do
             params = {
-              class: 'iruby-select', 
+              class: 'iruby-select',
               :'data-iruby-key' => @key,
               :'data-iruby-value' => @default
             }
-            
-            select **params do 
-              @options.each do |o| 
+
+            select **params do
+              @options.each do |o|
                 option o, selected: @default == o
               end
             end

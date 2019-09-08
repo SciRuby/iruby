@@ -9,13 +9,13 @@ module IRuby
       def content; widget_html; end
 
       def self.builder method, &block
-        Builder.instance_eval do 
+        Builder.instance_eval do
           define_method method, &block
         end
       end
 
       def widget_join method, *args
-        strings = args.map do |arg| 
+        strings = args.map do |arg|
           arg.is_a?(String) ? arg : arg.send(method)
         end
         strings.uniq.join("\n")

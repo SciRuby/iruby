@@ -2,7 +2,7 @@ begin
   require 'erector'
 rescue LoadError
   raise LoadError, <<-ERROR.gsub(/\s+/,' ')
-    IRuby::Input requires the erector gem. 
+    IRuby::Input requires the erector gem.
     `gem install erector` or add `gem 'erector'`
     it to your Gemfile to continue.
   ERROR

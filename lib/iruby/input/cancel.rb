@@ -22,7 +22,7 @@ module IRuby
       def widget_html
         button(
           @label,
-          type: 'button', 
+          type: 'button',
           :'data-dismiss' => 'modal',
           class: "btn btn-danger pull-right iruby-cancel"
         )

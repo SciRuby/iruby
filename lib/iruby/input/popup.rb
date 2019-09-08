@@ -21,11 +21,11 @@ module IRuby
                 #{widget_join :widget_js, @form, *@buttons}
 
                 var popup = $(this);
-                
+
                 $('#iruby-form').submit(function() {
                   popup.modal('hide');
                 });
-                
+
                 Jupyter.notebook.keyboard_manager.disable();
               }
             });

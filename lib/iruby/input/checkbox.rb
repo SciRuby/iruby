@@ -56,10 +56,10 @@ module IRuby
         widget_label do
           div **params do
             @options.each do |option|
-              label class: 'checkbox-inline' do 
+              label class: 'checkbox-inline' do
                 input(
-                  name: @key, 
-                  value: option, 
+                  name: @key,
+                  value: option,
                   type: 'checkbox',
                   checked: @default.include?(option)
                 )

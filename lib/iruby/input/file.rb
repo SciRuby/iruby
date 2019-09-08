@@ -13,10 +13,10 @@ module IRuby
 
           # get rid of Chrome's silly path
           name = value['name'].sub('C:\\fakepath\\','')
-          
+
           result[key.to_sym] = {
             name: name,
-            data: uri.data, 
+            data: uri.data,
             content_type: uri.content_type
           }
         end
@@ -46,7 +46,7 @@ module IRuby
       def widget_html
         widget_label do
           input(
-            type: 'file', 
+            type: 'file',
             :'data-iruby-key' => @key,
             class: 'form-control iruby-file'
           )
