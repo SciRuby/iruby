@@ -91,7 +91,7 @@ module IRuby
     end
 
     class Renderer
-      attr_reader :match, :mime, :render, :priority
+      attr_reader :match, :mime, :priority
 
       def initialize(match, mime, render, priority)
         @match, @mime, @render, @priority = match, mime, render, priority
@@ -291,7 +291,7 @@ module IRuby
       end
 
       type { Object }
-      priority -1000
+      priority(-1000)
       format 'text/plain' do |obj|
         obj.inspect
       end
