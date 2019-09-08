@@ -8,14 +8,14 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
 ## Installation
 How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
-You can use one of the following libraries. 
+You can use one of the following libraries.
 * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq) >= 3.2
 * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
 
 We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
 
 ### Ubuntu
-Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
 #### Setup ZeroMQ on Ubuntu 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
@@ -45,10 +45,10 @@ iruby register --force
 ```
 
 ### Windows
-Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
+Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
-Install ZeroMQ. 
+Install ZeroMQ.
 ```shell
 pacman -S mingw64/mingw-w64-x86_64-zeromq
 ```
@@ -61,7 +61,7 @@ iruby register --force
 
 ### macOS
 Install ruby with rbenv or rvm.
-Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
 #### Homebrew
 ```shell
@@ -89,7 +89,7 @@ gem install iruby
 ```
 
 ### FreeBSD
-At first install IPython/Jupyter. 
+At first install IPython/Jupyter.
 There is a pyzmq ports (ports/net/py-pyzmq) which depends on libzmq4, however, it doesn't works with ipython.
 Therefore we use libzmq3 like the following:
 
@@ -128,7 +128,7 @@ sudo gem install iruby-0.2.7.gem
 
 ### Installation for JRuby
 
-You can use Java classes in your IRuby notebook. 
+You can use Java classes in your IRuby notebook.
 
 * JRuby version >= 9.0.4.0
 * cztop gem
@@ -155,9 +155,6 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 
 ## Contributing
 We welcome contributions from everyone.
-
-## Authors
-See the [CONTRIBUTORS](CONTRIBUTORS) file.
 
 ## License
 Copyright © 2013-19, IRuby contributors and the Ruby Science Foundation.
