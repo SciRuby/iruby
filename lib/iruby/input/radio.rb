@@ -6,7 +6,7 @@ module IRuby
       builder :radio do |*args, **params|
         key = :radio
         key, *args = args if args.first.is_a? Symbol
-        
+
         params[:key] = unique_key(key)
         params[:options] = args
         params[:default] ||= false
@@ -24,7 +24,7 @@ module IRuby
         <<-JS
           $('.iruby-radio input').change(function(){
             var parent = $(this).closest('.iruby-radio');
-            $(parent).data('iruby-value', 
+            $(parent).data('iruby-value',
               $(parent).find(':checked').val()
             );
           });
@@ -38,13 +38,13 @@ module IRuby
           :'data-iruby-value' => @options.first,
           class: 'iruby-radio form-control'
         }
-        widget_label do 
+        widget_label do
           div **params do
             @options.each do |option|
-              label class: 'radio-inline' do 
+              label class: 'radio-inline' do
                 input(
-                  name: @key, 
-                  value: option, 
+                  name: @key,
+                  value: option,
                   type: 'radio',
                   checked: @default == option
                 )

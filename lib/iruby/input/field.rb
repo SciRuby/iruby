@@ -17,9 +17,9 @@ module IRuby
       end
 
       def widget_html
-        widget_label do 
+        widget_label do
           input(
-            type: @type, 
+            type: @type,
             :'data-iruby-key' => @key,
             class: "form-control #{@js_class}",
             value: @default

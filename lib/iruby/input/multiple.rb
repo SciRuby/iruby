@@ -9,7 +9,7 @@ module IRuby
 
         params[:key] = unique_key(key)
         params[:options] = args
-        
+
         params[:default] = case params[:default]
         when false, nil
           []
@@ -24,12 +24,12 @@ module IRuby
 
       def widget_css
         <<-CSS
-          .iruby-multiple { 
+          .iruby-multiple {
             display: table;
             min-width: 25%;
           }
-          .form-control.iruby-multiple-container { 
-            display: table; 
+          .form-control.iruby-multiple-container {
+            display: table;
           }
         CSS
       end
@@ -54,17 +54,17 @@ module IRuby
       end
 
       def widget_html
-        widget_label do 
-          div class: 'form-control iruby-multiple-container' do 
+        widget_label do
+          div class: 'form-control iruby-multiple-container' do
             params = {
               size: @size,
               multiple: true,
-              class: 'iruby-multiple', 
+              class: 'iruby-multiple',
               :'data-iruby-key' => @key
             }
-            
-            select **params do 
-              @options.each do |o| 
+
+            select **params do
+              @options.each do |o|
                 option o, selected: @default.include?(o)
               end
             end

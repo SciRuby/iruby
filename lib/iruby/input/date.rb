@@ -6,7 +6,7 @@ module IRuby
       builder :date do |key='date', **params|
         params[:default] ||= false
         params[:key] = unique_key key
-        
+
         if params[:default].is_a? Time
           params[:default] = params[:default].strftime('%m/%d/%Y')
         end
@@ -22,13 +22,13 @@ module IRuby
         '#ui-datepicker-div { z-index: 2000 !important; }'
       end
 
-      def widget_js 
+      def widget_js
         <<-JS
           $('.iruby-date').datepicker({
             dateFormat: 'mm/dd/yy',
             onClose: function(date) {
               $(this).data('iruby-value', date);
-            }  
+            }
           });
         JS
       end

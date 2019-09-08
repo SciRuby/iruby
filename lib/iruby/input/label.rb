@@ -4,13 +4,13 @@ module IRuby
       needs label: nil, icon: nil
 
       def widget_label
-        div class: 'iruby-label input-group' do 
-          span class: 'input-group-addon' do 
+        div class: 'iruby-label input-group' do
+          span class: 'input-group-addon' do
             text @label || to_label(@key)
           end
-          
+
           yield
-          
+
           if @icon
             span @icon, class: "input-group-addon"
           end

@@ -21,7 +21,7 @@ module IRuby
       def html &block
         add_field Class.new(Widget) {
           define_method(:widget_html) { instance_eval &block }
-        }.new 
+        }.new
       end
 
       def text string
@@ -44,7 +44,7 @@ module IRuby
         end
       end
 
-      private 
+      private
 
       def process key, &block
         @processors[key.to_s] = block
@@ -52,14 +52,14 @@ module IRuby
 
       def unique_key key
         @keys ||= []
-        
+
         if @keys.include? key
           (2..Float::INFINITY).each do |i|
             test = "#{key}#{i}"
             break key = test unless @keys.include? test
           end
         end
-        
+
         @keys << key; key
       end
     end

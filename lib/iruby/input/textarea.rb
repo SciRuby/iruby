@@ -9,7 +9,7 @@ module IRuby
       end
 
       def widget_html
-        widget_label do 
+        widget_label do
           textarea(
             @default,
             rows: @rows,
