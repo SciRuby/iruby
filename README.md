@@ -88,6 +88,15 @@ gem install ffi-rzmq
 gem install iruby
 ```
 
+### Docker
+
+Try [RubyData Docker Stacks](https://github.com/RubyData/docker-stacks). 
+Running jupyter notebook:
+
+```shell
+docker run -p 8888:8888 rubydata/datascience-notebook
+```
+
 ### Installation for JRuby
 
 You can use Java classes in your IRuby notebook.
