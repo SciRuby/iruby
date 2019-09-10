@@ -88,44 +88,6 @@ gem install ffi-rzmq
 gem install iruby
 ```
 
-### FreeBSD
-At first install IPython/Jupyter.
-There is a pyzmq ports (ports/net/py-pyzmq) which depends on libzmq4, however, it doesn't works with ipython.
-Therefore we use libzmq3 like the following:
-
-1. make your ports tree up-to-date.
-2. replace LIBDEPENDS line in ports/net/py-pyzmq/Makefile
-
-```shell
-LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq4
-```
-with
-```shell
-LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq3
-```
-3. install related packages
-
-```shell
-sudo pkg install libzmq3 py27-qt4-gui py27-pexpect-3.3 py27-qt4-svg py27-pygments py27-Jinja2 py27-tornado py27-jsonschema
-```
-4. make install using ports
-
-```shell
-cd /usr/ports/net/py-pyzmq
-sudo make install
-cd /usr/ports/devel/ipython
-sudo make install
-```
-Then, install IRuby and related ports and gems.
-```shell
-sudo pkg install rubygem-mimemagic
-sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
-git clone https://github.com/SciRuby/iruby.git
-cd iruby
-gem build iruby.gemspec
-sudo gem install iruby-0.2.7.gem
-```
-
 ### Installation for JRuby
 
 You can use Java classes in your IRuby notebook.
