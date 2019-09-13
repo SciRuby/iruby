@@ -1,5 +1,8 @@
 require 'iruby'
 require 'tmpdir'
+require 'simplecov'
+SimpleCov.start
+
 require 'minitest/autorun'
 
 module IRubyTest
