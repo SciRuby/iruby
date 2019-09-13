@@ -15,4 +15,5 @@ end
 group :test do
   gem 'cztop'
   gem 'rbczmq'
+  gem 'simplecov'
 end
