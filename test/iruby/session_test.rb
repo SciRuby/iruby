@@ -27,7 +27,8 @@ module IRubyTest
                       when 'ffi-rzmq'
                         IRuby::SessionAdapter::FfirzmqAdapter
                       when 'pyzmq'
-                        IRuby::SessionAdapter::PyzmqAdapter
+                        skip "pyzmq adapter is disabled"
+                        # IRuby::SessionAdapter::PyzmqAdapter
                       else
                         flunk "Unknown session adapter: #{adapter_name}"
                       end
