@@ -52,6 +52,7 @@ module IRubyTest
     end
 
     def test_select_adapter_class_with_pyzmq
+      skip "pyzmq adapter is disabled"
       IRuby::SessionAdapter::PyzmqAdapter.stub :available?, true do
         IRuby::SessionAdapter::RbczmqAdapter.stub :available?, false do
           IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
@@ -63,6 +64,7 @@ module IRubyTest
         end
       end
     end
+
     def test_select_adapter_class_with_env
       with_env('IRUBY_SESSION_ADAPTER' => 'rbczmq') do
         IRuby::SessionAdapter::RbczmqAdapter.stub :available?, true do
@@ -101,15 +103,17 @@ module IRubyTest
       end
 
       with_env('IRUBY_SESSION_ADAPTER' => 'pyzmq') do
-        IRuby::SessionAdapter::PyzmqAdapter.stub :available?, true do
-          assert_equal IRuby::SessionAdapter::PyzmqAdapter, IRuby::SessionAdapter.select_adapter_class
-        end
-
-        IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
-          assert_raises IRuby::SessionAdapterNotFound do
-            IRuby::SessionAdapter.select_adapter_class
-          end
-        end
+        # pyzmq adapter is disabled
+        #
+        # IRuby::SessionAdapter::PyzmqAdapter.stub :available?, true do
+        #   assert_equal IRuby::SessionAdapter::PyzmqAdapter, IRuby::SessionAdapter.select_adapter_class
+        # end
+        #
+        # IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
+        #   assert_raises IRuby::SessionAdapterNotFound do
+        #     IRuby::SessionAdapter.select_adapter_class
+        #   end
+        # end
       end
     end
   end
