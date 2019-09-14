@@ -52,7 +52,7 @@ module IRubyTest
     end
 
     def test_select_adapter_class_with_pyzmq
-      omit "pyzmq adapter is disabled"
+      skip "pyzmq adapter is disabled"
       IRuby::SessionAdapter::PyzmqAdapter.stub :available?, true do
         IRuby::SessionAdapter::RbczmqAdapter.stub :available?, false do
           IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
