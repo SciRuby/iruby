@@ -125,9 +125,10 @@ module IRuby
       end
       @session.send(:reply, :complete_reply,
                     matches: @backend.complete(code),
-                    status: :ok,
                     cursor_start: start.to_i,
-                    cursor_end: msg[:content]['cursor_pos'])
+                    cursor_end: msg[:content]['cursor_pos'],
+                    metadata: {},
+                    status: :ok)
     end
 
     def connect_request(msg)
