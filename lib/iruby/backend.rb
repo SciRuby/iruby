@@ -33,15 +33,17 @@ module IRuby
   end
 
   class PlainBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
       require 'bond'
       Bond.start(debug: true)
+      @eval_path = '(iruby)'
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code)
+      TOPLEVEL_BINDING.eval(code, @eval_path, 1)
     end
 
     def complete(code)
@@ -50,6 +52,7 @@ module IRuby
   end
 
   class PryBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
@@ -58,10 +61,12 @@ module IRuby
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
+      @eval_path = Pry.eval_path
       reset
     end
 
     def eval(code, store_history)
+      Pry.current_line = 1
       @pry.last_result = nil
       unless @pry.eval(code)
         reset
