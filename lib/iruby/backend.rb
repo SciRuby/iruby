@@ -33,15 +33,17 @@ module IRuby
   end
 
   class PlainBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
       require 'bond'
       Bond.start(debug: true)
+      @eval_path = '(iruby)'
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code, '(iruby)', 1)
+      TOPLEVEL_BINDING.eval(code, @eval_path, 1)
     end
 
     def complete(code)

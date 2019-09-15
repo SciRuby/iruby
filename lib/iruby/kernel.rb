@@ -105,9 +105,10 @@ module IRuby
     end
 
     def error_content(e)
+      backtrace = e.backtrace[0..e.backtrace.rindex{|line| line.start_with?(@backend.eval_path)}]
       { ename: e.class.to_s,
         evalue: e.message,
-        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace] }
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *backtrace] }
     end
 
     def is_complete_request(msg)
