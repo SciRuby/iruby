@@ -41,7 +41,7 @@ module IRuby
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code)
+      TOPLEVEL_BINDING.eval(code, '(iruby)', 1)
     end
 
     def complete(code)
