@@ -62,6 +62,7 @@ module IRuby
     end
 
     def eval(code, store_history)
+      Pry.current_line = 1
       @pry.last_result = nil
       unless @pry.eval(code)
         reset
