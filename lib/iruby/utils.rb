@@ -15,7 +15,7 @@ module IRuby
     end
 
     def table(s, **options)
-      html(HTML.table(s, options))
+      html(Formatter::HTML.table(s, options))
     end
 
     def latex(s)

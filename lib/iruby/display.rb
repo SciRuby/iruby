@@ -176,7 +176,7 @@ module IRuby
           Formatter::LaTeX.vector(obj.to_a)
       end
       format 'text/html' do |obj|
-        HTML.table(obj.to_a)
+        Formatter::HTML.table(obj.to_a)
       end
 
       type { NArray }
@@ -186,7 +186,7 @@ module IRuby
           Formatter::LaTeX.vector(obj.to_a)
       end
       format 'text/html' do |obj|
-        HTML.table(obj.to_a)
+        Formatter::HTML.table(obj.to_a)
       end
 
       type { Matrix }
@@ -194,7 +194,7 @@ module IRuby
         Formatter::LaTeX.matrix(obj, obj.row_size, obj.column_size)
       end
       format 'text/html' do |obj|
-        HTML.table(obj.to_a)
+        Formatter::HTML.table(obj.to_a)
       end
 
       type { GSL::Matrix }
@@ -202,7 +202,7 @@ module IRuby
         Formatter::LaTeX.matrix(obj, obj.size1, obj.size2)
       end
       format 'text/html' do |obj|
-        HTML.table(obj.to_a)
+        Formatter::HTML.table(obj.to_a)
       end
 
       type { GSL::Vector }
@@ -210,7 +210,7 @@ module IRuby
         Formatter::LaTeX.vector(obj.to_a)
       end
       format 'text/html' do |obj|
-        HTML.table(obj.to_a)
+        Formatter::HTML.table(obj.to_a)
       end
 
       type { GSL::Complex }
