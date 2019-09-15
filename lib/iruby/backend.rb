@@ -52,6 +52,7 @@ module IRuby
   end
 
   class PryBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
@@ -60,6 +61,7 @@ module IRuby
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
+      @eval_path = Pry.eval_path
       reset
     end
 
