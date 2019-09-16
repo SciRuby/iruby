@@ -59,7 +59,6 @@ module IRuby
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
                     implementation: 'iruby',
-                    banner: "IRuby #{IRuby::VERSION} (with #{@session.description})",
                     implementation_version: IRuby::VERSION,
                     language_info: {
                       name: 'ruby',
@@ -67,6 +66,13 @@ module IRuby
                       mimetype: 'application/x-ruby',
                       file_extension: '.rb'
                     },
+                    banner: "IRuby #{IRuby::VERSION} (with #{@session.description})",
+                    help_links: [
+                      {
+                        text: "Ruby Documentation",
+                        url:  "https://ruby-doc.org/"
+                      }
+                    ],
                     status: :ok)
     end
 
@@ -126,9 +132,10 @@ module IRuby
       end
       @session.send(:reply, :complete_reply,
                     matches: @backend.complete(code),
-                    status: :ok,
                     cursor_start: start.to_i,
-                    cursor_end: msg[:content]['cursor_pos'])
+                    cursor_end: msg[:content]['cursor_pos'],
+                    metadata: {},
+                    status: :ok)
     end
 
     def connect_request(msg)
