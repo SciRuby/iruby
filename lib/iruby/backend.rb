@@ -57,7 +57,7 @@ module IRuby
 
     def initialize
       require 'pry'
-      Pry.memory_size = 3 
+      Pry.memory_size = 3
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
@@ -72,11 +72,22 @@ module IRuby
         reset
         raise SystemExit
       end
+
+      # not complete exception syntex error
       unless @pry.eval_string.empty?
         syntax_error = @pry.eval_string
         @pry.reset_eval_string
         @pry.evaluate_ruby syntax_error
       end
+
+      # raise SyntaxError when check if it is complete exception
+      # evaluate again for current line number
+      if @pry.last_result_is_exception? &&
+          @pry.last_exception.is_a?(SyntaxError) &&
+          @pry.last_exception.is_a?(Pry::UserError)
+         @pry.evaluate_ruby code
+      end
+
       raise @pry.last_exception if @pry.last_result_is_exception?
       @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
       @pry.last_result
