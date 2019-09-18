@@ -73,19 +73,18 @@ module IRuby
         raise SystemExit
       end
 
-      # not complete exception syntex error
-      unless @pry.eval_string.empty?
+      # Pry::Code.complete_expression? return false
+      if !@pry.eval_string.empty?
         syntax_error = @pry.eval_string
         @pry.reset_eval_string
-        @pry.evaluate_ruby syntax_error
-      end
+        @pry.evaluate_ruby(syntax_error)
 
-      # raise SyntaxError when check if it is complete exception
+      # Pry::Code.complete_expression? raise SyntaxError
       # evaluate again for current line number
-      if @pry.last_result_is_exception? &&
-          @pry.last_exception.is_a?(SyntaxError) &&
-          @pry.last_exception.is_a?(Pry::UserError)
-         @pry.evaluate_ruby code
+      elsif @pry.last_result_is_exception? &&
+              @pry.last_exception.is_a?(SyntaxError) &&
+              @pry.last_exception.is_a?(Pry::UserError)
+         @pry.evaluate_ruby(code)
       end
 
       raise @pry.last_exception if @pry.last_result_is_exception?
