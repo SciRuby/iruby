@@ -111,7 +111,8 @@ module IRuby
     end
 
     def error_content(e)
-      backtrace = e.backtrace[0..e.backtrace.rindex{|line| line.start_with?(@backend.eval_path)}]
+      rindex = e.backtrace.rindex{|line| line.start_with?(@backend.eval_path)} || -1
+      backtrace = e.backtrace[0..rindex]
       { ename: e.class.to_s,
         evalue: e.message,
         traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *backtrace] }
