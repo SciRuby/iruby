@@ -7,17 +7,30 @@
 IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
 ## Installation
-How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
-You can use one of the following libraries.
-* [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq) >= 3.2
-* [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
+
+### Requirements
+* [Jupyter](https://jupyter.org)
+* One of the following is required
+    * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq)
+    * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq)
 
 We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
 
 ### Ubuntu
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
-#### Setup ZeroMQ on Ubuntu 16.04
+#### 17.04 to 19.04
+
+```shell
+sudo apt install libtool libffi-dev ruby ruby-dev make
+sudo apt install libzmq3-dev libczmq-dev
+
+gem install ffi-rzmq
+gem install iruby --pre
+iruby register --force
+```
+
+#### 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
 
 ```shell
@@ -28,18 +41,6 @@ cd czmq
 ./autogen.sh && ./configure && sudo make && sudo make install
 
 gem install cztop
-gem install iruby --pre
-iruby register --force
-```
-
-#### Setup ZeroMQ on Ubuntu 17.04 to 18.10
-Use official packages.
-
-```shell
-sudo apt install libtool libffi-dev ruby ruby-dev make
-sudo apt install libzmq3-dev libczmq-dev
-
-gem install ffi-rzmq
 gem install iruby --pre
 iruby register --force
 ```
