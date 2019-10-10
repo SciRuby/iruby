@@ -32,7 +32,7 @@ gem install iruby --pre
 iruby register --force
 ```
 
-#### Setup ZeroMQ on Ubuntu 17.04 to 18.10
+#### Setup ZeroMQ on Ubuntu 17.04 to 19.04
 Use official packages.
 
 ```shell
