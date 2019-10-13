@@ -1,6 +1,5 @@
 module IRuby
   In, Out = [nil], [nil]
-  ::In, ::Out = In, Out
 
   module History
     def eval(code, store_history)
