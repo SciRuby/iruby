@@ -170,6 +170,9 @@ module IRuby
       end
 
       type { Numo::NArray }
+      format 'text/plain' do |obj|
+        obj.inspect
+      end
       format 'text/latex' do |obj|
         obj.ndim == 2 ?
         LaTeX.matrix(obj, obj.shape[0], obj.shape[1]) :
@@ -180,6 +183,9 @@ module IRuby
       end
 
       type { NArray }
+      format 'text/plain' do |obj|
+        obj.inspect
+      end
       format 'text/latex' do |obj|
         obj.dim == 2 ?
         LaTeX.matrix(obj.transpose(1, 0), obj.shape[1], obj.shape[0]) :
