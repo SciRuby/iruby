@@ -26,13 +26,13 @@ matrix:
         - ruby_version=trunk-nightly
     - name: "Ruby 2.6"
       env:
-        - ruby_version=2.6.1
+        - ruby_version=2.6.5
     - name: "Ruby 2.5"
       env:
-        - ruby_version=2.5.3
+        - ruby_version=2.5.7
     - name: "Ruby 2.4"
       env:
-        - ruby_version=2.4.5
+        - ruby_version=2.4.9
     - name: "Ruby 2.3"
       env:
         - ruby_version=2.3.8
