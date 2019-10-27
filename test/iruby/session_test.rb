@@ -22,8 +22,6 @@ module IRubyTest
       adapter_class = case adapter_name
                       when 'cztop'
                         IRuby::SessionAdapter::CztopAdapter
-                      when 'rbczmq'
-                        IRuby::SessionAdapter::RbczmqAdapter
                       when 'ffi-rzmq'
                         IRuby::SessionAdapter::FfirzmqAdapter
                       when 'pyzmq'
