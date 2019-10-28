@@ -4,7 +4,7 @@ set -ex
 
 export PYTHON=python3
 
-ADAPTERS="cztop rbczmq ffi-rzmq pyzmq"
+ADAPTERS="cztop ffi-rzmq pyzmq"
 
 for adapter in $ADAPTERS; do
   export IRUBY_TEST_SESSION_ADAPTER_NAME=$adapter
