@@ -14,6 +14,11 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
     * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq)
     * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq)
 
+If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop, set the following environment variable.
+```sh
+export IRUBY_SESSION_ADAPTER="cztop"
+```
+
 We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
 
 ### Ubuntu
