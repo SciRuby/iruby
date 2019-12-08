@@ -31,6 +31,7 @@ module IRuby
 
       # returns %APPDATA%
       def windows_user_appdata
+        require 'fiddle/import'
         check_windows
         path = Fiddle::Pointer.malloc(2 * 300) # uint16_t[300]
         csidl_appdata = 0x001a
