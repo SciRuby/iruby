@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w[lib]
 
-  s.required_ruby_version = '>= 2.3.0'
+  s.required_ruby_version = '>= 2.2.0'
 
   s.add_dependency 'bond', '~> 0.5'
   s.add_dependency 'data_uri', '~> 0.1'
