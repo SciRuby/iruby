@@ -11,7 +11,10 @@ module IRuby
         obj = obj.object
 
         fuzzy_mime = options[:format] # Treated like a fuzzy mime type
-        raise 'Invalid argument :format' unless !fuzzy_mime || String === fuzzy_mime
+        unless !fuzzy_mime || String === fuzzy_mime
+          raise 'Invalid argument :format'
+        end
+
         if exact_mime = options[:mime]
           raise 'Invalid argument :mime' unless String === exact_mime
           raise 'Invalid mime type' unless exact_mime.include?('/')
@@ -27,13 +30,15 @@ module IRuby
 
         # As a last resort, interpret string representation of the object
         # as the given mime type.
-        data[exact_mime] = protect(exact_mime, obj) if exact_mime && !data.any? {|m,_| exact_mime == m }
+        if exact_mime && data.none? { |m, _| exact_mime == m }
+          data[exact_mime] = protect(exact_mime, obj)
+        end
 
         data
       end
 
-      def clear_output(wait=false)
-        IRuby::Kernel.instance.session.send(:publish, :clear_output, {wait: wait})
+      def clear_output(wait = false)
+        IRuby::Kernel.instance.session.send(:publish, :clear_output, wait: wait)
       end
 
       private
@@ -44,15 +49,19 @@ module IRuby
 
       def render(data, obj, exact_mime, fuzzy_mime)
         # Filter matching renderer by object type
-        renderer = Registry.renderer.select {|r| r.match?(obj) }
+        renderer = Registry.renderer.select { |r| r.match?(obj) }
 
         matching_renderer = nil
 
         # Find exactly matching display by exact_mime
-        matching_renderer = renderer.find {|r| exact_mime == r.mime } if exact_mime
+        if exact_mime
+          matching_renderer = renderer.find { |r| exact_mime == r.mime }
+        end
 
         # Find fuzzy matching display by fuzzy_mime
-        matching_renderer ||= renderer.find {|r| r.mime && r.mime.include?(fuzzy_mime) } if fuzzy_mime
+        if fuzzy_mime
+          matching_renderer ||= renderer.find { |r| r.mime&.include?(fuzzy_mime) }
+        end
 
         renderer.unshift matching_renderer if matching_renderer
 
@@ -73,7 +82,8 @@ module IRuby
       attr_reader :object, :options
 
       def initialize(object, options)
-        @object, @options = object, options
+        @object = object
+        @options = options
       end
 
       class << self
@@ -94,7 +104,10 @@ module IRuby
       attr_reader :match, :mime, :priority
 
       def initialize(match, mime, render, priority)
-        @match, @mime, @render, @priority = match, mime, render, priority
+        @match = match
+        @mime = mime
+        @render = render
+        @priority = priority
       end
 
       def match?(obj)
@@ -114,7 +127,7 @@ module IRuby
         @renderer ||= []
       end
 
-      SUPPORTED_MIMES = %w(
+      SUPPORTED_MIMES = %w[
         text/plain
         text/html
         text/latex
@@ -122,7 +135,8 @@ module IRuby
         application/javascript
         image/png
         image/jpeg
-        image/svg+xml)
+        image/svg+xml
+      ]
 
       def match(&block)
         @match = block
@@ -131,7 +145,7 @@ module IRuby
       end
 
       def respond_to(name)
-        match {|obj| obj.respond_to?(name) }
+        match { |obj| obj.respond_to?(name) }
       end
 
       def type(&block)
@@ -153,7 +167,7 @@ module IRuby
 
       def format(mime = nil, &block)
         renderer << Renderer.new(@match, mime, block, @priority)
-        renderer.sort_by! {|r| -r.priority }
+        renderer.sort_by! { |r| -r.priority }
 
         # Decrease priority implicitly for all formats
         # which are added later for a type.
@@ -170,9 +184,7 @@ module IRuby
       end
 
       type { Numo::NArray }
-      format 'text/plain' do |obj|
-        obj.inspect
-      end
+      format 'text/plain', &:inspect
       format 'text/latex' do |obj|
         obj.ndim == 2 ?
         LaTeX.matrix(obj, obj.shape[0], obj.shape[1]) :
@@ -183,9 +195,7 @@ module IRuby
       end
 
       type { NArray }
-      format 'text/plain' do |obj|
-        obj.inspect
-      end
+      format 'text/plain', &:inspect
       format 'text/latex' do |obj|
         obj.dim == 2 ?
         LaTeX.matrix(obj.transpose(1, 0), obj.shape[1], obj.shape[0]) :
@@ -247,37 +257,27 @@ module IRuby
 
       match do |obj|
         defined?(Magick::Image) && Magick::Image === obj ||
-        defined?(MiniMagick::Image) && MiniMagick::Image === obj
+          defined?(MiniMagick::Image) && MiniMagick::Image === obj
       end
       format 'image' do |obj|
         format = obj.format || 'PNG'
-        [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob {|i| i.format = format }]
+        [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob { |i| i.format = format }]
       end
 
       type { Gruff::Base }
-      format 'image/png' do |obj|
-        obj.to_blob
-      end
+      format 'image/png', &:to_blob
 
       respond_to :to_html
-      format 'text/html' do |obj|
-        obj.to_html
-      end
+      format 'text/html', &:to_html
 
       respond_to :to_latex
-      format 'text/latex' do |obj|
-        obj.to_latex
-      end
+      format 'text/latex', &:to_latex
 
       respond_to :to_tex
-      format 'text/latex' do |obj|
-        obj.to_tex
-      end
+      format 'text/latex', &:to_tex
 
       respond_to :to_javascript
-      format 'text/javascript' do |obj|
-        obj.to_javascript
-      end
+      format 'text/javascript', &:to_javascript
 
       respond_to :to_svg
       format 'image/svg+xml' do |obj|
@@ -286,11 +286,9 @@ module IRuby
       end
 
       respond_to :to_iruby
-      format do |obj|
-        obj.to_iruby
-      end
+      format(&:to_iruby)
 
-      match {|obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
+      match { |obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
       format do |obj|
         mime = MimeMagic.by_path(obj.path).to_s
         [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
@@ -298,9 +296,7 @@ module IRuby
 
       type { Object }
       priority(-1000)
-      format 'text/plain' do |obj|
-        obj.inspect
-      end
+      format 'text/plain', &:inspect
     end
   end
 end
