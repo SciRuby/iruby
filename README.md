@@ -134,8 +134,6 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 We welcome contributions from everyone.
 
 ## License
-Copyright © 2013-19, IRuby contributors and the Ruby Science Foundation.
+Copyright (c) IRuby contributors and the Ruby Science Foundation.
 
-All rights reserved.
-
-IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the [LICENSE](LICENSE) file.
+Licensed under the [MIT](LICENSE) license.
