@@ -35,10 +35,7 @@ matrix:
         - ruby_version=2.5.7
     - name: "Ruby 2.4"
       env:
-        - ruby_version=2.4.9
-    - name: "Ruby 2.3"
-      env:
-        - ruby_version=2.3.8
+        - ruby_version=2.4.10
 
   allow_failures:
     - name: "Ruby trunk-nightly"
