@@ -8,7 +8,12 @@ module IRuby
       b.local_variable_set(:_ih, In)  unless b.local_variable_defined?(:_ih)
       b.local_variable_set(:_oh, Out) unless b.local_variable_defined?(:_oh)
 
-      out = super
+      out = nil
+      captured_stdout = capture_stdout { out = super }
+
+      unless captured_stdout.nil? || captured_stdout.empty?
+        $stdout.puts captured_stdout
+      end
 
       # TODO Add IRuby.cache_size which controls the size of the Out array
       # and sets the oldest entries and _<n> variables to nil.
@@ -28,6 +33,17 @@ module IRuby
       end
 
       out
+    end
+
+    def capture_stdout
+      require 'tempfile'
+      stdout = STDOUT.dup
+      Tempfile.open 'stdout-redirect' do |temp|
+        STDOUT.reopen temp.path, 'w+'
+        yield if block_given?
+        STDOUT.reopen stdout
+        temp.read
+      end
     end
   end
 
