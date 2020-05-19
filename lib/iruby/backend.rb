@@ -36,17 +36,20 @@ module IRuby
     prepend History
 
     def initialize
-      require 'bond'
-      Bond.start(debug: true)
-      @eval_path = '(iruby)'
+      require 'irb'
+      require 'irb/completion'
+      IRB.setup(nil)
+      @irb = IRB::Irb.new
+      IRB.conf[:MAIN_CONTEXT] = @irb.context
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code, @eval_path, 1)
+      @irb.context.evaluate(code, 0)
+      @irb.context.last_value
     end
 
     def complete(code)
-      Bond.agent.call(code, code)
+      IRB::InputCompletor::CompletionProc.call(code)
     end
   end
 
