@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.3.0'
 
-  s.add_dependency 'bond', '~> 0.5'
   s.add_dependency 'data_uri', '~> 0.1'
   s.add_dependency 'ffi-rzmq'
   s.add_dependency 'mimemagic', '~> 0.3'

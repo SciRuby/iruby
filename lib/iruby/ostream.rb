@@ -46,6 +46,11 @@ module IRuby
       lines.each { |s| write(s) }
     end
 
+    # Called by irb
+    def set_encoding(extern, intern)
+      a = extern
+    end
+
     private
 
     def build_string
