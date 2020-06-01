@@ -15,11 +15,17 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
     * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq)
 
 If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop, set the following environment variable.
+
 ```sh
 export IRUBY_SESSION_ADAPTER="cztop"
 ```
 
-We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
+* We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
+* If you want to install the latest version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
+
+```
+gem specific_install https://github.com/SciRuby/iruby
+```
 
 ### Ubuntu
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
