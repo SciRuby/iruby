@@ -264,6 +264,20 @@ module IRuby
         [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob { |i| i.format = format }]
       end
 
+      match do |obj|
+        defined?(Vips::Image) && Vips::Image === obj
+      end
+      format do |obj|
+        # handles Vips::Error, vips_image_get: field "vips-loader" not found
+        loader = obj.get('vips-loader') rescue nil
+        if loader == 'jpegload'
+          ['image/jpeg', obj.write_to_buffer('.jpg')]
+        else
+          # falls back to png for other/unknown types
+          ['image/png', obj.write_to_buffer('.png')]
+        end
+      end
+
       type { Gruff::Base }
       format 'image/png', &:to_blob
 
