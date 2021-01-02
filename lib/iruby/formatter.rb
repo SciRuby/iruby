@@ -78,16 +78,16 @@ module IRuby
 
       if maxcols && keys.size > maxcols
         keys1 = keys[0...maxcols / 2]
-        keys2 = keys[-maxcols / 2...-1]
+        keys2 = keys[-maxcols / 2 + 1..-1]
         if header
           header1 = header[0...maxcols / 2]
-          header2 = header[-maxcols / 2...-1]
+          header2 = header[-maxcols / 2 + 1..-1]
         end
       end
 
       if maxrows && rows.size > maxrows
         rows1 = rows[0...maxrows / 2]
-        rows2 = rows[-maxrows / 2...-1]
+        rows2 = rows[-maxrows / 2 + 1..-1]
       end
 
       table = '<table>'
