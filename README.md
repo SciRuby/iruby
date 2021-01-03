@@ -2,22 +2,46 @@
 
 [![Gem Version](https://badge.fury.io/rb/iruby.svg)](https://badge.fury.io/rb/iruby)
 [![Build Status](https://travis-ci.org/SciRuby/iruby.svg?branch=master)](https://travis-ci.org/SciRuby/iruby)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb)
 
 IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
-![Screenshot](https://cloud.githubusercontent.com/assets/50754/7956845/3fa46df8-09e3-11e5-8641-f5b8669061b5.png)
-
 ## Installation
-How to set up [ZeroMQ](http://zeromq.org/) depends on your environment.
-You can use one of the following libraries. 
-* [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq) >= 4.0.0
-* [ffi-rqmz](https://github.com/chuckremes/ffi-rzmq) and [libzmq
-](https://github.com/zeromq/libzmq) >= 3.2
+
+### Requirements
+* [Jupyter](https://jupyter.org)
+* One of the following is required
+    * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq)
+    * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq)
+
+If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop, set the following environment variable.
+
+```sh
+export IRUBY_SESSION_ADAPTER="cztop"
+```
+
+* We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
+* If you want to install the latest version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
+
+```
+gem specific_install https://github.com/SciRuby/iruby
+```
 
 ### Ubuntu
-Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
-#### Setup ZeroMQ on Ubuntu 16.04
+#### 17.04 to 19.04
+
+```shell
+sudo apt install libtool libffi-dev ruby ruby-dev make
+sudo apt install libzmq3-dev libczmq-dev
+
+gem install ffi-rzmq
+gem install iruby --pre
+iruby register --force
+```
+
+#### 16.04
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
 
 ```shell
@@ -26,35 +50,30 @@ sudo apt install git libzmq-dev autoconf pkg-config
 git clone https://github.com/zeromq/czmq
 cd czmq
 ./autogen.sh && ./configure && sudo make && sudo make install
-```
 
-#### Setup ZeroMQ on Ubuntu 17.04 to 18.10
-Use official packages.
-
-```shell
-sudo apt install libtool libffi-dev ruby ruby-dev make
-sudo apt install libzmq3-dev libczmq-dev
-```
-
-#### Install CZTop and IRuby
-```shell
 gem install cztop
 gem install iruby --pre
 iruby register --force
 ```
 
 ### Windows
-Install git and Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
+[DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
+
+Install ZeroMQ.
+```shell
+pacman -S mingw64/mingw-w64-x86_64-zeromq
+```
 
 ```shell
-gem install cztop
+gem install ffi-rzmq
 gem install iruby --pre
 iruby register --force
 ```
 
-### Mac
+### macOS
 Install ruby with rbenv or rvm.
-Install Jupyter with [Anaconda](https://www.anaconda.com/)(recommended). 
+Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
 #### Homebrew
 ```shell
@@ -63,76 +82,51 @@ brew install zeromq --HEAD
 brew install czmq --HEAD
 ```
 
-Setup environment variables. 
-```
-export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
-export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
-```
-
 ```shell
-gem install cztop
-# gem install ffi-rzmq
+# export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
+# export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
+# gem install cztop
+gem install ffi-rzmq
 gem install iruby --pre
 iruby register --force
 ```
 
 #### MacPorts
+If you are using macports, run the following commands.
+
 ```shell
 port install libtool autoconf automake autogen
 gem install ffi-rzmq
 gem install iruby
 ```
 
-### FreeBSD
-At first install IPython/Jupyter. 
-There is a pyzmq ports (ports/net/py-pyzmq) which depends on libzmq4, however, it doesn't works with ipython.
-Therefore we use libzmq3 like the following:
+### Docker
 
-1. make your ports tree up-to-date.
-2. replace LIBDEPENDS line in ports/net/py-pyzmq/Makefile
+Try [RubyData Docker Stacks](https://github.com/RubyData/docker-stacks). 
+Running jupyter notebook:
 
 ```shell
-LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq4
-```
-with
-```shell
-LIB_DEPENDS=    libzmq.so:${PORTSDIR}/net/libzmq3
-```
-3. install related packages
-
-```shell
-sudo pkg install libzmq3 py27-qt4-gui py27-pexpect-3.3 py27-qt4-svg py27-pygments py27-Jinja2 py27-tornado py27-jsonschema
-```
-4. make install using ports
-
-```shell
-cd /usr/ports/net/py-pyzmq
-sudo make install
-cd /usr/ports/devel/ipython
-sudo make install
-```
-Then, install iruby and related ports and gems.
-```shell
-sudo pkg install rubygem-mimemagic
-sudo gem install ffi-rzmq  # install ffi, ffi-rzmq-core and ffi-rzmq
-git clone https://github.com/SciRuby/iruby.git
-cd iruby
-gem build iruby.gemspec
-sudo gem install iruby-0.2.7.gem
+docker run -p 8888:8888 rubydata/datascience-notebook
 ```
 
 ### Installation for JRuby
-You can use java classes in your iruby notebook. 
-* jRuby version >= 9.0.4.0
+
+You can use Java classes in your IRuby notebook.
+
+* JRuby version >= 9.0.4.0
 * cztop gem
 * iruby gem
 
-After installation, make sure that your `env` is set up to jruby.
+After installation, make sure that your `env` is set up to use jruby.
+
 ```shell
 $ env ruby -v
 ```
+
 If you use RVM, it is enough to switch the current version to jruby.
-If you have already used iruby with a different version, you need to generate a new kernel:
+
+If you have already used IRuby with a different version, you need to generate a new kernel:
+
 ```shell
 $ iruby register --force
 ```
@@ -145,12 +139,7 @@ and other scientific gems. You can find the prebuild image at [dockerhub](https:
 ## Contributing
 We welcome contributions from everyone.
 
-## Authors
-See the [CONTRIBUTORS](CONTRIBUTORS) file.
-
 ## License
-Copyright © 2013-19, IRuby contributors and the Ruby Science Foundation.
+Copyright (c) IRuby contributors and the Ruby Science Foundation.
 
-All rights reserved.
-
-IRuby, along with [SciRuby](http://sciruby.com/), is licensed under the MIT license. See the [LICENSE](LICENSE) file.
+Licensed under the [MIT](LICENSE) license.

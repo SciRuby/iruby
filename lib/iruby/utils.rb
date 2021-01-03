@@ -7,8 +7,11 @@ module IRuby
     def display(obj, options = {})
       Kernel.instance.session.send(:publish, :display_data,
                                    data: Display.display(obj, options),
-                                   metadata: {},
-                                   source: 'ruby') unless obj.nil?
+                                   metadata: {}) unless obj.nil?
+    end
+
+    def clear_output(wait=false)
+      Display.clear_output(wait)
     end
 
     def table(s, **options)

@@ -10,7 +10,7 @@ module IRuby
         green: 'success',
         aqua: 'info',
         orange: 'warning',
-        red: 'danger', 
+        red: 'danger',
         none: 'link'
       }
 
@@ -37,7 +37,7 @@ module IRuby
       def widget_html
         button(
           @label || to_label(@key),
-          type: 'button', 
+          type: 'button',
           :'data-iruby-key' => @key,
           class: "btn btn-#{COLORS[@color]} pull-right #{@js_class}"
         )

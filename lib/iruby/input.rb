@@ -15,21 +15,21 @@ module IRuby
     end
 
     def form &block
-      builder = Builder.new &block
+      builder = Builder.new(&block)
       form = InputForm.new(
-        fields: builder.fields, 
+        fields: builder.fields,
         buttons: builder.buttons
       )
       form.widget_display
       builder.process_result form.submit
     end
-       
+
     def popup title='Input', &block
-      builder = Builder.new &block
+      builder = Builder.new(&block)
       form = InputForm.new fields: builder.fields
       popup = Popup.new(
-        title: title, 
-        form: form, 
+        title: title,
+        form: form,
         buttons: builder.buttons
       )
       popup.widget_display

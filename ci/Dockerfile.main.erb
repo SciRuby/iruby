@@ -1,0 +1,7 @@
+FROM iruby-test-base:ruby-<%= ruby_version %>
+
+RUN gem install cztop
+RUN mkdir -p /iruby
+ADD . /iruby
+WORKDIR /iruby
+RUN bundle install

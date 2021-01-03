@@ -1,6 +1,5 @@
 module IRuby
   In, Out = [nil], [nil]
-  ::In, ::Out = In, Out
 
   module History
     def eval(code, store_history)
@@ -33,15 +32,17 @@ module IRuby
   end
 
   class PlainBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
       require 'bond'
       Bond.start(debug: true)
+      @eval_path = '(iruby)'
     end
 
     def eval(code, store_history)
-      TOPLEVEL_BINDING.eval(code)
+      TOPLEVEL_BINDING.eval(code, @eval_path, 1)
     end
 
     def complete(code)
@@ -50,28 +51,41 @@ module IRuby
   end
 
   class PryBackend
+    attr_reader :eval_path
     prepend History
 
     def initialize
       require 'pry'
-      Pry.memory_size = 3 
+      Pry.memory_size = 3
       Pry.pager = false # Don't use the pager
       Pry.print = proc {|output, value|} # No result printing
       Pry.exception_handler = proc {|output, exception, _| }
+      @eval_path = Pry.eval_path
       reset
     end
 
     def eval(code, store_history)
+      Pry.current_line = 1
       @pry.last_result = nil
       unless @pry.eval(code)
         reset
         raise SystemExit
       end
-      unless @pry.eval_string.empty?
+
+      # Pry::Code.complete_expression? return false
+      if !@pry.eval_string.empty?
         syntax_error = @pry.eval_string
         @pry.reset_eval_string
-        @pry.evaluate_ruby syntax_error
+        @pry.evaluate_ruby(syntax_error)
+
+      # Pry::Code.complete_expression? raise SyntaxError
+      # evaluate again for current line number
+      elsif @pry.last_result_is_exception? &&
+              @pry.last_exception.is_a?(SyntaxError) &&
+              @pry.last_exception.is_a?(Pry::UserError)
+         @pry.evaluate_ruby(code)
       end
+
       raise @pry.last_exception if @pry.last_result_is_exception?
       @pry.push_initial_binding unless @pry.current_binding # ensure that we have a binding
       @pry.last_result

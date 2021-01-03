@@ -36,6 +36,10 @@ module IRuby
       end
     end
 
+    def description
+      'old-stle session using cztop'
+    end
+
     # Build and send a message
     def send(socket, type, content)
       idents =

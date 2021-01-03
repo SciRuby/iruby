@@ -5,7 +5,7 @@ module IRuby
     class InputForm < Widget
       needs :fields, buttons: []
 
-      def widget_js 
+      def widget_js
         javascript = <<-JS
           var remove = function () {
             Jupyter.notebook.kernel.send_input_reply(
@@ -14,7 +14,7 @@ module IRuby
               })
             );
           };
-          
+
           $("#iruby-form").on("remove", remove);
 
           $('#iruby-form').submit(function() {
@@ -33,16 +33,16 @@ module IRuby
             Jupyter.notebook.kernel.send_input_reply(
               JSON.stringify({'#{@id}': result})
             );
-            
+
             $(this).remove();
             return false;
           });
 
           $('#iruby-form').keydown(function(event) {
-            if (event.keyCode == 13 && !event.shiftKey) { 
+            if (event.keyCode == 13 && !event.shiftKey) {
               $('#iruby-form').submit();
-            } else if (event.keyCode == 27) { 
-              $('#iruby-form').remove(); 
+            } else if (event.keyCode == 27) {
+              $('#iruby-form').remove();
             }
           });
         JS

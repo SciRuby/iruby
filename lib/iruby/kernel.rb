@@ -1,7 +1,6 @@
 module IRuby
   class Kernel
     RED = "\e[31m"
-    WHITE = "\e[37m"
     RESET = "\e[0m"
 
     class<< self
@@ -31,6 +30,8 @@ module IRuby
       $stdout = OStream.new(@session, :stdout)
       $stderr = OStream.new(@session, :stderr)
 
+      init_parent_process_poller
+
       @execution_count = 0
       @backend = create_backend
       @running = true
@@ -54,6 +55,7 @@ module IRuby
 
     def dispatch
       msg = @session.recv(:reply)
+      IRuby.logger.debug "Kernel#dispatch: msg = #{msg}"
       type = msg[:header]['msg_type']
       raise "Unknown message type: #{msg.inspect}" unless type =~ /comm_|_request\Z/ && respond_to?(type)
       begin
@@ -64,24 +66,32 @@ module IRuby
       end
     rescue Exception => e
       IRuby.logger.debug "Kernel error: #{e.message}\n#{e.backtrace.join("\n")}"
-      @session.send(:publish, :error, error_message(e))
+      @session.send(:publish, :error, error_content(e))
     end
 
     def kernel_info_request(msg)
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
                     implementation: 'iruby',
-                    banner: "IRuby #{IRuby::VERSION}",
                     implementation_version: IRuby::VERSION,
                     language_info: {
                       name: 'ruby',
                       version: RUBY_VERSION,
                       mimetype: 'application/x-ruby',
                       file_extension: '.rb'
-                    })
+                    },
+                    banner: "IRuby #{IRuby::VERSION} (with #{@session.description})",
+                    help_links: [
+                      {
+                        text: "Ruby Documentation",
+                        url:  "https://ruby-doc.org/"
+                      }
+                    ],
+                    status: :ok)
     end
 
     def send_status(status)
+      IRuby.logger.debug "Send status: #{status}"
       @session.send(:publish, :status, execution_state: status)
     end
 
@@ -102,8 +112,10 @@ module IRuby
       rescue SystemExit
         content[:payload] << { source: :ask_exit }
       rescue Exception => e
-        content = error_message(e)
+        content = error_content(e)
         @session.send(:publish, :error, content)
+        content[:status] = :error
+        content[:execution_count] = @execution_count
       end
       @session.send(:reply, :execute_reply, content)
       @session.send(:publish, :execute_result,
@@ -112,12 +124,12 @@ module IRuby
                     execution_count: @execution_count) unless result.nil? || msg[:content]['silent']
     end
 
-    def error_message(e)
-      { status: :error,
-        ename: e.class.to_s,
+    def error_content(e)
+      rindex = e.backtrace.rindex{|line| line.start_with?(@backend.eval_path)} || -1
+      backtrace = SyntaxError === e  && rindex == -1 ? [] : e.backtrace[0..rindex]
+      { ename: e.class.to_s,
         evalue: e.message,
-        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *e.backtrace.map { |l| "#{WHITE}#{l}#{RESET}" }],
-        execution_count: @execution_count }
+        traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *backtrace] }
     end
 
     def is_complete_request(msg)
@@ -135,9 +147,10 @@ module IRuby
       end
       @session.send(:reply, :complete_reply,
                     matches: @backend.complete(code),
-                    status: :ok,
                     cursor_start: start.to_i,
-                    cursor_end: msg[:content]['cursor_pos'])
+                    cursor_end: msg[:content]['cursor_pos'],
+                    metadata: {},
+                    status: :ok)
     end
 
     def connect_request(msg)
@@ -156,14 +169,8 @@ module IRuby
     end
 
     def inspect_request(msg)
-      result = @backend.eval(msg[:content]['code'])
-      @session.send(:reply, :inspect_reply,
-                    status: :ok,
-                    data: Display.display(result),
-                    metadata: {})
-    rescue Exception => e
-      IRuby.logger.warn "Inspection error: #{e.message}\n#{e.backtrace.join("\n")}"
-      @session.send(:reply, :inspect_reply, status: :error)
+      # not yet implemented. See (#119).
+      @session.send(:reply, :inspect_reply, status: :ok, found: false, data: {}, metadata: {})
     end
 
     def comm_open(msg)
@@ -180,6 +187,38 @@ module IRuby
       comm_id = msg[:content]['comm_id']
       Comm.comm[comm_id].handle_close(msg[:content]['data'])
       Comm.comm.delete(comm_id)
+    end
+
+    private
+
+    def init_parent_process_poller
+      pid = ENV.fetch('JPY_PARENT_PID', 0).to_i
+      return unless pid > 1
+
+      case RUBY_PLATFORM
+      when /mswin/, /mingw/
+        # TODO
+      else
+        @parent_poller = start_parent_process_pollar_unix
+      end
+    end
+
+    def start_parent_process_pollar_unix
+      Thread.start do
+        IRuby.logger.warn("parent process poller thread started.")
+        loop do
+          begin
+            current_ppid = Process.ppid
+            if current_ppid == 1
+              IRuby.logger.warn("parent process appears to exited, shutting down.")
+              exit!(1)
+            end
+            sleep 1
+          rescue Errno::EINTR
+            # ignored
+          end
+        end
+      end
     end
   end
 end
