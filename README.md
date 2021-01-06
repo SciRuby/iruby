@@ -1,7 +1,7 @@
 # IRuby
 
 [![Gem Version](https://badge.fury.io/rb/iruby.svg)](https://badge.fury.io/rb/iruby)
-[![Build Status](https://travis-ci.org/SciRuby/iruby.svg?branch=master)](https://travis-ci.org/SciRuby/iruby)
+[![Build Status](https://github.com/SciRuby/iruby/workflows/CI/badge.svg)](https://github.com/SciRuby/iruby/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb)
 
 IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
