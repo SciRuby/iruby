@@ -1,4 +1,4 @@
-name: CI on Ubuntu
+name: CI on Windows
 
 on:
   push:
@@ -19,16 +19,15 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - ubuntu-20.04
-        - ubuntu-latest
+        - windows-latest
         ruby:
-        - 3.0
+        - mswin
+        - mingw
         - 2.7
         - 2.6
         - 2.5
         - 2.4
         - 2.3
-        - debug
 
     steps:
     - uses: actions/checkout@v2
@@ -39,15 +38,13 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-    - name: Install requirements on ubuntu
+    - name: Install requirements on vcpkg
       run: |
-        sudo apt install -y --no-install-recommends \
-                 libczmq-dev \
-                 python3 \
-                 python3-pip \
-                 python3-setuptools
-        sudo pip3 install wheel
-        sudo pip3 install -r ci/requirements.txt
+        vcpkg install zeromq:x64-windows
+        vcpkg install czmq:x64-windows
+        vcpkg install libffi:x64-windows
+
+    - run: pip3 install -r ci/requirements.txt
 
     - run: gem install bundler
 
@@ -62,6 +59,7 @@ jobs:
           export IRUBY_TEST_SESSION_ADAPTER_NAME=$adapter
           bundle exec rake test TESTOPTS=-v
         done
+      shell: bash
 
     - run: rake build
 
