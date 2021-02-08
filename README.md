@@ -150,7 +150,7 @@ Contributions to IRuby are very welcome.
 
 To former contributors
 
-In February 2021, [IRuby became a canonical repository](https://github.com/SciRuby/iruby/issues/285) and is no longer a fork from [minrk/iruby](https://github.com/minrk/iruby). Please fork from this repository again before making pull requests. 
+In February 2021, [IRuby became the canonical repository](https://github.com/SciRuby/iruby/issues/285) and is no longer a fork from [minrk/iruby](https://github.com/minrk/iruby). Please fork from this repository again before making pull requests. 
 
 ## License
 
