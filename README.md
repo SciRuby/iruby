@@ -9,6 +9,7 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 ## Installation
 
 ### Requirements
+
 * [Jupyter](https://jupyter.org)
 * One of the following is required
     * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq)
@@ -28,6 +29,7 @@ gem specific_install https://github.com/SciRuby/iruby
 ```
 
 ### Ubuntu
+
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
 #### 17.04 to 19.04
@@ -42,6 +44,7 @@ iruby register --force
 ```
 
 #### 16.04
+
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
 
 ```shell
@@ -57,6 +60,7 @@ iruby register --force
 ```
 
 ### Windows
+
 Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
@@ -72,10 +76,12 @@ iruby register --force
 ```
 
 ### macOS
+
 Install ruby with rbenv or rvm.
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
 #### Homebrew
+
 ```shell
 brew install automake gmp libtool wget
 brew install zeromq --HEAD
@@ -92,6 +98,7 @@ iruby register --force
 ```
 
 #### MacPorts
+
 If you are using macports, run the following commands.
 
 ```shell
@@ -132,14 +139,21 @@ $ iruby register --force
 ```
 
 ## Notebooks
+
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
 and other scientific gems. You can find the prebuild image at [dockerhub](https://registry.hub.docker.com/u/minad/sciruby-notebooks/).
 
 ## Contributing
-We welcome contributions from everyone.
+
+Contributions to IRuby are very welcome.
+
+To former contributors
+
+In February 2021, [IRuby became the canonical repository](https://github.com/SciRuby/iruby/issues/285) and is no longer a fork from [minrk/iruby](https://github.com/minrk/iruby). Please fork from this repository again before making pull requests. 
 
 ## License
+
 Copyright (c) IRuby contributors and the Ruby Science Foundation.
 
 Licensed under the [MIT](LICENSE) license.
