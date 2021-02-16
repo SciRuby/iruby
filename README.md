@@ -32,7 +32,7 @@ gem specific_install https://github.com/SciRuby/iruby
 
 Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
 
-#### 17.04 to 19.04
+#### Ubuntu 17+
 
 ```shell
 sudo apt install libtool libffi-dev ruby ruby-dev make
@@ -43,7 +43,7 @@ gem install iruby --pre
 iruby register --force
 ```
 
-#### 16.04
+#### Ubuntu 16
 
 CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
 
