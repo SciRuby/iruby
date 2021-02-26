@@ -49,8 +49,6 @@ jobs:
         sudo pip3 install wheel
         sudo pip3 install -r ci/requirements.txt
 
-    - run: gem install bundler
-
     - run: bundle install --jobs 4 --retry 3
 
     - name: Run tests
