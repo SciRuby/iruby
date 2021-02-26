@@ -1,5 +1,3 @@
-require 'test_helper'
-
 module IRubyTest
   class SessionAdapterSelectionTest < TestBase
     def setup
@@ -25,10 +23,10 @@ module IRubyTest
                       when 'ffi-rzmq'
                         IRuby::SessionAdapter::FfirzmqAdapter
                       when 'pyzmq'
-                        skip "pyzmq adapter is disabled"
+                        omit("pyzmq adapter is disabled")
                         # IRuby::SessionAdapter::PyzmqAdapter
                       else
-                        flunk "Unknown session adapter: #{adapter_name}"
+                        flunk "Unknown session adapter: #{adapter_name.inspect}"
                       end
 
       session = IRuby::Session.new(@session_config, adapter_name)
@@ -36,13 +34,12 @@ module IRubyTest
     end
 
     def test_without_any_session_adapter
-      IRuby::SessionAdapter::CztopAdapter.stub :available?, false do
-        IRuby::SessionAdapter::FfirzmqAdapter.stub :available?, false do
-          IRuby::SessionAdapter::PyzmqAdapter.stub :available?, false do
-            assert_raises IRuby::SessionAdapterNotFound do
-              IRuby::Session.new(@session_config)
-            end
-          end
+      assert_rr do
+        stub(IRuby::SessionAdapter::CztopAdapter).available? { false }
+        stub(IRuby::SessionAdapter::FfirzmqAdapter).available? { false }
+        stub(IRuby::SessionAdapter::PyzmqAdapter).available? { false }
+        assert_raises IRuby::SessionAdapterNotFound do
+          IRuby::Session.new(@session_config)
         end
       end
     end

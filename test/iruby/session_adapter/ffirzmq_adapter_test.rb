@@ -13,7 +13,7 @@ module IRubyTest
       end
 
       def test_recv
-        skip
+        omit
       end
     end
   end

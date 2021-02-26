@@ -1,4 +1,3 @@
-require 'test_helper'
 require 'iruby/command'
 
 module IRubyTest

@@ -1,5 +1,3 @@
-require 'test_helper'
-
 module IRubyTest
   class PlainBackendTest < IRubyTest::TestBase
     def setup
