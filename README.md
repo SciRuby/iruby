@@ -30,7 +30,7 @@ gem specific_install https://github.com/SciRuby/iruby
 
 ### Ubuntu
 
-Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
+Install Jupyter.
 
 #### Ubuntu 17+
 
@@ -61,7 +61,7 @@ iruby register --force
 
 ### Windows
 
-Install git and Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
+Install git and Jupyter.
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
 Install ZeroMQ.
@@ -78,7 +78,7 @@ iruby register --force
 ### macOS
 
 Install ruby with rbenv or rvm.
-Install Jupyter with [Anaconda](https://www.anaconda.com/) (recommended).
+Install Jupyter.
 
 #### Homebrew
 
