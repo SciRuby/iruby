@@ -21,13 +21,14 @@ jobs:
         os:
         - windows-latest
         ruby:
-        - mswin
-        - mingw
+        - "3.0"
         - 2.7
         - 2.6
         - 2.5
         - 2.4
         - 2.3
+        - mswin
+        - mingw
 
     steps:
     - uses: actions/checkout@v2
