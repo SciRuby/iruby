@@ -6,6 +6,16 @@
 
 IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
+## Try IRuby
+
+You can try IRuby with a sample notebook on Binder (the same link as the banner placed above):
+
+https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb
+
+The following URL launches JupyterLab directly on Binder.
+
+https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab
+
 ## Installation
 
 ### Requirements
