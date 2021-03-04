@@ -47,12 +47,11 @@ jobs:
 
     - run: pip3 install -r ci/requirements.txt
 
-    - run: bundle install --jobs 4 --retry 3 --without pycall
+    - run: bundle install --jobs 4 --retry 3 --without "pycall cztop"
 
     - name: Run tests
       env:
-        PYTHON: python3
-        ADAPTERS: cztop ffi-rzmq pyzmq
+        ADAPTERS: ffi-rzmq
       run: |
         for adapter in $ADAPTERS; do
           export IRUBY_TEST_SESSION_ADAPTER_NAME=$adapter

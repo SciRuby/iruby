@@ -16,6 +16,6 @@ group :pycall do
   gem 'pycall'
 end
 
-group :test do
+group :cztop do
   gem 'cztop'
 end
