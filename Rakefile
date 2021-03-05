@@ -1,17 +1,17 @@
-require 'rake/testtask'
+require "bundler/gem_helper"
 
-begin
-  require 'bundler/gem_tasks'
-rescue Exception
-end
+base_dir = File.join(File.dirname(__FILE__))
+
+helper = Bundler::GemHelper.new(base_dir)
+helper.install
 
 FileList['tasks/**.rake'].each {|f| load f }
 
-Rake::TestTask.new('test') do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.test_files = FileList['test/**/*_test.rb']
-  t.verbose = true
+desc "Run tests"
+task :test do
+  cd(base_dir) do
+    ruby("test/run-test.rb")
+  end
 end
 
 task default: 'test'

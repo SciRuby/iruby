@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'mimemagic', '~> 0.3'
   s.add_dependency 'multi_json', '~> 1.11'
 
-  s.add_development_dependency 'minitest'
   s.add_development_dependency 'pycall', '>= 1.2.1'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'test-unit'
+  s.add_development_dependency 'test-unit-rr'
 end

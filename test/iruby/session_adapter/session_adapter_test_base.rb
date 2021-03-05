@@ -1,5 +1,3 @@
-require 'test_helper'
-
 module IRubyTest
   class SessionAdapterTestBase < TestBase
     # https://jupyter-client.readthedocs.io/en/stable/kernels.html#connection-files
@@ -22,7 +20,7 @@ module IRubyTest
       @session_adapter = adapter_class.new(@config)
 
       unless adapter_class.available?
-        skip "#{@session_adapter.name} is unavailable"
+        omit("#{@session_adapter.name} is unavailable")
       end
     end
   end

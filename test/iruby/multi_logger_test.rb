@@ -1,5 +1,4 @@
 require 'stringio'
-require 'test_helper'
 require 'iruby/logger'
 
 class IRubyTest::MultiLoggerTest < IRubyTest::TestBase
