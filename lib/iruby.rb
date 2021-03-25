@@ -1,4 +1,4 @@
-require 'mimemagic'
+require 'mime/types'
 require 'multi_json'
 require 'securerandom'
 require 'openssl'

@@ -44,7 +44,7 @@ module IRuby
       private
 
       def protect(mime, data)
-        MimeMagic.new(mime).text? ? data.to_s : [data.to_s].pack('m0')
+        MIME::Type.new(mime).ascii? ? data.to_s : [data.to_s].pack('m0')
       end
 
       def render(data, obj, exact_mime, fuzzy_mime)
@@ -304,7 +304,7 @@ module IRuby
 
       match { |obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
       format do |obj|
-        mime = MimeMagic.by_path(obj.path).to_s
+        mime = MIME::Types.of(obj.path).first.to_s
         [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
       end
 
