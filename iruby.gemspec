@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'bond', '~> 0.5'
   s.add_dependency 'data_uri', '~> 0.1'
   s.add_dependency 'ffi-rzmq'
-  s.add_dependency 'mimemagic', '~> 0.3'
+  s.add_dependency 'mime-types', '>= 3.3.1'
   s.add_dependency 'multi_json', '~> 1.11'
 
   s.add_development_dependency 'pycall', '>= 1.2.1'
