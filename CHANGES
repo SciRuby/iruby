@@ -1,3 +1,27 @@
+0.5.0 (2021-03-25)
+
+  Bug Fixes:
+    * Fix Jupyter console crashes issue https://github.com/SciRuby/iruby/pull/210 (@kojix2)
+    * Fix syntax highlighting issue on Jpyter Lab https://github.com/SciRuby/iruby/issues/224 (@kojix2)
+    * Fix interoperability issue with ruby-git https://github.com/SciRuby/iruby/pull/139 (@habemus-papadum)
+    * Fix the issue of `$stderr.write` that cannot handle multiple arguments https://github.com/SciRuby/iruby/issues/206 (@kojix2)
+    * Remove a buggy `inspect_request` implementation https://github.com/SciRuby/iruby/pull/119 (@LunarLanding)
+    * Fix uninitialized constant `Fiddle` caused in initialization phase https://github.com/SciRuby/iruby/issues/264 (@MatthewSteen, @kjoix2)
+    * Fix the issue on displaying a table https://github.com/SciRuby/iruby/pull/281 (@ankane)
+
+  Enhancements:
+    * Add `IRuby.clear_output` method https://github.com/SciRuby/iruby/pull/220 (@kojix2)
+    * Make backtrace on exception simplify and more appropriate for code in a cell https://github.com/SciRuby/iruby/pull/249 (@zheng-yongping)
+    * Make syntax error message more appropriate https://github.com/SciRuby/iruby/pull/251 (@zheng-yongping)
+    * Remove top-level `In` and `Out` constants https://github.com/SciRuby/iruby/pull/229 (@kojix2)
+    * Use text/plain for the default format of `Numo::NArray` objects https://github.com/SciRuby/iruby/pull/255 (@kojix2)
+    * Use ffi-rzmq as the default ZeroMQ adapter https://github.com/SciRuby/iruby/pull/256 (@kojix2)
+    * Drop rbczmq support https://github.com/SciRuby/iruby/pull/260 (@rstammer)
+    * Add ruby-vips image support https://github.com/SciRuby/iruby/pull/279 (@ankane)
+    * Replace mimemagic with mime-types https://github.com/SciRuby/iruby/pull/291 (@mrkn)
+
+0.4.0 (2019-07-31)
+
 0.3 (2017-03-26)
 
   Bug Fixes:
