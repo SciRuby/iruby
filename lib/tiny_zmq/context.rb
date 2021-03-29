@@ -1,5 +1,5 @@
 module TinyZmq
-  # Return the default ZMQ context
+  # Return the singleton object of a ZMQ context
   def self.context
     @context ||= __init_context__
   end
