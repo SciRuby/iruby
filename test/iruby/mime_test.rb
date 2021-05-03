@@ -1,14 +1,25 @@
 class IRubyTest::MimeTest < IRubyTest::TestBase
   sub_test_case("IRuby::Display") do
-    def test_display_with_mime_type
-      html = "<b>Bold Text</b>"
+    sub_test_case(".display") do
+      sub_test_case("with mime type") do
+        test("text/html") do
+          html = "<b>Bold Text</b>"
 
-      obj = Object.new
-      obj.define_singleton_method(:to_s) { html }
+          obj = Object.new
+          obj.define_singleton_method(:to_s) { html }
 
-      res = IRuby::Display.display(obj, mime: "text/html")
-      assert_equal({ plain: obj.inspect,       html: html },
-                   { plain: res["text/plain"], html: res["text/html"] })
+          res = IRuby::Display.display(obj, mime: "text/html")
+          assert_equal({ plain: obj.inspect,       html: html },
+                       { plain: res["text/plain"], html: res["text/html"] })
+        end
+
+        test("application/javascript") do
+          data = "alert('Hello World!')"
+          res = IRuby::Display.display(data, mime: "application/javascript")
+          assert_equal(data,
+                       res["application/javascript"])
+        end
+      end
     end
   end
 

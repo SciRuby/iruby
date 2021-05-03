@@ -44,7 +44,18 @@ module IRuby
       private
 
       def protect(mime, data)
-        MIME::Type.new(mime).ascii? ? data.to_s : [data.to_s].pack('m0')
+        ascii?(mime) ? data.to_s : [data.to_s].pack('m0')
+      end
+
+      def ascii?(mime)
+        case mime
+        when "application/javascript"
+          # Special case for application/javascript.
+          # This needs because mime-types tells us application/javascript a non-text type.
+          true
+        else
+          MIME::Type.new(mime).ascii?
+        end
       end
 
       def render(data, obj, exact_mime, fuzzy_mime)
