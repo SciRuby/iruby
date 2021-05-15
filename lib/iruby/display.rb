@@ -30,7 +30,7 @@ module IRuby
         render(data, obj, exact_mime, fuzzy_mime)
 
         # IPython always requires a text representation
-        render(data, obj, 'text/plain', nil) unless data['text/plain']
+        render_by_registry(data, obj, 'text/plain', nil) unless data['text/plain']
 
         # As a last resort, interpret string representation of the object
         # as the given mime type.
@@ -68,6 +68,32 @@ module IRuby
       end
 
       def render(data, obj, exact_mime, fuzzy_mime)
+        # First examine to_iruby_mimebundle
+
+        if obj.respond_to?(:to_iruby_mimebundle)
+          # If the object can respond to to_iruby_mimebundle,
+          # IRuby uses it and ignores all the registered renderer.
+          kwargs = {}
+          include_mime = [exact_mime, fuzzy_mime].compact
+          kwargs[:include] = include_mime unless include_mime.empty?
+          # TODO: support `exclude:` keyword argument to specify mime types to be excluded
+
+          # TODO: should handle metadata correctly
+          formats, metadata = obj.to_iruby_mimebundle(**kwargs)
+
+          # formats should be a Hash that maps mime-type string to
+          # the redered data.
+          formats.each do |mime, value|
+            data[mime] = value unless value.nil?
+          end
+        end
+
+        unless data.key?(exact_mime)
+          render_by_registry(data, obj, exact_mime, fuzzy_mime)
+        end
+      end
+
+      private def render_by_registry(data, obj, exact_mime, fuzzy_mime)
         # Filter matching renderer by object type
         renderer = Registry.renderer.select { |r| r.match?(obj) }
 
