@@ -8,6 +8,25 @@ module IRubyTest
       @kernel = IRuby::Kernel.instance
     end
 
+    sub_test_case("iruby_initialized event") do
+      def setup
+        super
+        @initialized_kernel = nil
+        @callback = IRuby::Kernel.events.register(:initialized) do |kernel|
+          @initialized_kernel = kernel
+        end
+      end
+
+      def teardown
+        IRuby::Kernel.events.unregister(:initialized, @callback)
+      end
+
+      def test_iruby_initialized_event
+        with_session_adapter("test")
+        assert_same(IRuby::Kernel.instance, @initialized_kernel)
+      end
+    end
+
     def test_execute_request
       obj = Object.new
 
