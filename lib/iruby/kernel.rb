@@ -5,7 +5,10 @@ module IRuby
     RED = "\e[31m"
     RESET = "\e[0m"
 
-    class<< self
+    @events = EventManager.new([:initialized])
+
+    class << self
+      attr_reader :events
       attr_accessor :instance
     end
 
@@ -33,6 +36,8 @@ module IRuby
       @execution_count = 0
       @backend = create_backend
       @running = true
+
+      self.class.events.trigger(:initialized, self)
     end
 
     attr_reader :events
