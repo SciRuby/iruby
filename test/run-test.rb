@@ -14,5 +14,6 @@ $LOAD_PATH.unshift(lib_dir.to_s)
 require_relative "helper"
 
 ENV["TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE"] ||= "10000"
+ENV["IRUBY_TEST_SESSION_ADAPTER_NAME"] ||= "ffi-rzmq"
 
 exit Test::Unit::AutoRunner.run(true, test_dir)
