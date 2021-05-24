@@ -7,6 +7,7 @@ require 'set'
 
 require 'iruby/version'
 require 'iruby/jupyter'
+require 'iruby/event_manager'
 require 'iruby/kernel'
 require 'iruby/backend'
 require 'iruby/ostream'
