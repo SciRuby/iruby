@@ -1,10 +1,53 @@
 require "iruby"
+require "iruby/logger"
+require "json"
+require 'multi_json'
+require "pathname"
 require "test/unit"
 require "test/unit/rr"
 require "tmpdir"
 
+
+IRuby.logger = IRuby::MultiLogger.new(*Logger.new(STDERR, level: Logger::Severity::INFO))
+
 module IRubyTest
   class TestBase < Test::Unit::TestCase
+    def self.startup
+      @__config_dir = Dir.mktmpdir("iruby-test")
+      @__config_path = Pathname.new(@__config_dir) + "config.json"
+      File.write(@__config_path, {
+        control_port: 50160,
+        shell_port: 57503,
+        transport: "tcp",
+        signature_scheme: "hmac-sha256",
+        stdin_port: 52597,
+        hb_port: 42540,
+        ip: "127.0.0.1",
+        iopub_port: 40885,
+        key: "a0436f6c-1916-498b-8eb9-e81ab9368e84"
+      }.to_json)
+
+      @__original_kernel_instance = IRuby::Kernel.instance
+    end
+
+    def self.shutdown
+      FileUtils.remove_entry_secure(@__config_dir)
+    end
+
+    def self.test_config_filename
+      @__config_path.to_s
+    end
+
+    def teardown
+      IRuby::Kernel.instance = @__original_kernel_instance
+    end
+
+    def with_session_adapter(session_adapter_name)
+      IRuby::Kernel.new(self.class.test_config_filename, session_adapter_name)
+      $stdout = STDOUT
+      $stderr = STDERR
+    end
+
     def assert_output(stdout=nil, stderr=nil)
       flunk "assert_output requires a block to capture output." unless block_given?
 

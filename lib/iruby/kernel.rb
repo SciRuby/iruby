@@ -9,12 +9,12 @@ module IRuby
 
     attr_reader :session
 
-    def initialize(config_file)
+    def initialize(config_file, session_adapter_name=nil)
       @config = MultiJson.load(File.read(config_file))
       IRuby.logger.debug("IRuby kernel start with config #{@config}")
       Kernel.instance = self
 
-      @session = Session.new(@config)
+      @session = Session.new(@config, session_adapter_name)
       $stdout = OStream.new(@session, :stdout)
       $stderr = OStream.new(@session, :stderr)
 
