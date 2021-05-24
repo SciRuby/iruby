@@ -1,3 +1,16 @@
+0.6.0 (development)
+
+  Bug Fixes:
+    * Fix the handling of application/javascript (@kylekyle, @mrkn)
+
+  Enhancements:
+    * Add the `initialized` event in `IRuby::Kernel` class (@Yuki-Inoue, @mrkn)
+    * Add the following four events (@mrkn):
+      * `pre-execute` -- occurs before every code execution
+      * `pre-run-cell` -- occurs before every non-silent code execution
+      * `post-execute` -- occurs after every code execution
+      * `post-run-cell` -- occurs after every non-silent code execution
+
 0.5.0 (2021-03-25)
 
   Bug Fixes:
