@@ -10,6 +10,10 @@ module IRuby
         false
       end
 
+      def self.load_requirements
+        # Do nothing
+      end
+
       def initialize(config)
         @config = config
       end
@@ -37,12 +41,14 @@ module IRuby
     require_relative 'session_adapter/ffirzmq_adapter'
     require_relative 'session_adapter/cztop_adapter'
     require_relative 'session_adapter/pyzmq_adapter'
+    require_relative 'session_adapter/test_adapter'
 
     def self.select_adapter_class(name=nil)
       classes = {
         'ffi-rzmq' => SessionAdapter::FfirzmqAdapter,
         'cztop' => SessionAdapter::CztopAdapter,
         # 'pyzmq' => SessionAdapter::PyzmqAdapter
+        'test' => SessionAdapter::TestAdapter,
       }
       if (name ||= ENV.fetch('IRUBY_SESSION_ADAPTER', nil))
         cls = classes[name]

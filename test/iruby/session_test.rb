@@ -38,6 +38,7 @@ module IRubyTest
         stub(IRuby::SessionAdapter::CztopAdapter).available? { false }
         stub(IRuby::SessionAdapter::FfirzmqAdapter).available? { false }
         stub(IRuby::SessionAdapter::PyzmqAdapter).available? { false }
+        stub(IRuby::SessionAdapter::TestAdapter).available? { false }
         assert_raises IRuby::SessionAdapterNotFound do
           IRuby::Session.new(@session_config)
         end
