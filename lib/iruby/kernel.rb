@@ -1,4 +1,6 @@
 module IRuby
+  ExecutionInfo = Struct.new(:raw_cell, :store_history, :silent)
+
   class Kernel
     RED = "\e[31m"
     RESET = "\e[0m"
@@ -8,6 +10,13 @@ module IRuby
     end
 
     attr_reader :session
+
+    EVENTS = [
+      :pre_execute,
+      :pre_run_cell,
+      :post_run_cell,
+      :post_execute
+    ].freeze
 
     def initialize(config_file, session_adapter_name=nil)
       @config = MultiJson.load(File.read(config_file))
@@ -20,10 +29,13 @@ module IRuby
 
       init_parent_process_poller
 
+      @events = EventManager.new(EVENTS)
       @execution_count = 0
       @backend = create_backend
       @running = true
     end
+
+    attr_reader :events
 
     def create_backend
       PryBackend.new
@@ -83,8 +95,20 @@ module IRuby
 
     def execute_request(msg)
       code = msg[:content]['code']
-      @execution_count += 1 if msg[:content]['store_history']
-      @session.send(:publish, :execute_input, code: code, execution_count: @execution_count)
+      store_history = msg[:content]['store_history']
+      silent = msg[:content]['silent']
+
+      @execution_count += 1 if store_history
+
+      unless silent
+        @session.send(:publish, :execute_input, code: code, execution_count: @execution_count)
+      end
+
+      events.trigger(:pre_execute)
+      unless silent
+        exec_info = ExecutionInfo.new(code, store_history, silent)
+        events.trigger(:pre_run_cell, exec_info)
+      end
 
       content = {
         status: :ok,
@@ -92,9 +116,10 @@ module IRuby
         user_expressions: {},
         execution_count: @execution_count
       }
+
       result = nil
       begin
-        result = @backend.eval(code, msg[:content]['store_history'])
+        result = @backend.eval(code, store_history)
       rescue SystemExit
         content[:payload] << { source: :ask_exit }
       rescue Exception => e
@@ -103,6 +128,10 @@ module IRuby
         content[:status] = :error
         content[:execution_count] = @execution_count
       end
+
+      events.trigger(:post_execute)
+      events.trigger(:post_run_cell, result) unless silent
+
       @session.send(:reply, :execute_reply, content)
       @session.send(:publish, :execute_result,
                     data: Display.display(result),

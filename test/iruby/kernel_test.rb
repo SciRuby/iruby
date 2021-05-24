@@ -76,5 +76,59 @@ module IRubyTest
                      }
                    })
     end
+
+    def test_events_around_of_execute_request
+      event_history = []
+
+      @kernel.events.register(:pre_execute) do
+        event_history << :pre_execute
+      end
+
+      @kernel.events.register(:pre_run_cell) do |exec_info|
+        event_history << [:pre_run_cell, exec_info]
+      end
+
+      @kernel.events.register(:post_execute) do
+        event_history << :post_execute
+      end
+
+      @kernel.events.register(:post_run_cell) do |result|
+        event_history << [:post_run_cell, result]
+      end
+
+      msg = {
+        content: {
+          "code" => "true",
+          "silent" => false,
+          "store_history" => false,
+          "user_expressions" => {},
+          "allow_stdin" => false,
+          "stop_on_error" => true,
+        }
+      }
+      @kernel.execute_request(msg)
+
+      msg = {
+        content: {
+          "code" => "true",
+          "silent" => true,
+          "store_history" => false,
+          "user_expressions" => {},
+          "allow_stdin" => false,
+          "stop_on_error" => true,
+        }
+      }
+      @kernel.execute_request(msg)
+
+      assert_equal([
+                     :pre_execute,
+                     [:pre_run_cell, IRuby::ExecutionInfo.new("true", false, false)],
+                     :post_execute,
+                     [:post_run_cell, true],
+                     :pre_execute,
+                     :post_execute
+                   ],
+                   event_history)
+    end
   end
 end
