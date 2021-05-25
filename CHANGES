@@ -1,15 +1,16 @@
-0.6.0 (development)
+0.6.0 (2021-05-25)
 
   Bug Fixes:
-    * Fix the handling of application/javascript (@kylekyle, @mrkn)
+    * Fix the handling of application/javascript https://github.com/SciRuby/iruby/issues/292, https://github.com/SciRuby/iruby/pull/294 (@kylekyle, @mrkn)
 
   Enhancements:
-    * Add the `initialized` event in `IRuby::Kernel` class (@Yuki-Inoue, @mrkn)
-    * Add the following four events (@mrkn):
+    * Add the `initialized` event in `IRuby::Kernel` class https://github.com/SciRuby/iruby/pull/168, https://github.com/SciRuby/iruby/pull/296 (@Yuki-Inoue, @mrkn)
+    * Add the following four events https://github.com/SciRuby/iruby/pull/295 (@mrkn):
       * `pre-execute` -- occurs before every code execution
       * `pre-run-cell` -- occurs before every non-silent code execution
       * `post-execute` -- occurs after every code execution
       * `post-run-cell` -- occurs after every non-silent code execution
+    * Replace Bond with IRB in PlainBackend https://github.com/SciRuby/iruby/pull/276, https://github.com/SciRuby/iruby/pull/297 (@cfis, @mrkn)
 
 0.5.0 (2021-03-25)
 
