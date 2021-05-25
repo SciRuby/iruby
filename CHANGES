@@ -1,3 +1,8 @@
+0.6.1 (under development)
+
+  Bug Fixes:
+    * Follow the messages and hooks orders during execute_request processing (@mrkn)
+
 0.6.0 (2021-05-25)
 
   Bug Fixes:
