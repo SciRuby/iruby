@@ -3,7 +3,7 @@ module IRuby
 
   module History
     def eval(code, store_history)
-      b = TOPLEVEL_BINDING
+      b = eval_binding
 
       b.local_variable_set(:_ih, In)  unless b.local_variable_defined?(:_ih)
       b.local_variable_set(:_oh, Out) unless b.local_variable_defined?(:_oh)
@@ -39,8 +39,15 @@ module IRuby
       require 'irb'
       require 'irb/completion'
       IRB.setup(nil)
-      @irb = IRB::Irb.new
+      @main = TOPLEVEL_BINDING.eval("self").dup
+      @workspace = IRB::WorkSpace.new(@main)
+      @irb = IRB::Irb.new(@workspace)
+      @eval_path = @irb.context.irb_path
       IRB.conf[:MAIN_CONTEXT] = @irb.context
+    end
+
+    def eval_binding
+      @workspace.binding
     end
 
     def eval(code, store_history)
@@ -65,6 +72,10 @@ module IRuby
       Pry.exception_handler = proc {|output, exception, _| }
       @eval_path = Pry.eval_path
       reset
+    end
+
+    def eval_binding
+      TOPLEVEL_BINDING
     end
 
     def eval(code, store_history)
@@ -99,7 +110,7 @@ module IRuby
     end
 
     def reset
-      @pry = Pry.new(output: $stdout, target: TOPLEVEL_BINDING)
+      @pry = Pry.new(output: $stdout, target: eval_binding)
     end
   end
 end
