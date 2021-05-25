@@ -70,7 +70,7 @@ module IRubyTest
       @kernel.execute_request(msg)
 
       assert_equal({
-                     msg_types: [ "execute_input", "execute_reply", "execute_result" ],
+                     msg_types: [ "execute_input", "execute_result", "execute_reply" ],
                      execute_reply: {
                        status: "ok",
                        user_expressions: {},

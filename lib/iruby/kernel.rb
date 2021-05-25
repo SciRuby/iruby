@@ -134,14 +134,17 @@ module IRuby
         content[:execution_count] = @execution_count
       end
 
+      unless result.nil? || silent
+        @session.send(:publish, :execute_result,
+                      data: Display.display(result),
+                      metadata: {},
+                      execution_count: @execution_count)
+      end
+
       events.trigger(:post_execute)
       events.trigger(:post_run_cell, result) unless silent
 
       @session.send(:reply, :execute_reply, content)
-      @session.send(:publish, :execute_result,
-                    data: Display.display(result),
-                    metadata: {},
-                    execution_count: @execution_count) unless result.nil? || msg[:content]['silent']
     end
 
     def error_content(e)
