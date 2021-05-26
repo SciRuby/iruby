@@ -1,10 +1,12 @@
 module IRuby
   module Display
     class << self
+      # @private
       def convert(obj, options)
         Representation.new(obj, options)
       end
 
+      # @private
       def display(obj, options = {})
         obj = convert(obj, options)
         options = obj.options
@@ -37,6 +39,7 @@ module IRuby
         data
       end
 
+      # @private
       def clear_output(wait = false)
         IRuby::Kernel.instance.session.send(:publish, :clear_output, wait: wait)
       end

@@ -8,10 +8,26 @@ module IRuby
     @events = EventManager.new([:initialized])
 
     class << self
+      # Return the event manager defined in the `IRuby::Kernel` class.
+      # This event manager can handle the following event:
+      #
+      # - `initialized`: The event occurred after the initialization of
+      #   a `IRuby::Kernel` instance is finished
+      #
+      # @example Registering initialized event
+      #   IRuby::Kernel.events.register(:initialized) do |result|
+      #     STDERR.puts "IRuby kernel has been initialized"
+      #   end
+      #
+      # @see IRuby::EventManager
+      # @see IRuby::Kernel#events
       attr_reader :events
+
+      # Returns the singleton kernel instance
       attr_accessor :instance
     end
 
+    # Returns a session object
     attr_reader :session
 
     EVENTS = [
@@ -40,8 +56,35 @@ module IRuby
       self.class.events.trigger(:initialized, self)
     end
 
+    # Returns the event manager defined in a `IRuby::Kernel` instance.
+    # This event manager can handle the following events:
+    #
+    # - `pre_execute`: The event occurred before running the code
+    #
+    # - `pre_run_cell`: The event occurred before running the code and
+    #   if the code execution is not silent
+    #
+    # - `post_execute`: The event occurred after running the code
+    #
+    # - `post_run_cell`: The event occurred after running the code and
+    #   if the code execution is not silent
+    #
+    # The callback functions of `pre_run_cell` event must take one argument
+    # to get an `ExecutionInfo` object.
+    # The callback functions of `post_run_cell` event must take one argument
+    # to get the result of the code execution.
+    #
+    # @example Registering post_run_cell event
+    #   IRuby::Kernel.instance.events.register(:post_run_cell) do |result|
+    #     STDERR.puts "The result of the last execution: %p" % result
+    #   end
+    #
+    # @see IRuby::EventManager
+    # @see IRuby::ExecutionInfo
+    # @see IRuby::Kernel.events
     attr_reader :events
 
+    # @private
     def create_backend
       PryBackend.new
     rescue Exception => e
@@ -49,6 +92,7 @@ module IRuby
       PlainBackend.new
     end
 
+    # @private
     def run
       send_status :starting
       while @running
@@ -56,6 +100,7 @@ module IRuby
       end
     end
 
+    # @private
     def dispatch
       msg = @session.recv(:reply)
       IRuby.logger.debug "Kernel#dispatch: msg = #{msg}"
@@ -72,6 +117,7 @@ module IRuby
       @session.send(:publish, :error, error_content(e))
     end
 
+    # @private
     def kernel_info_request(msg)
       @session.send(:reply, :kernel_info_reply,
                     protocol_version: '5.0',
@@ -93,11 +139,13 @@ module IRuby
                     status: :ok)
     end
 
+    # @private
     def send_status(status)
       IRuby.logger.debug "Send status: #{status}"
       @session.send(:publish, :status, execution_state: status)
     end
 
+    # @private
     def execute_request(msg)
       code = msg[:content]['code']
       store_history = msg[:content]['store_history']
@@ -147,6 +195,7 @@ module IRuby
       @session.send(:reply, :execute_reply, content)
     end
 
+    # @private
     def error_content(e)
       rindex = e.backtrace.rindex{|line| line.start_with?(@backend.eval_path)} || -1
       backtrace = SyntaxError === e  && rindex == -1 ? [] : e.backtrace[0..rindex]
@@ -155,12 +204,14 @@ module IRuby
         traceback: ["#{RED}#{e.class}#{RESET}: #{e.message}", *backtrace] }
     end
 
+    # @private
     def is_complete_request(msg)
       # FIXME: the code completeness should be judged by using ripper or other Ruby parser
       @session.send(:reply, :is_complete_reply,
                     status: :unknown)
     end
 
+    # @private
     def complete_request(msg)
       # HACK for #26, only complete last line
       code = msg[:content]['code']
@@ -176,36 +227,43 @@ module IRuby
                     status: :ok)
     end
 
+    # @private
     def connect_request(msg)
       @session.send(:reply, :connect_reply, Hash[%w(shell_port iopub_port stdin_port hb_port).map {|k| [k, @config[k]] }])
     end
 
+    # @private
     def shutdown_request(msg)
       @session.send(:reply, :shutdown_reply, msg[:content])
       @running = false
     end
 
+    # @private
     def history_request(msg)
       # we will just send back empty history for now, pending clarification
       # as requested in ipython/ipython#3806
       @session.send(:reply, :history_reply, history: [])
     end
 
+    # @private
     def inspect_request(msg)
       # not yet implemented. See (#119).
       @session.send(:reply, :inspect_reply, status: :ok, found: false, data: {}, metadata: {})
     end
 
+    # @private
     def comm_open(msg)
       comm_id = msg[:content]['comm_id']
       target_name = msg[:content]['target_name']
       Comm.comm[comm_id] = Comm.target[target_name].new(target_name, comm_id)
     end
 
+    # @private
     def comm_msg(msg)
       Comm.comm[msg[:content]['comm_id']].handle_msg(msg[:content]['data'])
     end
 
+    # @private
     def comm_close(msg)
       comm_id = msg[:content]['comm_id']
       Comm.comm[comm_id].handle_close(msg[:content]['data'])
