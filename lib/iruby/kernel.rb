@@ -50,7 +50,7 @@ module IRuby
 
       @events = EventManager.new(EVENTS)
       @execution_count = 0
-      @backend = create_backend
+      @backend = PlainBackend.new
       @running = true
 
       self.class.events.trigger(:initialized, self)
@@ -83,14 +83,6 @@ module IRuby
     # @see IRuby::ExecutionInfo
     # @see IRuby::Kernel.events
     attr_reader :events
-
-    # @private
-    def create_backend
-      PryBackend.new
-    rescue Exception => e
-      IRuby.logger.warn "Could not load PryBackend: #{e.message}\n#{e.backtrace.join("\n")}" unless LoadError === e
-      PlainBackend.new
-    end
 
     # Switch the backend (interactive shell) system
     #
