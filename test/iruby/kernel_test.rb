@@ -149,5 +149,32 @@ module IRubyTest
                    ],
                    event_history)
     end
+
+    sub_test_case("#switch_backend!") do
+      sub_test_case("") do
+        def test_switch_backend
+          classes = []
+          @kernel.switch_backend!(:pry)
+          classes << @kernel.instance_variable_get(:@backend).class
+
+          @kernel.switch_backend!(:irb)
+          classes << @kernel.instance_variable_get(:@backend).class
+
+          @kernel.switch_backend!(:pry)
+          classes << @kernel.instance_variable_get(:@backend).class
+
+          @kernel.switch_backend!(:plain)
+          classes << @kernel.instance_variable_get(:@backend).class
+
+          assert_equal([
+                         IRuby::PryBackend,
+                         IRuby::PlainBackend,
+                         IRuby::PryBackend,
+                         IRuby::PlainBackend
+                       ],
+                       classes)
+        end
+      end
+    end
   end
 end

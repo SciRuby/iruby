@@ -92,6 +92,42 @@ module IRuby
       PlainBackend.new
     end
 
+    # Switch the backend (interactive shell) system
+    #
+    # @param backend [:irb,:plain,:pry] Specify the backend name switched to
+    #
+    # @return [true,false] true if the switching succeeds, otherwise false
+    def switch_backend!(backend)
+      name = case backend
+             when String, Symbol
+               name = backend.downcase
+             else
+               name = backend
+             end
+
+      backend_class = case name
+                      when :irb, :plain
+                        PlainBackend
+                      when :pry
+                        PryBackend
+                      else
+                        raise ArgumentError,
+                          "Unknown backend name: %p" % backend
+                      end
+
+      begin
+        new_backend = backend_class.new
+        @backend = new_backend
+        true
+      rescue Exception => e
+        unless LoadError === e
+          IRuby.logger.warn "Could not load #{backend_class}: " +
+                            "#{e.message}\n#{e.backtrace.join("\n")}"
+        end
+        return false
+      end
+    end
+
     # @private
     def run
       send_status :starting
