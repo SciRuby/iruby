@@ -56,6 +56,9 @@ module IRuby
           # Special case for application/javascript.
           # This needs because mime-types tells us application/javascript a non-text type.
           true
+        when "image/svg+xml"
+          # mime-types tells us image/svg+xml a non-text type.
+          true
         else
           MIME::Type.new(mime).ascii?
         end
