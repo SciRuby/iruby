@@ -1,5 +1,3 @@
-require 'stringio'
-
 class IRubyTest::MultiLoggerTest < IRubyTest::TestBase
   def test_multilogger
     out, err = StringIO.new, StringIO.new

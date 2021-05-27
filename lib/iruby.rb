@@ -5,6 +5,7 @@ require 'securerandom'
 require 'openssl'
 require 'tempfile'
 require 'set'
+require 'stringio'
 
 require 'iruby/version'
 require 'iruby/jupyter'
