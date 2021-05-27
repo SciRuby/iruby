@@ -31,8 +31,8 @@ If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop,
 export IRUBY_SESSION_ADAPTER="cztop"
 ```
 
-* We recommend the [Pry](https://github.com/pry/pry) backend for full functionality.
-* If you want to install the latest version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
+* [Pry][Pry], if you want to use [Pry][Pry] instead of IRB for the code execution backend
+* If you want to install the development version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
 
 ```
 gem specific_install https://github.com/SciRuby/iruby
@@ -148,6 +148,19 @@ If you have already used IRuby with a different version, you need to generate a 
 $ iruby register --force
 ```
 
+## Backends
+
+There are two backends: PlainBackend and PryBackend.
+
+* PlainBackend is the default backend.  It uses [IRB](https://github.com/ruby/irb).
+* PryBackend uses [Pry][Pry].
+
+You can switch the backend to PryBackend by running the code below.
+
+```ruby
+IRuby::Kernel.instance.switch_backend!(:pry)
+```
+
 ## Notebooks
 
 Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
@@ -167,3 +180,5 @@ In February 2021, [IRuby became the canonical repository](https://github.com/Sci
 Copyright (c) IRuby contributors and the Ruby Science Foundation.
 
 Licensed under the [MIT](LICENSE) license.
+
+[Pry]: https://github.com/pry/pry
