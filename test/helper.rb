@@ -1,5 +1,4 @@
 require "iruby"
-require "iruby/logger"
 require "json"
 require 'multi_json'
 require "pathname"

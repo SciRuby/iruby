@@ -1,7 +1,4 @@
-require 'iruby/jupyter'
-
-require 'fileutils'
-require 'multi_json'
+require 'iruby'
 
 module IRuby
   class Command
@@ -92,7 +89,6 @@ Try `ipython help` for more information.
     end
 
     def run_kernel
-      require 'iruby/logger'
       IRuby.logger = MultiLogger.new(*Logger.new(STDOUT))
       STDOUT.sync = true # FIXME: This can make the integration test.
 
@@ -131,7 +127,7 @@ Try `ipython help` for more information.
       check_registered_kernel
       check_bundler {|e| STDERR.puts "Could not load bundler: #{e.message}" }
 
-      Kernel.exec('ipython', *@args)
+      Process.exec('ipython', *@args)
     end
 
     def check_registered_kernel

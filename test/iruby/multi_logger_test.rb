@@ -1,5 +1,4 @@
 require 'stringio'
-require 'iruby/logger'
 
 class IRubyTest::MultiLoggerTest < IRubyTest::TestBase
   def test_multilogger
