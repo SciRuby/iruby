@@ -19,6 +19,13 @@ class IRubyTest::MimeTest < IRubyTest::TestBase
           assert_equal(data,
                        res["application/javascript"])
         end
+
+        test("image/svg+xml") do
+          data = '<svg height="30" width="100"><text x="0" y="15" fill="red">SVG</text></svg>'
+          res = IRuby::Display.display(data, mime: "image/svg+xml")
+          assert_equal(data,
+                       res["image/svg+xml"])
+        end
       end
     end
   end
