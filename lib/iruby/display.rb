@@ -1,3 +1,5 @@
+require "set"
+
 module IRuby
   module Display
     class << self
@@ -50,14 +52,15 @@ module IRuby
         ascii?(mime) ? data.to_s : [data.to_s].pack('m0')
       end
 
+      # Each of the following mime types must be a text type,
+      # but mime-types library tells us it is a non-text type.
+      FORCE_TEXT_TYPES = Set[
+        "application/javascript",
+        "image/svg+xml"
+      ].freeze
+
       def ascii?(mime)
-        case mime
-        when "application/javascript"
-          # Special case for application/javascript.
-          # This needs because mime-types tells us application/javascript a non-text type.
-          true
-        when "image/svg+xml"
-          # mime-types tells us image/svg+xml a non-text type.
+        if FORCE_TEXT_TYPES.include?(mime)
           true
         else
           MIME::Type.new(mime).ascii?
