@@ -10,6 +10,7 @@ module IRuby
     def initialize(config, adapter_name=nil)
       @config = config
       @adapter = create_session_adapter(config, adapter_name)
+      @last_recvd_msg = nil
 
       setup
       setup_sockets

@@ -37,8 +37,12 @@ module IRubyTest
       @__config_path.to_s
     end
 
-    def teardown
+    def self.restore_kernel
       IRuby::Kernel.instance = @__original_kernel_instance
+    end
+
+    def teardown
+      self.class.restore_kernel
     end
 
     def with_session_adapter(session_adapter_name)
