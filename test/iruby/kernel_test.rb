@@ -154,6 +154,10 @@ module IRubyTest
       sub_test_case("") do
         def test_switch_backend
           classes = []
+
+          # First pick the default backend class
+          classes << @kernel.instance_variable_get(:@backend).class
+
           @kernel.switch_backend!(:pry)
           classes << @kernel.instance_variable_get(:@backend).class
 
@@ -167,6 +171,7 @@ module IRubyTest
           classes << @kernel.instance_variable_get(:@backend).class
 
           assert_equal([
+                         IRuby::PlainBackend,
                          IRuby::PryBackend,
                          IRuby::PlainBackend,
                          IRuby::PryBackend,
