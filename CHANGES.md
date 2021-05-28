@@ -1,3 +1,9 @@
+# 0.7.1 (development)
+
+## Enhancements
+
+## Bug Fixes
+
 # 0.7.0 (2021-05-28)
 
 ## Enhancements
