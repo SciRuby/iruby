@@ -1,4 +1,4 @@
-# 0.6.1 (under development)
+# 0.7.0 (2021-05-28)
 
 ## Enhancements
 
