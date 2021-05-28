@@ -7,8 +7,13 @@
 
 ## Bug Fixes
 
-* Follow the messages and hooks orders during execute_request processing (@mrkn)
 * Fix the handling of image/svg+xml https://github.com/SciRuby/iruby/pull/300, https://github.com/SciRuby/iruby/pull/301 (@kojix2)
+
+# 0.6.1 (2021-05-26)
+
+## Bug Fixes
+
+* Follow the messages and hooks orders during execute_request processing (@mrkn)
 
 # 0.6.0 (2021-05-25)
 
