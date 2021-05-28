@@ -1,5 +1,9 @@
 0.6.1 (under development)
 
+  Enhancements:
+    * The default backend is changed to IRB (@mrkn)
+    * Add IRuby::Kernel#switch_backend! method (@mrkn)
+
   Bug Fixes:
     * Follow the messages and hooks orders during execute_request processing (@mrkn)
     * Fix the handling of image/svg+xml https://github.com/SciRuby/iruby/pull/300, https://github.com/SciRuby/iruby/pull/301 (@kojix2)
