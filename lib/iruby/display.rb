@@ -2,6 +2,22 @@ require "set"
 
 module IRuby
   module Display
+    DEFAULT_MIME_TYPE_FORMAT_METHODS = {
+      "text/html" => :to_html,
+      "text/markdown" => :to_markdown,
+      "image/svg+xml" => :to_svg,
+      "image/png" => :to_png,
+      "appliation/pdf" => :to_pdf,
+      "image/jpeg" => :to_jpeg,
+      "text/latex" => [:to_latex, :to_tex],
+      # NOTE: Do not include the entry of "application/json" because
+      #       all objects can respond to `to_json` due to json library
+      # "application/json" => :to_json,
+      "application/javascript" => :to_javascript,
+      nil => :to_iruby,
+      "text/plain" => :inspect
+    }.freeze
+
     class << self
       # @private
       def convert(obj, options)
@@ -24,17 +40,38 @@ module IRuby
           raise 'Invalid mime type' unless exact_mime.include?('/')
         end
 
-        data = {}
+        data = render_mimebundle(obj, exact_mime, fuzzy_mime)
 
-        # Render additional representation
-        render(data, obj, exact_mime, fuzzy_mime)
+        # Render by additional formatters
+        render_by_registry(data, obj, exact_mime, fuzzy_mime)
 
-        # IPython always requires a text representation
-        render_by_registry(data, obj, 'text/plain', nil) unless data['text/plain']
+        # Render by to_xxx methods
+        DEFAULT_MIME_TYPE_FORMAT_METHODS.each do |mime, methods|
+          next if mime.nil? && !data.empty? # for to_iruby
+
+          next if mime && data.key?(mime)   # do not overwrite
+
+          method = Array(methods).find {|m| obj.respond_to?(m) }
+          next if method.nil?
+
+          result = obj.send(method)
+          case mime
+          when nil # to_iruby
+            case result
+            when Array
+              mime, result = result
+            else
+              warn(("Ignore the result of to_iruby method of %p because " +
+                    "it does not return a pair of mime-type and formatted representation") % obj)
+              next
+            end
+          end
+          data[mime] = result
+        end
 
         # As a last resort, interpret string representation of the object
         # as the given mime type.
-        if exact_mime && data.none? { |m, _| exact_mime == m }
+        if exact_mime && !data.key?(exact_mime)
           data[exact_mime] = protect(exact_mime, obj)
         end
 
@@ -67,30 +104,18 @@ module IRuby
         end
       end
 
-      def render(data, obj, exact_mime, fuzzy_mime)
-        # First examine to_iruby_mimebundle
-
+      private def render_mimebundle(obj, exact_mime, fuzzy_mime)
+        data = {}
         if obj.respond_to?(:to_iruby_mimebundle)
-          # If the object can respond to to_iruby_mimebundle,
-          # IRuby uses it and ignores all the registered renderer.
-          kwargs = {}
-          include_mime = [exact_mime, fuzzy_mime].compact
-          kwargs[:include] = include_mime unless include_mime.empty?
-          # TODO: support `exclude:` keyword argument to specify mime types to be excluded
-
-          # TODO: should handle metadata correctly
-          formats, metadata = obj.to_iruby_mimebundle(**kwargs)
-
-          # formats should be a Hash that maps mime-type string to
-          # the redered data.
+          include_mime = [exact_mime].compact
+          formats, metadata = obj.to_iruby_mimebundle(include: include_mime)
           formats.each do |mime, value|
-            data[mime] = value unless value.nil?
+            if fuzzy_mime.nil? || mime.include?(fuzzy_mime)
+              data[mime] = value
+            end
           end
         end
-
-        unless data.key?(exact_mime)
-          render_by_registry(data, obj, exact_mime, fuzzy_mime)
-        end
+        data
       end
 
       private def render_by_registry(data, obj, exact_mime, fuzzy_mime)
@@ -114,6 +139,8 @@ module IRuby
         # Return first render result which has the right mime type
         renderer.each do |r|
           mime, result = r.render(obj)
+          next if data.key?(mime)
+
           if mime && result && (!exact_mime || exact_mime == mime) && (!fuzzy_mime || mime.include?(fuzzy_mime))
             data[mime] = protect(mime, result)
             break
@@ -121,6 +148,19 @@ module IRuby
         end
 
         nil
+      end
+    end
+
+    private def render_by_to_iruby(data, obj)
+      if obj.respond_to?(:to_iruby)
+        result = obj.to_iruby
+        mime, rep = case result
+                    when Array
+                      result
+                    else
+                      [nil, result]
+                    end
+        data[mime] = rep
       end
     end
 
@@ -143,6 +183,58 @@ module IRuby
           end
           old_new(obj, options)
         end
+      end
+    end
+
+    class FormatMatcher
+      def initialize(&block)
+        @block = block
+      end
+
+      def call(obj)
+        @block.(obj)
+      end
+
+      def inspect
+        "#{self.class.name}[%p]" % @block
+      end
+    end
+
+    class RespondToFormatMatcher < FormatMatcher
+      def initialize(name)
+        super() {|obj| obj.respond_to?(name) }
+        @name = name
+      end
+
+      attr_reader :name
+
+      def inspect
+        "#{self.class.name}[respond_to?(%p)]" % name
+      end
+    end
+
+    class TypeFormatMatcher < FormatMatcher
+      def initialize(class_block)
+        super() do |obj|
+          self.klass === obj
+        # We have to rescue all exceptions since constant autoloading could fail with a different error
+        rescue Exception
+          false
+        end
+        @class_block = class_block
+      end
+
+      def klass
+        @class_block.()
+      end
+
+      def inspect
+        klass = begin
+                  @class_block.()
+                rescue Exception
+                  @class_block
+                end
+        "#{self.class.name}[%p]" % klass
       end
     end
 
@@ -185,25 +277,21 @@ module IRuby
       ]
 
       def match(&block)
-        @match = block
+        @match = FormatMatcher.new(&block)
         priority 0
         nil
       end
 
       def respond_to(name)
-        match { |obj| obj.respond_to?(name) }
+        @match = RespondToFormatMatcher.new(name)
+        priority 0
+        nil
       end
 
       def type(&block)
-        match do |obj|
-          begin
-            block.call === obj
-          # We have to rescue all exceptions since constant autoloading could fail with a different error
-          rescue Exception
-          rescue #NameError
-            false
-          end
-        end
+        @match = TypeFormatMatcher.new(block)
+        priority 0
+        nil
       end
 
       def priority(p)
@@ -327,36 +415,17 @@ module IRuby
       type { Gruff::Base }
       format 'image/png', &:to_blob
 
-      respond_to :to_html
-      format 'text/html', &:to_html
-
-      respond_to :to_latex
-      format 'text/latex', &:to_latex
-
-      respond_to :to_tex
-      format 'text/latex', &:to_tex
-
-      respond_to :to_javascript
-      format 'text/javascript', &:to_javascript
-
-      respond_to :to_svg
+      type { Rubyvis::Mark }
       format 'image/svg+xml' do |obj|
-        obj.render if defined?(Rubyvis) && Rubyvis::Mark === obj
+        obj.render
         obj.to_svg
       end
-
-      respond_to :to_iruby
-      format(&:to_iruby)
 
       match { |obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
       format do |obj|
         mime = MIME::Types.of(obj.path).first.to_s
         [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
       end
-
-      type { Object }
-      priority(-1000)
-      format 'text/plain', &:inspect
     end
   end
 end

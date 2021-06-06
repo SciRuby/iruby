@@ -131,12 +131,12 @@ module IRubyTest
         def test_display
           assert_iruby_display({
                                  result: {
-                                   "text/html" => "<b>to_iruby</b>",
+                                   "text/markdown" => "*markdown*",
                                    "text/plain" => "!!! inspect !!!"
                                  },
                                  to_html_called: false,
-                                 to_markdown_called: false,
-                                 to_iruby_called: true,
+                                 to_markdown_called: true,
+                                 to_iruby_called: false,
                                  to_iruby_mimebundle_called: false
                                })
         end
@@ -170,12 +170,12 @@ module IRubyTest
           def test_display
             assert_iruby_display({
                                    result: {
-                                     "text/html" => "<b>html</b>",
+                                     "text/html" => "<i>html</i>",
                                      "text/markdown" => "**markdown**",
                                      "application/json" => %Q[{"mimebundle": "json"}],
                                      "text/plain" => "!!! inspect !!!"
                                    },
-                                   to_html_called: true,
+                                   to_html_called: false,
                                    to_markdown_called: false,
                                    to_iruby_called: false,
                                    to_iruby_mimebundle_called: true
