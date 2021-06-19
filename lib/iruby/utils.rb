@@ -9,6 +9,9 @@ module IRuby
       Kernel.instance.session.send(:publish, :display_data,
                                    data: Display.display(obj, options),
                                    metadata: {}) unless obj.nil?
+      # The next `nil` is necessary to prevent unintentional displaying
+      # the result of Session#send
+      nil
     end
 
     # Clear the output area
