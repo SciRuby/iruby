@@ -216,10 +216,12 @@ module IRuby
     class TypeFormatMatcher < FormatMatcher
       def initialize(class_block)
         super() do |obj|
-          self.klass === obj
-        # We have to rescue all exceptions since constant autoloading could fail with a different error
-        rescue Exception
-          false
+          begin
+            self.klass === obj
+          # We have to rescue all exceptions since constant autoloading could fail with a different error
+          rescue Exception
+            false
+          end
         end
         @class_block = class_block
       end
