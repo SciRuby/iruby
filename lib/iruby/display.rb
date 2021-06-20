@@ -267,17 +267,6 @@ module IRuby
         @renderer ||= []
       end
 
-      SUPPORTED_MIMES = %w[
-        text/plain
-        text/html
-        text/latex
-        application/json
-        application/javascript
-        image/png
-        image/jpeg
-        image/svg+xml
-      ]
-
       def match(&block)
         @match = FormatMatcher.new(&block)
         priority 0
@@ -434,7 +423,9 @@ module IRuby
       match { |obj| obj.respond_to?(:path) && obj.method(:path).arity == 0 && File.readable?(obj.path) }
       format do |obj|
         mime = MIME::Types.of(obj.path).first.to_s
-        [mime, File.read(obj.path)] if SUPPORTED_MIMES.include?(mime)
+        if mime && DEFAULT_MIME_TYPE_FORMAT_METHODS.key?(mime)
+          [mime, File.read(obj.path)]
+        end
       end
     end
   end
