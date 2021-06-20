@@ -391,13 +391,24 @@ module IRuby
         end
       end
 
+      format_magick_image = ->(obj) do
+        format = obj.format || 'PNG'
+        [
+          format == 'PNG' ? 'image/png' : 'image/jpeg',
+          obj.to_blob {|i| i.format = format }
+        ]
+      end
+
       match do |obj|
         defined?(Magick::Image) && Magick::Image === obj ||
           defined?(MiniMagick::Image) && MiniMagick::Image === obj
       end
+      format 'image', &format_magick_image
+
+      type { Gruff::Base }
       format 'image' do |obj|
-        format = obj.format || 'PNG'
-        [format == 'PNG' ? 'image/png' : 'image/jpeg', obj.to_blob { |i| i.format = format }]
+        image = obj.to_image
+        format_magick_image.(obj.to_image)
       end
 
       match do |obj|
@@ -413,9 +424,6 @@ module IRuby
           ['image/png', obj.write_to_buffer('.png')]
         end
       end
-
-      type { Gruff::Base }
-      format 'image/png', &:to_blob
 
       type { Rubyvis::Mark }
       format 'image/svg+xml' do |obj|
