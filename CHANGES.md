@@ -1,8 +1,13 @@
-# 0.7.1 (development)
+# 0.7.1 (2021-06-21)
 
 ## Enhancements
 
+* Add support of `to_iruby_mimebundle` format method https://github.com/SciRuby/iruby/pull/304 (@mrkn)
+
 ## Bug Fixes
+
+* Prevent unintentional display the result of Session#send (@mrkn)
+* Update display formatter for Gruff::Base to prevent warning (@mrkn)
 
 # 0.7.0 (2021-05-28)
 
