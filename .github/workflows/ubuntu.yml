@@ -41,6 +41,7 @@ jobs:
 
     - name: Install requirements on ubuntu
       run: |
+        sudo apt update
         sudo apt install -y --no-install-recommends \
                  libczmq-dev \
                  python3 \
