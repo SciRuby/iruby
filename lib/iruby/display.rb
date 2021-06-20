@@ -58,6 +58,9 @@ module IRuby
           case mime
           when nil # to_iruby
             case result
+            when nil
+              # do nothing
+              next
             when Array
               mime, result = result
             else
