@@ -21,7 +21,7 @@ module IRuby
 
     # Format the given object into HTML table
     def table(s, **options)
-      html(HTML.table(s, options))
+      html(HTML.table(s, **options))
     end
 
     # Treat the given string as LaTeX text
