@@ -10,7 +10,7 @@ module IRubyTest
 
     def test_include_module
       assert_nothing_raised do
-        @plainbackend.eval("include Math", false)
+        @plainbackend.eval("include Math, Comparable", false)
       end
     end
 
@@ -34,7 +34,7 @@ module IRubyTest
 
     def test_include_module
       assert_nothing_raised do
-        @prybackend.eval("include Math", false)
+        @prybackend.eval("include Math, Comparable", false)
       end
     end
 
