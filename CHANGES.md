@@ -1,3 +1,10 @@
+# 0.7.2 (2021-06-23)
+
+## Bug Fixes
+
+* Fix IRuby.table for Ruby >= 2.7 https://github.com/SciRuby/iruby/pull/305 (@topofocus)
+* Fix PlainBackend to include modules https://github.com/SciRuby/iruby/issues/303 (@UliKuch, @mrkn)
+
 # 0.7.1 (2021-06-21)
 
 ## Enhancements
