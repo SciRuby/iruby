@@ -65,8 +65,8 @@ module IRuby
     def init_main_object(main)
       wrapper_module = Module.new
       main.extend(wrapper_module)
-      main.define_singleton_method(:include) do |*args, **kwargs|
-        wrapper_module.include(*args, **kwargs)
+      main.define_singleton_method(:include) do |*args|
+        wrapper_module.include(*args)
       end
     end
   end
