@@ -8,6 +8,12 @@ module IRubyTest
       assert_equal 3, @plainbackend.eval('1+2', false)
     end
 
+    def test_include_module
+      assert_nothing_raised do
+        @plainbackend.eval("include Math", false)
+      end
+    end
+
     def test_complete_req
       assert_includes @plainbackend.complete('req'), 'require'
     end
@@ -24,6 +30,12 @@ module IRubyTest
 
     def test_eval_one_plus_two
       assert_equal 3, @prybackend.eval('1+2', false)
+    end
+
+    def test_include_module
+      assert_nothing_raised do
+        @prybackend.eval("include Math", false)
+      end
     end
 
     def test_complete_req

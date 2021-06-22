@@ -40,6 +40,7 @@ module IRuby
       require 'irb/completion'
       IRB.setup(nil)
       @main = TOPLEVEL_BINDING.eval("self").dup
+      init_main_object(@main)
       @workspace = IRB::WorkSpace.new(@main)
       @irb = IRB::Irb.new(@workspace)
       @eval_path = @irb.context.irb_path
@@ -57,6 +58,16 @@ module IRuby
 
     def complete(code)
       IRB::InputCompletor::CompletionProc.call(code)
+    end
+
+    private
+
+    def init_main_object(main)
+      wrapper_module = Module.new
+      main.extend(wrapper_module)
+      main.define_singleton_method(:include) do |mod|
+        wrapper_module.include(mod)
+      end
     end
   end
 
