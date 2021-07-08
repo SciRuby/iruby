@@ -1,3 +1,9 @@
+# 0.7.3 (2021-07-08)
+
+## Bug Fixes
+
+* Do not call default renderers when to_iruby_mimebundle is available (@mrkn)
+
 # 0.7.2 (2021-06-23)
 
 ## Bug Fixes
