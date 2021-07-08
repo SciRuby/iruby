@@ -40,13 +40,23 @@ module IRuby
           raise 'Invalid mime type' unless exact_mime.include?('/')
         end
 
-        data = render_mimebundle(obj, exact_mime, fuzzy_mime)
+        data = if obj.respond_to?(:to_iruby_mimebundle)
+                 render_mimebundle(obj, exact_mime, fuzzy_mime)
+               else
+                 {}
+               end
 
         # Render by additional formatters
         render_by_registry(data, obj, exact_mime, fuzzy_mime)
 
         # Render by to_xxx methods
-        DEFAULT_MIME_TYPE_FORMAT_METHODS.each do |mime, methods|
+        default_renderers = if obj.respond_to?(:to_iruby_mimebundle)
+                              # Do not use Hash#slice for Ruby < 2.5
+                              {"text/plain" => DEFAULT_MIME_TYPE_FORMAT_METHODS["text/plain"]}
+                            else
+                              DEFAULT_MIME_TYPE_FORMAT_METHODS
+                            end
+        default_renderers.each do |mime, methods|
           next if mime.nil? && !data.empty? # for to_iruby
 
           next if mime && data.key?(mime)   # do not overwrite
@@ -109,13 +119,11 @@ module IRuby
 
       private def render_mimebundle(obj, exact_mime, fuzzy_mime)
         data = {}
-        if obj.respond_to?(:to_iruby_mimebundle)
-          include_mime = [exact_mime].compact
-          formats, metadata = obj.to_iruby_mimebundle(include: include_mime)
-          formats.each do |mime, value|
-            if fuzzy_mime.nil? || mime.include?(fuzzy_mime)
-              data[mime] = value
-            end
+        include_mime = [exact_mime].compact
+        formats, metadata = obj.to_iruby_mimebundle(include: include_mime)
+        formats.each do |mime, value|
+          if fuzzy_mime.nil? || mime.include?(fuzzy_mime)
+            data[mime] = value
           end
         end
         data

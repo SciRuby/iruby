@@ -59,14 +59,12 @@ module IRubyTest
         def to_iruby_mimebundle(include: [])
           @to_iruby_mimebundle_called = true
           mimes = if include.empty?
-                    ["text/html", "text/markdown", "application/json"]
+                    ["text/markdown", "application/json"]
                   else
                     include
                   end
           formats = mimes.map { |mime|
             result = case mime
-                     when "text/html"
-                       "<i>html</i>"
                      when "text/markdown"
                        "**markdown**"
                      when "application/json"
@@ -170,7 +168,6 @@ module IRubyTest
           def test_display
             assert_iruby_display({
                                    result: {
-                                     "text/html" => "<i>html</i>",
                                      "text/markdown" => "**markdown**",
                                      "application/json" => %Q[{"mimebundle": "json"}],
                                      "text/plain" => "!!! inspect !!!"
