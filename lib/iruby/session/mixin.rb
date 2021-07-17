@@ -23,7 +23,7 @@ module IRuby
       idents, msg_list = frames[0..i-1], frames[i+1..-1]
 
       minlen = 5
-      raise 'malformed message, must have at least #{minlen} elements' unless msg_list.length >= minlen
+      raise "malformed message, must have at least #{minlen} elements" unless msg_list.length >= minlen
       s, header, parent_header, metadata, content, buffers = *msg_list
       raise 'Invalid signature' unless s == sign(msg_list[1..-1])
       {
