@@ -12,6 +12,10 @@ group :plot do
   gem 'rubyvis'
 end
 
-group :test do
+group :pycall do
+  gem 'pycall'
+end
+
+group :cztop do
   gem 'cztop'
 end
