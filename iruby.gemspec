@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w[lib]
+  s.extensions    = ["ext/Rakefile"]
 
   s.required_ruby_version = '>= 2.3.0'
 
@@ -23,8 +24,12 @@ Gem::Specification.new do |s|
   s.add_dependency 'mime-types', '>= 3.3.1'
   s.add_dependency 'multi_json', '~> 1.11'
 
+  s.add_runtime_dependency "native-package-installer", ">= 1.0.3"
+
   s.add_development_dependency 'pycall', '>= 1.2.1'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'test-unit-rr'
+
+  s.metadata["msys2_mingw_dependencies"] = "zeromq"
 end

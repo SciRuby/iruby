@@ -1,0 +1,15 @@
+task default: :all
+
+task all: [:install_zeromq]
+
+task :install_zeromq do
+  require "native-package-installer"
+
+  NativePackageInstaller.install(arch_linux: "zeromq",
+                                 debian: "libzmq5",
+                                 freebsd: "zeromq4",
+                                 homebrew: "zmq",
+                                 macports: "zmq",
+                                 msys2: "zeromq",
+                                 redhat: "zeromq")
+end
