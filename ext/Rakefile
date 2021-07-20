@@ -1,0 +1,19 @@
+task default: :all
+
+task all: [:ensure_zeromq]
+
+task :ensure_zeromq do
+  begin
+    require 'ffi-rzmq'
+  rescue LoadError
+    require 'native-package-installer'
+    unless NativePackageInstaller.install(arch_linux: 'zeromq',
+                                          debian: 'libzmq3-dev',
+                                          freebsd: 'libzmq4',
+                                          homebrew: 'zmq',
+                                          macports: 'zmq',
+                                          redhat: 'zeromq-devel')
+      raise 'Failed to install ZeroMQ'
+    end
+  end
+end

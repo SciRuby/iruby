@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    types:
+    - opened
+    - synchronize
+    - reopened
+
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        ruby:
+        - "3.0"
+        - "2.7"
+        - "2.6"
+        - "2.5"
+        - "2.4"
+        - "2.3"
+        - debug
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - run: rake build
+
+    - name: Install irb for old Ruby
+      if: |
+        matrix.ruby == '2.5' ||
+        matrix.ruby == '2.4' ||
+        matrix.ruby == '2.3'
+      run: |
+        cat <<GEMFILE > Gemfile.irb
+        source 'https://rubygems.org'
+        gem 'irb'
+        GEMFILE
+        BUNDLE_GEMFILE=Gemfile.irb bundle install --jobs 4 --retry 3
+
+    - run: gem install pkg/*.gem
+
+    - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
+      env:
+        IRUBY_SESSION_ADAPTER: ffi-rzmq
+
+    - name: Install requirements on ubuntu
+      run: |
+        sudo apt update
+        sudo apt install -y --no-install-recommends \
+                 libczmq-dev \
+                 python3 \
+                 python3-pip \
+                 python3-setuptools
+        sudo pip3 install wheel
+        sudo pip3 install -r ci/requirements.txt
+
+    - run: bundle install --jobs 4 --retry 3
+
+    - name: Run tests
+      env:
+        PYTHON: python3
+        ADAPTERS: cztop ffi-rzmq pyzmq
+      run: |
+        for adapter in $ADAPTERS; do
+          export IRUBY_TEST_SESSION_ADAPTER_NAME=$adapter
+          bundle exec rake test TESTOPTS=-v
+        done
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.0"
+
+    - run: rake build
+
+    - run: gem install pkg/*.gem
+
+    - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
+      env:
+        IRUBY_SESSION_ADAPTER: ffi-rzmq
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.0"
+
+    - run: rake build
+
+    - run: gem install pkg/*.gem
+
+    - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
+      env:
+        IRUBY_SESSION_ADAPTER: ffi-rzmq
