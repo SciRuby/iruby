@@ -59,6 +59,9 @@ module IRuby
                   "Session adapter `#{name}` is unavailable"
           end
         end
+        if name == 'cztop'
+          warn "WARNING: cztop was deprecated and will be removed; Use ffi-rzmq, instead."
+        end
         return cls
       end
       classes.each_value do |cls|
