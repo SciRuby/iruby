@@ -1,3 +1,11 @@
+# 0.7.4 (2021-08-15)
+
+## Enhancements
+
+* Install zeromq library automatically https://github.com/SciRuby/iruby/pull/307, https://github.com/SciRuby/iruby/pull/308 (@mrkn, @kou)
+* Remove pyzmq session adapter (@mrkn)
+* Make cztop session adapter deprecated (@mrkn)
+
 # 0.7.3 (2021-07-08)
 
 ## Bug Fixes
