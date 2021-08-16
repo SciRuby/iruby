@@ -21,67 +21,53 @@ https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab
 ### Requirements
 
 * [Jupyter](https://jupyter.org)
-* One of the following is required
-    * [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq) and [libzmq](https://github.com/zeromq/libzmq)
-    * [CZTop](https://gitlab.com/paddor/cztop) and [CZMQ](https://github.com/zeromq/czmq)
 
-If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop, set the following environment variable.
+The following requirements are automatically installed.
 
-```sh
-export IRUBY_SESSION_ADAPTER="cztop"
-```
+* [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq)
+* [libzmq](https://github.com/zeromq/libzmq)
+
+The following dependencies are optional.
 
 * [Pry][Pry], if you want to use [Pry][Pry] instead of IRB for the code execution backend
-* If you want to install the development version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
 
-```
-gem specific_install https://github.com/SciRuby/iruby
-```
+
+### Installing Jupyter Notebook and/or JupyterLab
+
+See the official document to know how to install Jupyter Notebook and/or JupyterLab.
+
+* https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html
+* https://jupyter.readthedocs.io/en/latest/install.html
 
 ### Ubuntu
-
-Install Jupyter.
 
 #### Ubuntu 17+
 
 ```shell
 sudo apt install libtool libffi-dev ruby ruby-dev make
-sudo apt install libzmq3-dev libczmq-dev
 
-gem install ffi-rzmq
-gem install iruby --pre
+gem install --user-install iruby
 iruby register --force
 ```
 
 #### Ubuntu 16
 
-CZTop requires CZMQ >= 4.0.0 and ZMQ >= 4.2.0. The official packages for Ubuntu 16.04 don't satisfy these version requrements, so you need to install from source.
+The latest IRuby requires Ruby >= 2.4 while Ubuntu's official Ruby package is version 2.3.
+So you need to install Ruby >= 2.4 by yourself before preparing IRuby.
+We recommend to use rbenv.
 
 ```shell
 sudo apt install libtool libffi-dev ruby ruby-dev make
-sudo apt install git libzmq-dev autoconf pkg-config
-git clone https://github.com/zeromq/czmq
-cd czmq
-./autogen.sh && ./configure && sudo make && sudo make install
-
-gem install cztop
-gem install iruby --pre
+gem install --user-install iruby
 iruby register --force
 ```
 
 ### Windows
 
-Install git and Jupyter.
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
 
-Install ZeroMQ.
 ```shell
-pacman -S mingw64/mingw-w64-x86_64-zeromq
-```
-
-```shell
-gem install ffi-rzmq
-gem install iruby --pre
+gem install iruby
 iruby register --force
 ```
 
@@ -93,17 +79,7 @@ Install Jupyter.
 #### Homebrew
 
 ```shell
-brew install automake gmp libtool wget
-brew install zeromq --HEAD
-brew install czmq --HEAD
-```
-
-```shell
-# export LIBZMQ_PATH=$(brew --prefix zeromq)/lib
-# export LIBCZMQ_PATH=$(brew --prefix czmq)/lib
-# gem install cztop
-gem install ffi-rzmq
-gem install iruby --pre
+gem install iruby
 iruby register --force
 ```
 
@@ -113,8 +89,8 @@ If you are using macports, run the following commands.
 
 ```shell
 port install libtool autoconf automake autogen
-gem install ffi-rzmq
 gem install iruby
+iruby register --force
 ```
 
 ### Docker
@@ -123,7 +99,7 @@ Try [RubyData Docker Stacks](https://github.com/RubyData/docker-stacks).
 Running jupyter notebook:
 
 ```shell
-docker run -p 8888:8888 rubydata/datascience-notebook
+docker run --rm -it -p 8888:8888 rubydata/datascience-notebook
 ```
 
 ### Installation for JRuby
@@ -131,7 +107,6 @@ docker run -p 8888:8888 rubydata/datascience-notebook
 You can use Java classes in your IRuby notebook.
 
 * JRuby version >= 9.0.4.0
-* cztop gem
 * iruby gem
 
 After installation, make sure that your `env` is set up to use jruby.
@@ -146,6 +121,29 @@ If you have already used IRuby with a different version, you need to generate a 
 
 ```shell
 $ iruby register --force
+```
+
+### Install the development version of IRuby
+
+**Be careful to use the development version because it is usually unstable.**
+
+If you want to install the development version of IRuby from the source code, try [specific_install](https://github.com/rdp/specific_install).
+
+```
+gem specific_install https://github.com/SciRuby/iruby
+```
+
+### Note for using with CZTop and CZMQ
+
+[CZTop](https://gitlab.com/paddor/cztop) adapter has been deprecated since IRuby version 0.7.4.
+It will be removed after several versions.
+
+If you want to use IRuby with CZTop, you need to install it and [CZMQ](https://github.com/zeromq/czmq).
+
+If both ffi-rzmq and cztop are installed, ffi-rzmq is used. If you prefer cztop, set the following environment variable.
+
+```sh
+export IRUBY_SESSION_ADAPTER="cztop"
 ```
 
 ## Backends
