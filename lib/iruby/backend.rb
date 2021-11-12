@@ -1,6 +1,11 @@
 module IRuby
   In, Out = [nil], [nil]
 
+  class << self
+    attr_accessor :silent_assignment
+  end
+  self.silent_assignment = false
+
   module History
     def eval(code, store_history)
       b = eval_binding
@@ -53,7 +58,7 @@ module IRuby
 
     def eval(code, store_history)
       @irb.context.evaluate(code, 0)
-      @irb.context.last_value unless assignment_expression?(code)
+      @irb.context.last_value unless IRuby.silent_assignment && assignment_expression?(code)
     end
 
     def complete(code)
