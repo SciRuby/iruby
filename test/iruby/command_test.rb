@@ -150,7 +150,9 @@ module IRubyTest
     def test_register_and_unregister_with_JUPYTER_DATA_DIR_when_there_is_kernel_in_ipython_dir
       Dir.mktmpdir do |tmpdir|
         Dir.mktmpdir do |tmpdir2|
-          with_env('HOME' => tmpdir2) do
+          with_env("JUPYTER_DATA_DIR" => nil,
+                   "IPYTHONDIR" => nil,
+                   "HOME" => tmpdir2) do
             ignore_warning do
               @command = IRuby::Command.new(["register", "--ipython-dir=~/.ipython"])
               assert_equal("#{tmpdir2}/.ipython/kernels/ruby/kernel.json", @command.kernel_file)

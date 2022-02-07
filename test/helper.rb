@@ -2,6 +2,7 @@ require "iruby"
 require "json"
 require 'multi_json'
 require "pathname"
+require "rbconfig"
 require "test/unit"
 require "test/unit/rr"
 require "tmpdir"
@@ -11,9 +12,28 @@ IRuby.logger = IRuby::MultiLogger.new(*Logger.new(STDERR, level: Logger::Severit
 
 module IRubyTest
   class TestBase < Test::Unit::TestCase
+    TEST_DIR = File.expand_path("..", __FILE__).freeze
+    BIN_DIR = File.expand_path("../bin", TEST_DIR).freeze
+    LIB_DIR = File.expand_path("../lib", TEST_DIR).freeze
+
+    RUBY = RbConfig.ruby.freeze
+    IRUBY_PATH = File.join(BIN_DIR, "iruby").freeze
+
+    def iruby_command(*args)
+      [RUBY, "-I#{LIB_DIR}", IRUBY_PATH, *args]
+    end
+
     def self.startup
-      @__config_dir = Dir.mktmpdir("iruby-test")
+      @__work_dir = Dir.mktmpdir("iruby-test-data")
+
+      @__jupyter_data_dir = File.join(@__work_dir, "jupyter")
+      ENV["JUPYTER_DATA_DIR"] = @__jupyter_data_dir
+      system(RUBY, "-I#{LIB_DIR}", IRUBY_PATH, "register",
+             err: :out, out: File::NULL)
+
+      @__config_dir = File.join(@__work_dir, "config")
       @__config_path = Pathname.new(@__config_dir) + "config.json"
+      @__config_path.dirname.mkpath
       File.write(@__config_path, {
         control_port: 50160,
         shell_port: 57503,
@@ -30,7 +50,7 @@ module IRubyTest
     end
 
     def self.shutdown
-      FileUtils.remove_entry_secure(@__config_dir)
+      FileUtils.remove_entry_secure(@__work_dir)
     end
 
     def self.test_config_filename
