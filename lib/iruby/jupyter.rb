@@ -2,8 +2,11 @@ module IRuby
   module Jupyter
     class << self
       # User's default kernelspec directory is described here:
-      #     https://jupyter.readthedocs.io/en/latest/projects/jupyter-directories.html
+      #     https://docs.jupyter.org/en/latest/use/jupyter-directories.html
       def default_data_dir
+        data_dir = ENV["JUPYTER_DATA_DIR"]
+        return data_dir if data_dir
+
         case
         when windows?
           appdata = windows_user_appdata
