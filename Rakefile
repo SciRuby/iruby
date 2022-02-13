@@ -9,8 +9,9 @@ FileList['tasks/**.rake'].each {|f| load f }
 
 desc "Run tests"
 task :test do
+  test_opts = ENV.fetch("TESTOPTS", "").split
   cd(base_dir) do
-    ruby("test/run-test.rb")
+    ruby("test/run-test.rb", *test_opts)
   end
 end
 
