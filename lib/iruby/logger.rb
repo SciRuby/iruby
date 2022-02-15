@@ -6,10 +6,21 @@ module IRuby
   end
 
   class MultiLogger < BasicObject
+    def initialize(*loggers, level: ::Logger::DEBUG)
+      @loggers = loggers
+      @level = level
+    end
+
     attr_reader :loggers
 
-    def initialize(*loggers)
-      @loggers = loggers
+    attr_reader :level
+
+    def level=(new_level)
+      p :ahi
+      @loggers.each do |l|
+        l.level = new_level
+      end
+      @level = new_level
     end
 
     def method_missing(name, *args, &b)
