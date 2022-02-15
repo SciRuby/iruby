@@ -16,7 +16,6 @@ module IRuby
     attr_reader :level
 
     def level=(new_level)
-      p :ahi
       @loggers.each do |l|
         l.level = new_level
       end
