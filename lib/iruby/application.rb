@@ -123,7 +123,7 @@ module IRuby
       :force,
       :ipython_dir
     ) do
-      def initialize(*args, **kw)
+      def initialize(*args)
         super
         self.name ||= DEFAULT_KERNEL_NAME
         self.force = false

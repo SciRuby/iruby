@@ -51,8 +51,7 @@ puts "Fake Jupyter"
           @kernel_json = File.join(tmpdir, "kernels", DEFAULT_KERNEL_NAME, "kernel.json")
           with_env(
             "JUPYTER_DATA_DIR" => tmpdir,
-            "IPYTHONDIR" => nil,
-            "HOME" => nil
+            "IPYTHONDIR" => nil
           ) do
             yield
           end
