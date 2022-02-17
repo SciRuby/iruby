@@ -2,6 +2,7 @@
 
 $VERBOSE = true
 
+require "bundler/setup"
 require "pathname"
 
 base_dir = Pathname.new(__dir__).parent.expand_path

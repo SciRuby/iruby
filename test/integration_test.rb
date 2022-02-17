@@ -1,11 +1,17 @@
+require 'bundler'
 require 'pty'
 require 'expect'
 
 class IRubyTest::IntegrationTest < IRubyTest::TestBase
   def setup
-    $expect_verbose = false # make true if you want to dump the output of iruby console
+    system(*iruby_command("register", "--name=iruby-test"), out: File::NULL, err: File::NULL)
+    kernel_json = File.join(ENV["JUPYTER_DATA_DIR"], "kernels", "iruby-test", "kernel.json")
+    assert_path_exist kernel_json
 
-    @in, @out, pid = PTY.spawn('bin/iruby --simple-prompt')
+    $expect_verbose = true # make true if you want to dump the output of iruby console
+
+    command = iruby_command("console", "--kernel=iruby-test").map {|x| %Q["#{x}"] }
+    @in, @out, pid = PTY.spawn(command.join(" "))
     @waiter = Thread.start { Process.waitpid(pid) }
     expect 'In [', 30
     expect '1'
