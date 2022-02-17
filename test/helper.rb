@@ -7,7 +7,6 @@ require "test/unit"
 require "test/unit/rr"
 require "tmpdir"
 
-
 IRuby.logger = IRuby::MultiLogger.new(*Logger.new(STDERR, level: Logger::Severity::INFO))
 
 module IRubyTest
@@ -27,9 +26,8 @@ module IRubyTest
       @__work_dir = Dir.mktmpdir("iruby-test-data")
 
       @__jupyter_data_dir = File.join(@__work_dir, "jupyter")
+      @__save_jupyter_data_dir = ENV["JUPYTER_DATA_DIR"]
       ENV["JUPYTER_DATA_DIR"] = @__jupyter_data_dir
-      system(RUBY, "-I#{LIB_DIR}", IRUBY_PATH, "register",
-             err: :out, out: File::NULL)
 
       @__config_dir = File.join(@__work_dir, "config")
       @__config_path = Pathname.new(@__config_dir) + "config.json"
@@ -51,6 +49,7 @@ module IRubyTest
 
     def self.shutdown
       FileUtils.remove_entry_secure(@__work_dir)
+      ENV["JUPYTER_DATA_DIR"] = @__save_jupyter_data_dir
     end
 
     def self.test_config_filename

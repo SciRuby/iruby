@@ -1,7 +1,8 @@
 require "helper"
-require "iruby/application"
 require "open3"
 require "rbconfig"
+
+require "iruby/application"
 
 module IRubyTest
   module ApplicationTests
