@@ -13,11 +13,11 @@ IRuby.logger = IRuby::MultiLogger.new(*Logger.new(STDERR, level: Logger::Severit
 module IRubyTest
   class TestBase < Test::Unit::TestCase
     TEST_DIR = File.expand_path("..", __FILE__).freeze
-    BIN_DIR = File.expand_path("../bin", TEST_DIR).freeze
+    EXE_DIR = File.expand_path("../exe", TEST_DIR).freeze
     LIB_DIR = File.expand_path("../lib", TEST_DIR).freeze
 
     RUBY = RbConfig.ruby.freeze
-    IRUBY_PATH = File.join(BIN_DIR, "iruby").freeze
+    IRUBY_PATH = File.join(EXE_DIR, "iruby").freeze
 
     def iruby_command(*args)
       [RUBY, "-I#{LIB_DIR}", IRUBY_PATH, *args]

@@ -6,17 +6,6 @@ require "rbconfig"
 module IRubyTest
   module ApplicationTests
     class ApplicationTestBase < TestBase
-      RUBY = RbConfig.ruby
-      TEST_DIR = File.expand_path("../../..", __FILE__).freeze
-      EXE_DIR = File.expand_path("../exe", TEST_DIR).freeze
-      LIB_DIR = File.expand_path("../lib", TEST_DIR).freeze
-
-      IRUBY_PATH = File.join(EXE_DIR, "iruby").freeze
-
-      def iruby_command(*args)
-        [RUBY, "-I#{LIB_DIR}", IRUBY_PATH, *args]
-      end
-
       DEFAULT_KERNEL_NAME = IRuby::Application::DEFAULT_KERNEL_NAME
       DEFAULT_DISPLAY_NAME = IRuby::Application::DEFAULT_DISPLAY_NAME
 
