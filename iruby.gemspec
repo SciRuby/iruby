@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
 
   s.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
-  s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  s.bindir        = "exe"
+  s.executables   = %w[iruby]
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w[lib]
   s.extensions    = %w[ext/Rakefile]

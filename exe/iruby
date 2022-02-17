@@ -1,0 +1,7 @@
+#! /usr/bin/env ruby
+require "iruby"
+require "iruby/application"
+
+app = IRuby::Application.instance
+app.setup
+app.run
