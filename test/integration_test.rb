@@ -8,7 +8,7 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
     kernel_json = File.join(ENV["JUPYTER_DATA_DIR"], "kernels", "iruby-test", "kernel.json")
     assert_path_exist kernel_json
 
-    $expect_verbose = true # make true if you want to dump the output of iruby console
+    $expect_verbose = false # make true if you want to dump the output of iruby console
 
     command = iruby_command("console", "--kernel=iruby-test").map {|x| %Q["#{x}"] }
     @in, @out, pid = PTY.spawn(command.join(" "))
