@@ -4,6 +4,7 @@ require "optparse"
 require "rbconfig"
 require "singleton"
 
+require_relative "error"
 require_relative "kernel_app"
 
 module IRuby
@@ -56,7 +57,13 @@ module IRuby
         argv = ["console", *argv]
       end
 
-      parse_sub_command(argv) if argv.length > 0
+      begin
+        parse_sub_command(argv) if argv.length > 0
+      rescue InvalidSubcommandError => err
+        $stderr.puts err.message
+        print_help(opts, $stderr)
+        abort
+      end
     end
 
     SUB_COMMANDS = {
@@ -75,17 +82,15 @@ module IRuby
         @sub_cmd = sub_cmd.to_sym
         @sub_argv = sub_argv
       else
-        $stderr.puts "Invalid sub-command name: #{sub_cmd}"
-        print_help(opts, $stderr)
-        abort
+        raise InvalidSubcommandError.new(sub_cmd, sub_argv)
       end
     end
 
     private def print_help(opts, out=$stdout)
       out.puts opts.help
       out.puts
-      out.puts "Sub-commands"
-      out.puts "============"
+      out.puts "Subcommands"
+      out.puts "==========="
       SUB_COMMANDS.each do |name, description|
         out.puts "#{name}"
         out.puts "    #{description}"

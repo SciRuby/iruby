@@ -21,5 +21,12 @@ module IRubyTest::ApplicationTests
       assert status.success?
       assert_match(/\bIRuby\s+#{Regexp.escape(IRuby::VERSION)}\b/, out)
     end
+
+    def test_unknown_subcommand
+      out, status = Open3.capture2e(*iruby_command("matz"))
+      refute status.success?
+      assert_match(/^Invalid subcommand name: matz$/, out)
+      assert_match(/^Subcommands$/, out)
+    end
   end
 end
