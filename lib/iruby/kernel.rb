@@ -189,6 +189,7 @@ module IRuby
       unless silent
         exec_info = ExecutionInfo.new(code, store_history, silent)
         events.trigger(:pre_run_cell, exec_info)
+        code = exec_info.raw_cell
       end
 
       content = {
