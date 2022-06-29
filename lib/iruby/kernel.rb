@@ -218,7 +218,7 @@ module IRuby
       end
 
       events.trigger(:post_execute)
-      events.trigger(:post_run_cell, result) unless silent
+      events.trigger(:post_run_cell, result, **{}) unless silent
 
       @session.send(:reply, :execute_reply, content)
     end
