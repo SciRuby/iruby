@@ -218,7 +218,8 @@ module IRuby
       end
 
       events.trigger(:post_execute)
-      events.trigger(:post_run_cell, result) unless silent
+      # **{} is for Ruby2.7. Gnuplot#to_hash returns an Array.
+      events.trigger(:post_run_cell, result, **{}) unless silent
 
       @session.send(:reply, :execute_reply, content)
     end
