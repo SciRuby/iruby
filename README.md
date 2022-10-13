@@ -61,6 +61,7 @@ sudo apt install libtool libffi-dev ruby ruby-dev make
 gem install --user-install iruby
 iruby register --force
 ```
+
 ### Fedora
 
 #### Fedora 36
