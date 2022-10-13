@@ -62,6 +62,17 @@ gem install --user-install iruby
 iruby register --force
 ```
 
+### Fedora
+
+#### Fedora 36
+
+```shell
+sudo dnf install ruby ruby-dev make zeromq-devel
+
+gem install --user-install iruby
+iruby register --force
+```
+
 ### Windows
 
 [DevKit](https://rubyinstaller.org/add-ons/devkit.html) is necessary for building RubyGems with native C-based extensions.
