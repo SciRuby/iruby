@@ -61,6 +61,16 @@ sudo apt install libtool libffi-dev ruby ruby-dev make
 gem install --user-install iruby
 iruby register --force
 ```
+### Fedora
+
+#### Fedora 36
+
+```shell
+sudo dnf install ruby ruby-dev make zeromq-devel
+
+gem install --user-install iruby
+iruby register --force
+```
 
 ### Windows
 
