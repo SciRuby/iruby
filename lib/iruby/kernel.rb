@@ -176,8 +176,9 @@ module IRuby
     # @private
     def execute_request(msg)
       code = msg[:content]['code']
-      store_history = msg[:content]['store_history']
       silent = msg[:content]['silent']
+      # https://jupyter-client.readthedocs.io/en/stable/messaging.html#execute
+      store_history = silent ? false : msg[:content].fetch('store_history', true)
 
       @execution_count += 1 if store_history
 
