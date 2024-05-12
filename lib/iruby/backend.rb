@@ -57,7 +57,7 @@ module IRuby
     end
 
     def eval(code, store_history)
-      @irb.context.evaluate(code, 0)
+      @irb.context.evaluate(@irb.build_statement(code), 0)
       @irb.context.last_value unless IRuby.silent_assignment && assignment_expression?(code)
     end
 
