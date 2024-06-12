@@ -303,13 +303,14 @@ module IRuby
     private
 
     def init_parent_process_poller
-      pid = ENV.fetch('JPY_PARENT_PID', 0).to_i
-      return unless pid > 1
+      parent_pid = ENV.fetch('JPY_PARENT_PID', 0).to_i
 
       case RUBY_PLATFORM
       when /mswin/, /mingw/
-        # TODO
+        interrupt_handle = Integer(ENV.fetch('JPY_EVENT_INTERRUPT', 0))
+        @parent_poller = start_parent_process_pollar_windows(parent_pid, interrupt_handle)
       else
+        return unless parent_pid > 1
         @parent_poller = start_parent_process_pollar_unix
       end
     end
@@ -329,6 +330,13 @@ module IRuby
             # ignored
           end
         end
+      end
+    end
+
+    def start_parent_process_pollar_windows(parent_handle, interrupt_handle)
+      Thread.start do
+        IRuby.logger.warn("parent process poller thread started.")
+        # TODO
       end
     end
   end
