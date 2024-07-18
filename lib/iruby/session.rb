@@ -2,6 +2,7 @@ require 'iruby/session_adapter'
 require 'iruby/session/mixin'
 
 require 'securerandom'
+require 'time'
 
 module IRuby
   class Session
@@ -79,6 +80,7 @@ module IRuby
       header = {
         msg_type: message_type,
         msg_id:   SecureRandom.uuid,
+        date:     Time.now.utc.iso8601,
         username: 'kernel',
         session:  @session_id,
         version:  '5.0'
