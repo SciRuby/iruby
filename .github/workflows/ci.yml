@@ -89,7 +89,7 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0"
+          ruby-version: "ruby"
 
       - run: rake build
 
@@ -110,7 +110,7 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0"
+          ruby-version: "ruby"
 
       - run: rake build
 
