@@ -1,3 +1,23 @@
+# 0.8.0 (2024-07-28)
+
+* Hide output on assignment by @ankane in https://github.com/SciRuby/iruby/pull/312
+* Introduce the new Application classes by @mrkn in https://github.com/SciRuby/iruby/pull/317
+* Fix Gnuplot issues in Ruby 2.7 (#321) by @kojix2 in https://github.com/SciRuby/iruby/pull/322
+* Add Ruby3.1 to CI by @kojix2 in https://github.com/SciRuby/iruby/pull/323
+* Update README.md by @marek-witkowski in https://github.com/SciRuby/iruby/pull/324
+* ci: upgrade actions/checkout by @kojix2 in https://github.com/SciRuby/iruby/pull/325
+* Add Ruby 3.2 to CI for ubuntu by @petergoldstein in https://github.com/SciRuby/iruby/pull/327
+* Default to true for `store_history` if not in silent mode by @gartens in https://github.com/SciRuby/iruby/pull/330
+* Add Ruby 3.3 to CI for Ubuntu by @kojix2 in https://github.com/SciRuby/iruby/pull/331
+* Remove Ruby 2.3 and 2.4 from CI by @kojix2 in https://github.com/SciRuby/iruby/pull/332
+* Fix typos by @kojix2 in https://github.com/SciRuby/iruby/pull/335
+* Format README.md and ci.yml by @kojix2 in https://github.com/SciRuby/iruby/pull/337
+* Fix PlainBackend for irb v1.13.0 by @zalt50 in https://github.com/SciRuby/iruby/pull/339
+* Added `date` to header by @ebababi in https://github.com/SciRuby/iruby/pull/342
+* Update CI Configuration for IRuby by @kojix2 in https://github.com/SciRuby/iruby/pull/344
+* Add logger and Remove base64 to Fix CI Tests by @kojix2 in https://github.com/SciRuby/iruby/pull/345
+* Update CI trigger configuration by @kojix2 in https://github.com/SciRuby/iruby/pull/346
+
 # 0.7.4 (2021-08-18)
 
 ## Enhancements
