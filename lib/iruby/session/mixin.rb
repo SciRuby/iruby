@@ -4,10 +4,10 @@ module IRuby
 
     private
 
-    def serialize(idents, header, content)
+    def serialize(idents, header, metadata = nil, content)
       msg = [MultiJson.dump(header),
              MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
-             '{}',
+             MultiJson.dump(metadata || {}),
              MultiJson.dump(content || {})]
       frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
       IRuby.logger.debug "Sent #{frames.inspect}"
