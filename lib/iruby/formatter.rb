@@ -90,7 +90,7 @@ module IRuby
         rows2 = rows[-maxrows / 2 + 1..-1]
       end
 
-      table = '<table>'
+      table = +'<table>'
 
       if header1 && options[:header] != false
         table << '<tr>' << header1.map {|k| "<th>#{cell k}</th>" }.join
