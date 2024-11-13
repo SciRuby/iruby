@@ -113,14 +113,14 @@ module IRuby
         if FORCE_TEXT_TYPES.include?(mime)
           true
         else
-          MIME::Type.new(mime).ascii?
+          MIME::Type.new("content-type" => mime).ascii?
         end
       end
 
       private def render_mimebundle(obj, exact_mime, fuzzy_mime)
         data = {}
         include_mime = [exact_mime].compact
-        formats, metadata = obj.to_iruby_mimebundle(include: include_mime)
+        formats, _metadata = obj.to_iruby_mimebundle(include: include_mime)
         formats.each do |mime, value|
           if fuzzy_mime.nil? || mime.include?(fuzzy_mime)
             data[mime] = value
@@ -407,7 +407,6 @@ module IRuby
 
       type { Gruff::Base }
       format 'image' do |obj|
-        image = obj.to_image
         format_magick_image.(obj.to_image)
       end
 
