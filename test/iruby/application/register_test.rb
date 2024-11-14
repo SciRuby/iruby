@@ -61,7 +61,7 @@ puts "Fake Jupyter"
       test("a new IRuby kernel `#{DEFAULT_KERNEL_NAME}` will be installed in JUPYTER_DATA_DIR") do
         assert_path_not_exist @kernel_json
 
-        out, status = Open3.capture2e(*iruby_command("register"))
+        _out, status = Open3.capture2e(*iruby_command("register"))
         assert status.success?
         assert_path_exist @kernel_json
 

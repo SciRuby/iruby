@@ -48,7 +48,7 @@ module IRuby
 
     # Called by irb
     def set_encoding(extern, intern)
-      a = extern
+      extern
     end
 
     private
