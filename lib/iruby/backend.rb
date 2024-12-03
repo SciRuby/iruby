@@ -50,6 +50,7 @@ module IRuby
       @irb = IRB::Irb.new(@workspace)
       @eval_path = @irb.context.irb_path
       IRB.conf[:MAIN_CONTEXT] = @irb.context
+      @completor = IRB::RegexpCompletor.new if defined? IRB::RegexpCompletor # IRB::VERSION >= 1.8.2
     end
 
     def eval_binding
@@ -66,10 +67,9 @@ module IRuby
     end
 
     def complete(code)
-      if defined? IRB::RegexpCompletor # IRB::VERSION >= 1.8.2
-        completor = IRB::RegexpCompletor.new
+      if @completor
         # preposing and postposing never used, so they are empty, pass only target as code
-        completor.completion_candidates('', code, '', bind: @workspace.binding)
+        @completor.completion_candidates('', code, '', bind: @workspace.binding)
       else
         IRB::InputCompletor::CompletionProc.call(code)
       end
