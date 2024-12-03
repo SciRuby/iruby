@@ -25,6 +25,7 @@ jobs:
           - "3.0"
           - "2.7"
           - "2.6"
+          - "2.5"
           - debug
 
     steps:
@@ -55,6 +56,17 @@ jobs:
           cat <<GEMFILE > Gemfile.irb
           source 'https://rubygems.org'
           gem 'ffi', '~> 1.6.0'
+          GEMFILE
+          BUNDLE_GEMFILE=Gemfile.irb bundle install --jobs 4 --retry 3
+
+      - name: Install ffi 1.6.x and irb < 1.4.3 (if Ruby 2.5)
+        if: |
+          matrix.ruby == '2.5'
+        run: |
+          cat <<GEMFILE > Gemfile.irb
+          source 'https://rubygems.org'
+          gem 'ffi', '~> 1.6.0'
+          gem 'irb', '< 1.4.3'
           GEMFILE
           BUNDLE_GEMFILE=Gemfile.irb bundle install --jobs 4 --retry 3
 
