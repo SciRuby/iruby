@@ -50,7 +50,6 @@ module IRuby
       @irb = IRB::Irb.new(@workspace)
       @eval_path = @irb.context.irb_path
       IRB.conf[:MAIN_CONTEXT] = @irb.context
-      @completor = IRB::RegexpCompletor.new
     end
 
     def eval_binding
@@ -58,13 +57,22 @@ module IRuby
     end
 
     def eval(code, store_history)
-      @irb.context.evaluate(@irb.build_statement(code), 0)
+      if Gem::Version.new(IRB::VERSION) < Gem::Version.new('1.13.0')
+        @irb.context.evaluate(code, 0)
+      else
+        @irb.context.evaluate(@irb.build_statement(code), 0)
+      end
       @irb.context.last_value unless IRuby.silent_assignment && assignment_expression?(code)
     end
 
     def complete(code)
-      # preposing and postposing never used, so they are empty, pass only target as code
-      @completor.completion_candidates('', code, '', bind: @workspace.binding)
+      if defined? IRB::RegexpCompletor # IRB::VERSION >= 1.8.2
+        completor = IRB::RegexpCompletor.new
+        # preposing and postposing never used, so they are empty, pass only target as code
+        completor.completion_candidates('', code, '', bind: @workspace.binding)
+      else
+        IRB::InputCompletor::CompletionProc.call(code)
+      end
     end
 
     private
