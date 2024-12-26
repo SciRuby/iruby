@@ -113,7 +113,7 @@ module IRuby
         if FORCE_TEXT_TYPES.include?(mime)
           true
         else
-          MIME::Type.new("content-type" => mime).ascii?
+          MIME::Types[mime].first.ascii?
         end
       end
 
