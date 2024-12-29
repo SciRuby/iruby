@@ -106,7 +106,8 @@ module IRuby
       # but mime-types library tells us it is a non-text type.
       FORCE_TEXT_TYPES = Set[
         "application/javascript",
-        "image/svg+xml"
+        "image/svg+xml",
+        "text.html",
       ].freeze
 
       def ascii?(mime)
