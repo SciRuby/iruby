@@ -3,10 +3,7 @@ name: CI
 on:
   push:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  workflow_dispatch:
 
 jobs:
   ubuntu:
@@ -19,6 +16,7 @@ jobs:
         os:
           - ubuntu-latest
         ruby:
+          - "3.4"
           - "3.3"
           - "3.2"
           - "3.1"
