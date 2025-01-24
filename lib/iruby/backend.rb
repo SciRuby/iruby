@@ -58,12 +58,14 @@ module IRuby
     end
 
     def eval(code, store_history)
-      if Gem::Version.new(IRB::VERSION) < Gem::Version.new('1.13.0')
-        @irb.context.evaluate(code, 0)
-      else
-        @irb.context.evaluate(@irb.build_statement(code), 0)
-      end
+      @irb.context.evaluate(parse_code(code), 0)
       @irb.context.last_value unless IRuby.silent_assignment && assignment_expression?(code)
+    end
+
+    def parse_code(code)
+      return code if Gem::Version.new(IRB::VERSION) < Gem::Version.new('1.13.0')
+      return @irb.parse_input(code) if @irb.respond_to?(:parse_input)
+      return @irb.build_statement(code) if @irb.respond_to?(:build_statement)
     end
 
     def complete(code)
