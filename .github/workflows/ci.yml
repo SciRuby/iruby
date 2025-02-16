@@ -68,7 +68,10 @@ jobs:
           GEMFILE
           BUNDLE_GEMFILE=Gemfile.irb bundle install --jobs 4 --retry 3
 
-      - run: gem install pkg/*.gem
+      - name: Install IRuby gem
+        run: |
+          sudo apt update # Preparation for Native Package Installer
+          gem install pkg/*.gem
 
       - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
         env:
