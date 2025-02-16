@@ -1,3 +1,13 @@
+# 0.8.1 (2025-02-16)
+
+* Add support for jupyter widgets by @matt-do-it in https://github.com/SciRuby/iruby/pull/350
+* Suppress "literal string will be frozen in the future" warning by @tikkss in https://github.com/SciRuby/iruby/pull/353
+* Fix warnings in project by @simpl1g in https://github.com/SciRuby/iruby/pull/356
+* restore support for IRB <= v1.13.0 by @sealocal in https://github.com/SciRuby/iruby/pull/358
+* Restore ruby 2.6 and 2.5 in CI by @sealocal in https://github.com/SciRuby/iruby/pull/359
+* Add Ruby 3.4 to CI by @kojix2 in https://github.com/SciRuby/iruby/pull/360
+* Fix NoMethodError in backend by @edsinclair in https://github.com/SciRuby/iruby/pull/364
+
 # 0.8.0 (2024-07-28)
 
 * Hide output on assignment by @ankane in https://github.com/SciRuby/iruby/pull/312
