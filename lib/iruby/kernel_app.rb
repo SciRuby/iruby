@@ -50,13 +50,13 @@ module IRuby
         if argv.length <= 3
           @connection_file, @boot_file, @work_dir = argv
         else
-          raise ArgumentError, "Too many comandline arguments"
+          raise ArgumentError, "Too many commandline arguments"
         end
       else
         if argv.length <= 2
           @boot_file, @work_dir = argv
         else
-          raise ArgumentError, "Too many comandline arguments"
+          raise ArgumentError, "Too many commandline arguments"
         end
       end
 

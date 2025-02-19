@@ -1,5 +1,3 @@
-require "base64"
-
 module IRubyTest
   class KernelTest < TestBase
     def setup

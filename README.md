@@ -10,11 +10,11 @@ IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
 
 You can try IRuby with a sample notebook on Binder (the same link as the banner placed above):
 
-https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb
+<https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb>
 
 The following URL launches JupyterLab directly on Binder.
 
-https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab
+<https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab>
 
 ## Installation
 
@@ -31,13 +31,12 @@ The following dependencies are optional.
 
 * [Pry][Pry], if you want to use [Pry][Pry] instead of IRB for the code execution backend
 
-
 ### Installing Jupyter Notebook and/or JupyterLab
 
 See the official document to know how to install Jupyter Notebook and/or JupyterLab.
 
-* https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html
-* https://jupyter.readthedocs.io/en/latest/install.html
+* <https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html>
+* <https://jupyter.readthedocs.io/en/latest/install.html>
 
 ### Ubuntu
 
@@ -106,7 +105,7 @@ iruby register --force
 
 ### Docker
 
-Try [RubyData Docker Stacks](https://github.com/RubyData/docker-stacks). 
+Try [RubyData Docker Stacks](https://github.com/RubyData/docker-stacks).
 Running jupyter notebook:
 
 ```shell
@@ -123,7 +122,7 @@ You can use Java classes in your IRuby notebook.
 After installation, make sure that your `env` is set up to use jruby.
 
 ```shell
-$ env ruby -v
+env ruby -v
 ```
 
 If you use RVM, it is enough to switch the current version to jruby.
@@ -131,7 +130,7 @@ If you use RVM, it is enough to switch the current version to jruby.
 If you have already used IRuby with a different version, you need to generate a new kernel:
 
 ```shell
-$ iruby register --force
+iruby register --force
 ```
 
 ### Install the development version of IRuby
@@ -182,7 +181,7 @@ Contributions to IRuby are very welcome.
 
 To former contributors
 
-In February 2021, [IRuby became the canonical repository](https://github.com/SciRuby/iruby/issues/285) and is no longer a fork from [minrk/iruby](https://github.com/minrk/iruby). Please fork from this repository again before making pull requests. 
+In February 2021, [IRuby became the canonical repository](https://github.com/SciRuby/iruby/issues/285) and is no longer a fork from [minrk/iruby](https://github.com/minrk/iruby). Please fork from this repository again before making pull requests.
 
 ## License
 

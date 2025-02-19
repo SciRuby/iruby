@@ -13,17 +13,17 @@ module IRuby
       @target_name, @comm_id = target_name, comm_id
     end
 
-    def open(**data)
-      Kernel.instance.session.send(:publish, :comm_open, comm_id: @comm_id, data: data, target_name: @target_name)
+    def open(metadata = nil, **data)
+      Kernel.instance.session.send(:publish, :comm_open, metadata, comm_id: @comm_id, data: data, target_name: @target_name)
       Comm.comm[@comm_id] = self
     end
 
-    def send(**data)
-      Kernel.instance.session.send(:publish, :comm_msg, comm_id: @comm_id, data: data)
+    def send(metadata = nil, **data)
+      Kernel.instance.session.send(:publish, :comm_msg, metadata, comm_id: @comm_id, data: data)
     end
 
-    def close(**data)
-      Kernel.instance.session.send(:publish, :comm_close, comm_id: @comm_id, data: data)
+    def close(metadata = nil, **data)
+      Kernel.instance.session.send(:publish, :comm_close, metadata, comm_id: @comm_id, data: data)
       Comm.comm.delete(@comm_id)
     end
 

@@ -32,7 +32,7 @@ puts "Fake Jupyter"
         end
       end
 
-      test("IRuby warns tthe existence of the kernel in IPython's kerenls directory and executes `jupyter kernelspec install` command") do
+      test("IRuby warns the existence of the kernel in IPython's kernels directory and executes `jupyter kernelspec install` command") do
         out, status = Open3.capture2e(*iruby_command("register"))
         assert status.success?
         assert_match(/^Fake Jupyter$/, out)
@@ -61,7 +61,7 @@ puts "Fake Jupyter"
       test("a new IRuby kernel `#{DEFAULT_KERNEL_NAME}` will be installed in JUPYTER_DATA_DIR") do
         assert_path_not_exist @kernel_json
 
-        out, status = Open3.capture2e(*iruby_command("register"))
+        _out, status = Open3.capture2e(*iruby_command("register"))
         assert status.success?
         assert_path_exist @kernel_json
 

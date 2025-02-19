@@ -83,7 +83,7 @@ module IRubyTest::ApplicationTests
 
         add_kernel_options("--log=#{log_file}", boot_file)
 
-        out, status = Open3.capture2e(*iruby_command("console"), in: :close)
+        _out, status = Open3.capture2e(*iruby_command("console"), in: :close)
         assert status.success?
         assert_path_exist log_file
         assert_match(/\bINFO -- bootfile: !!! LOG MESSAGE FROM BOOT FILE !!!$/, File.read(log_file))

@@ -2,6 +2,7 @@ require 'iruby/session_adapter'
 require 'iruby/session/mixin'
 
 require 'securerandom'
+require 'time'
 
 module IRuby
   class Session
@@ -69,7 +70,7 @@ module IRuby
       end
     end
 
-    def send(socket_type, message_type, content)
+    def send(socket_type, message_type, metadata = nil, content)
       sock = check_socket_type(socket_type)
       idents = if socket_type == :reply && @last_recvd_msg
                  @last_recvd_msg[:idents]
@@ -79,11 +80,12 @@ module IRuby
       header = {
         msg_type: message_type,
         msg_id:   SecureRandom.uuid,
+        date:     Time.now.utc.iso8601,
         username: 'kernel',
         session:  @session_id,
         version:  '5.0'
       }
-      @adapter.send(sock, serialize(idents, header, content))
+      @adapter.send(sock, serialize(idents, header, metadata, content))
     end
 
     def recv(socket_type)

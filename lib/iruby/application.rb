@@ -265,7 +265,7 @@ module IRuby
       opts.on(
         "--display-name=VALUE", String,
         "Specify the display name for the kernelspec. This is helpful when you have multiple IRuby kernels."
-      ) {|v| kernel_display_name = v }
+      ) {|v| params.display_name = v }
 
       # TODO: --profile
       # TODO: --prefix
