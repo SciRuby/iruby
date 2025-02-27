@@ -11,6 +11,10 @@ module IRuby
       @session = nil
     end
 
+    def closed?
+      @session.nil?
+    end
+
     def flush
     end
 
