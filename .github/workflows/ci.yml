@@ -70,7 +70,7 @@ jobs:
 
       - name: Install IRuby gem
         run: |
-          sudo apt update # Preparation for Native Package Installer
+          gem install rubygems-requirements-system
           gem install pkg/*.gem
 
       - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
@@ -136,7 +136,7 @@ jobs:
 
       - run: rake build
 
-      - run: gem install pkg/*.gem
+      - run: gem install rubygems-requirements-system pkg/*.gem
 
       - run: ruby -r iruby -e "p IRuby::SessionAdapter.select_adapter_class"
         env:
