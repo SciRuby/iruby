@@ -40,34 +40,24 @@ See the official document to know how to install Jupyter Notebook and/or Jupyter
 
 ### Ubuntu
 
-#### Ubuntu 17+
+#### Ubuntu 22.04+
 
 ```shell
 sudo apt install libtool libffi-dev ruby ruby-dev make
 
-gem install --user-install iruby
-iruby register --force
-```
-
-#### Ubuntu 16
-
-The latest IRuby requires Ruby >= 2.4 while Ubuntu's official Ruby package is version 2.3.
-So you need to install Ruby >= 2.4 by yourself before preparing IRuby.
-We recommend to use rbenv.
-
-```shell
-sudo apt install libtool libffi-dev ruby ruby-dev make
+gem install --user-install rubygems-requirements-system
 gem install --user-install iruby
 iruby register --force
 ```
 
 ### Fedora
 
-#### Fedora 36
+#### Fedora 40+
 
 ```shell
 sudo dnf install ruby ruby-dev make zeromq-devel
 
+gem install --user-install rubygems-requirements-system
 gem install --user-install iruby
 iruby register --force
 ```
@@ -89,6 +79,7 @@ Install Jupyter.
 #### Homebrew
 
 ```shell
+gem install rubygems-requirements-system
 gem install iruby
 iruby register --force
 ```
@@ -99,6 +90,7 @@ If you are using macports, run the following commands.
 
 ```shell
 port install libtool autoconf automake autogen
+gem install rubygems-requirements-system
 gem install iruby
 iruby register --force
 ```

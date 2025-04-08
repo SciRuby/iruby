@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.executables   = %w[iruby]
   s.test_files    = s.files.grep(%r{^test/})
   s.require_paths = %w[lib]
-  s.extensions    = %w[ext/Rakefile]
 
   s.required_ruby_version = '>= 2.3.0'
 
@@ -25,12 +24,21 @@ Gem::Specification.new do |s|
   s.add_dependency 'logger'
   s.add_dependency 'mime-types', '>= 3.3.1'
   s.add_dependency 'multi_json', '~> 1.11'
-  s.add_dependency 'native-package-installer'
 
   s.add_development_dependency 'pycall', '>= 1.2.1'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'test-unit-rr'
+
+  [
+    ['arch_linux', 'zeromq'],
+    ['debian', 'libzmq3-dev'],
+    ['freebsd', 'libzmq4'],
+    ['homebrew', 'zmq'],
+    ['macports', 'zmq'],
+  ].each do |platform, package|
+    s.requirements << "system: libzmq: #{platform}: #{package}"
+  end
 
   s.metadata['msys2_mingw_dependencies'] = 'zeromq'
 end

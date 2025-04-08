@@ -1,4 +1,7 @@
 source 'https://rubygems.org'
+
+plugin 'rubygems-requirements-system'
+
 gemspec
 
 group :pry do
