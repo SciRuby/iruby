@@ -1,3 +1,11 @@
+# 0.8.2 (2025-04-10)
+
+* Update CI to refresh apt packages before installing IRuby gem by @kojix2 in https://github.com/SciRuby/iruby/pull/367
+* Fix missing `OStream#closed?` method by @RobinDaugherty in https://github.com/SciRuby/iruby/pull/368
+* Use rubygems-requirements-system to install system dependencies automatically by @kou in https://github.com/SciRuby/iruby/pull/369
+* Various typo corrections by @kojix2 in https://github.com/SciRuby/iruby/pull/370
+* Minor changes to README by @kojix2 in https://github.com/SciRuby/iruby/pull/371
+
 # 0.8.1 (2025-02-16)
 
 * Add support for jupyter widgets by @matt-do-it in https://github.com/SciRuby/iruby/pull/350
