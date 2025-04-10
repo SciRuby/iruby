@@ -225,7 +225,7 @@ module IRuby
       end
 
       if ipython_dir
-        File.join(ipython_dir, 'kerenels')
+        File.join(ipython_dir, 'kernels')
       else
         Jupyter.kernelspec_dir
       end
