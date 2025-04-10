@@ -38,7 +38,7 @@ class IRubyTest::IntegrationTest < IRubyTest::TestBase
   end
 
   def test_interaction
-    omit("This test too much unstable")
+    omit("This test is too unstable")
 
     write '"Hello, world!"'
     expect '"Hello, world!"'

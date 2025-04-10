@@ -7,7 +7,7 @@ module IRuby
       "text/markdown" => :to_markdown,
       "image/svg+xml" => :to_svg,
       "image/png" => :to_png,
-      "appliation/pdf" => :to_pdf,
+      "application/pdf" => :to_pdf,
       "image/jpeg" => :to_jpeg,
       "text/latex" => [:to_latex, :to_tex],
       # NOTE: Do not include the entry of "application/json" because
