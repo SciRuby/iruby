@@ -60,7 +60,7 @@ module IRuby
           end
         end
         if name == 'cztop'
-          warn "WARNING: cztop was deprecated and will be removed; Use ffi-rzmq, instead."
+          warn "WARNING: cztop is deprecated and will be removed; Use ffi-rzmq instead."
         end
         return cls
       end
