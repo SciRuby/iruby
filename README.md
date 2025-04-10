@@ -20,23 +20,23 @@ The following URL launches JupyterLab directly on Binder.
 
 ### Requirements
 
-* [Jupyter](https://jupyter.org)
+- [Jupyter](https://jupyter.org)
 
 The following requirements are automatically installed.
 
-* [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq)
-* [libzmq](https://github.com/zeromq/libzmq)
+- [ffi-rzmq](https://github.com/chuckremes/ffi-rzmq)
+- [libzmq](https://github.com/zeromq/libzmq)
 
 The following dependencies are optional.
 
-* [Pry][Pry], if you want to use [Pry][Pry] instead of IRB for the code execution backend
+- [Pry][Pry], if you want to use [Pry][Pry] instead of IRB for the code execution backend
 
 ### Installing Jupyter Notebook and/or JupyterLab
 
 See the official document to know how to install Jupyter Notebook and/or JupyterLab.
 
-* <https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html>
-* <https://jupyter.readthedocs.io/en/latest/install.html>
+- <https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html>
+- <https://jupyter.readthedocs.io/en/latest/install.html>
 
 ### Ubuntu
 
@@ -108,8 +108,8 @@ docker run --rm -it -p 8888:8888 rubydata/datascience-notebook
 
 You can use Java classes in your IRuby notebook.
 
-* JRuby version >= 9.0.4.0
-* iruby gem
+- JRuby version >= 9.0.4.0
+- iruby gem
 
 After installation, make sure that your `env` is set up to use jruby.
 
@@ -152,8 +152,8 @@ export IRUBY_SESSION_ADAPTER="cztop"
 
 There are two backends: PlainBackend and PryBackend.
 
-* PlainBackend is the default backend.  It uses [IRB](https://github.com/ruby/irb).
-* PryBackend uses [Pry][Pry].
+- PlainBackend is the default backend. It uses [IRB](https://github.com/ruby/irb).
+- PryBackend uses [Pry][Pry].
 
 You can switch the backend to PryBackend by running the code below.
 
@@ -165,7 +165,7 @@ IRuby::Kernel.instance.switch_backend!(:pry)
 
 Take a look at the [example notebook](https://nbviewer.jupyter.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
-and other scientific gems. 
+and other scientific gems.
 
 ## Contributing
 
