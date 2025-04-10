@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/SciRuby/iruby/workflows/CI/badge.svg)](https://github.com/SciRuby/iruby/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb)
 
-IRuby is a Ruby kernel for [Jupyter project](http://try.jupyter.org/).
+IRuby is a Ruby kernel for [Jupyter project](https://jupyter.org/).
 
 ## Try IRuby
 
@@ -163,7 +163,7 @@ IRuby::Kernel.instance.switch_backend!(:pry)
 
 ## Notebooks
 
-Take a look at the [example notebook](http://nbviewer.ipython.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
+Take a look at the [example notebook](https://nbviewer.jupyter.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
 and other scientific gems. 
 
