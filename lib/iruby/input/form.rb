@@ -63,7 +63,7 @@ module IRuby
       end
 
       def submit
-        result = MultiJson.load(Kernel.instance.session.recv_input)
+        result = JSON.parse(Kernel.instance.session.recv_input)
 
         unless result.has_key? @id
           submit

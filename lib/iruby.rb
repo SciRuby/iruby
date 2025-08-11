@@ -1,6 +1,6 @@
 require 'fileutils'
 require 'mime/types'
-require 'multi_json'
+require 'json'
 require 'securerandom'
 require 'openssl'
 require 'tempfile'

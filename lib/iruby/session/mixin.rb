@@ -5,10 +5,10 @@ module IRuby
     private
 
     def serialize(idents, header, metadata = nil, content)
-      msg = [MultiJson.dump(header),
-             MultiJson.dump(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
-             MultiJson.dump(metadata || {}),
-             MultiJson.dump(content || {})]
+      msg = [JSON.generate(header),
+             JSON.generate(@last_recvd_msg ? @last_recvd_msg[:header] : {}),
+             JSON.generate(metadata || {}),
+             JSON.generate(content || {})]
       frames = ([*idents].compact.map(&:to_s) << DELIM << sign(msg)) + msg
       IRuby.logger.debug "Sent #{frames.inspect}"
       frames
@@ -28,10 +28,10 @@ module IRuby
       raise 'Invalid signature' unless s == sign(msg_list[1..-1])
       {
         idents:        idents,
-        header:        MultiJson.load(header),
-        parent_header: MultiJson.load(parent_header),
-        metadata:      MultiJson.load(metadata),
-        content:       MultiJson.load(content),
+        header:        JSON.parse(header),
+        parent_header: JSON.parse(parent_header),
+        metadata:      JSON.parse(metadata),
+        content:       JSON.parse(content),
         buffers:       buffers
       }
     end
