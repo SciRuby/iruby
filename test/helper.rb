@@ -1,6 +1,5 @@
 require "iruby"
 require "json"
-require 'multi_json'
 require "pathname"
 require "rbconfig"
 require "test/unit"
