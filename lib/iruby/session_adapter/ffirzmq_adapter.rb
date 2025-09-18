@@ -37,9 +37,9 @@ module IRuby
           type = ZMQ.const_get(type)
         else
           if ZMQ.const_defined?(type)
-            raise ArgumentError, "Unsupported ZMQ socket type: #{type_symbol}"
+            raise ArgumentError, "Unsupported ZMQ socket type: #{type}"
           else
-            raise ArgumentError, "Invalid ZMQ socket type: #{type_symbol}"
+            raise ArgumentError, "Invalid ZMQ socket type: #{type}"
           end
         end
         zmq_context.socket(type).tap do |sock|
