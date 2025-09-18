@@ -67,7 +67,7 @@ end
 
 The enter key will submit an input or form and the escape key will cancel it. Canceled inputs are returned as `nil`. Inputs are automatically canceled if destroyed. An input can be destroyed by clearing its cell's output. The `cancel` button will cancel a form and all other buttons will submit it. 
 
-After a form destroyed, the cell's output is cleared. Be careful not to prompt for input in a block that has previous output you would like to keep. Output is cleared to prevent forms from interferring with one another and to ensure that inputs are not inadvertently saved to the notebook. 
+After a form destroyed, the cell's output is cleared. Be careful not to prompt for input in a block that has previous output you would like to keep. Output is cleared to prevent forms from interfering with one another and to ensure that inputs are not inadvertently saved to the notebook. 
 
 
 ```ruby
@@ -105,7 +105,7 @@ end
 
 ## Defaults
 
-Most inputs will accept a `default` parameter. If no default is given, the deault is `nil`. Since checkboxes can have multiple values selected, you can pass an array of values. To check everything, pass `true` as the default. 
+Most inputs will accept a `default` parameter. If no default is given, the default is `nil`. Since checkboxes can have multiple values selected, you can pass an array of values. To check everything, pass `true` as the default. 
 
 
 ```ruby
