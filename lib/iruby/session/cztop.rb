@@ -37,7 +37,7 @@ module IRuby
     end
 
     def description
-      'old-stle session using cztop'
+      'old-style session using cztop'
     end
 
     # Build and send a message

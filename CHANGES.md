@@ -141,7 +141,7 @@
 
 * Improvements to IRuby dependency detection using `Bundler::Dependencies#specs` (@kou).
 * Use less memory forcing pry to store only the last 3 commands in memory (@kylekyle).
-* Use bigger z-index that is used accross all browsers (@kylekyle).
+* Use bigger z-index that is used across all browsers (@kylekyle).
 * Ability to input date values as DateTime objects in IRuby/Input (@kylekyle).
 * Add option to have check boxes checked by default (@kylekyle).
 * Option for multi-select in drop down menus in the prompter (@kylekyle).
