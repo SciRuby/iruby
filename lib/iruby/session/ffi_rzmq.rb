@@ -17,7 +17,7 @@ module IRuby
       stdin_socket = c.socket(ZMQ::XREP)
       stdin_socket.bind(connection % config['stdin_port'])
 
-      Thread.new do
+      hb_thr = Thread.new do
         begin
           hb_socket = c.socket(ZMQ::REP)
           hb_socket.bind(connection % config['hb_port'])
@@ -26,6 +26,7 @@ module IRuby
           IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}"
         end
       end
+      hb_thr.daemon = true
 
       @sockets = { 
         publish: pub_socket, reply: reply_socket, stdin: stdin_socket

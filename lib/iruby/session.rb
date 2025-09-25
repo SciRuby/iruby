@@ -57,6 +57,8 @@ module IRuby
           IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}"
         end
       end
+      # Avoid process hang at exit on Ruby 3.4+ when this thread blocks
+      @heartbeat_thread.daemon = true
     end
 
     def setup_security
