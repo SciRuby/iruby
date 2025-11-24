@@ -27,7 +27,7 @@ jobs:
           - debug
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -105,7 +105,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -126,7 +126,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
