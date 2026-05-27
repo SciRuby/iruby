@@ -74,7 +74,7 @@ module IRubyTest::ApplicationTests
         kernel_name = "other-kernel-#{Process.pid}"
         out, status = Open3.capture2e(*iruby_command("console", "--kernel=#{kernel_name}"))
         refute status.success?
-        assert_match(/\bNo such kernel named #{Regexp.escape(kernel_name)}\b/, out)
+        assert_match(/\b(?:No such kernel named|Could not find kernel) '?#{Regexp.escape(kernel_name)}'?(?=\W|\z)/, out)
       end
     end
 
