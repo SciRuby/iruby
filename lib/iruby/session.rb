@@ -40,6 +40,7 @@ module IRuby
       end
     end
 
+    # Optional setup hook.
     def setup
     end
 

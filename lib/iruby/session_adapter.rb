@@ -41,6 +41,7 @@ module IRuby
         socket.close if socket.respond_to?(:close)
       end
 
+      # Override in adapters that need cleanup.
       def close
       end
     end
