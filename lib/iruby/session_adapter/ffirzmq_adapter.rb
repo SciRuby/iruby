@@ -29,6 +29,11 @@ module IRuby
         @heartbeat_device = ZMQ::Device.new(sock, sock)
       end
 
+      def close
+        @zmq_context&.terminate
+        @zmq_context = nil
+      end
+
       private
 
       def make_socket(type, protocol, host, port)

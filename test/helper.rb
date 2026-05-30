@@ -60,10 +60,12 @@ module IRubyTest
     end
 
     def teardown
+      IRuby::Kernel.instance&.close
       self.class.restore_kernel
     end
 
     def with_session_adapter(session_adapter_name)
+      IRuby::Kernel.instance&.close
       IRuby::Kernel.new(self.class.test_config_filename, session_adapter_name)
       $stdout = STDOUT
       $stderr = STDERR

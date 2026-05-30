@@ -36,6 +36,14 @@ module IRuby
         socket, port = make_socket(:REP, protocol, host, port)
         [socket, port]
       end
+
+      def close_socket(socket)
+        socket.close if socket.respond_to?(:close)
+      end
+
+      # Override in adapters that need cleanup.
+      def close
+      end
     end
 
     require_relative 'session_adapter/ffirzmq_adapter'
