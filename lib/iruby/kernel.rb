@@ -126,6 +126,13 @@ module IRuby
       while @running
         dispatch
       end
+    ensure
+      close
+    end
+
+    def close
+      @session&.close
+      stop_parent_process_poller
     end
 
     # @private
@@ -312,6 +319,13 @@ module IRuby
       else
         @parent_poller = start_parent_process_pollar_unix
       end
+    end
+
+    def stop_parent_process_poller
+      return unless @parent_poller&.alive?
+
+      @parent_poller.kill
+      @parent_poller.join
     end
 
     def start_parent_process_pollar_unix

@@ -40,5 +40,24 @@ module IRubyTest
         end
       end
     end
+
+    def test_close_releases_adapter_resources
+      session = IRuby::Session.new(@session_config, "test")
+      adapter = session.adapter
+
+      session.close
+
+      assert(adapter.closed)
+      assert_equal([
+                     :PUB,
+                     :REP,
+                     :ROUTER,
+                     :ROUTER,
+                   ],
+                   adapter.closed_sockets.map(&:type).sort_by(&:to_s))
+      refute(session.instance_variable_get(:@heartbeat_thread).alive?)
+    ensure
+      session&.close
+    end
   end
 end

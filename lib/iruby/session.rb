@@ -25,6 +25,21 @@ module IRuby
       "#{@adapter.name} session adapter"
     end
 
+    def close
+      return if @closed
+
+      @closed = true
+      begin
+        close_sockets
+      ensure
+        begin
+          @adapter.close
+        ensure
+          stop_heartbeat
+        end
+      end
+    end
+
     def setup
     end
 
@@ -54,7 +69,7 @@ module IRuby
           # NOTE: this loop is copied from CZTop's old session code
           @adapter.heartbeat_loop(@hb_socket)
         rescue Exception => e
-          IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}"
+          IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}" unless @closed
         end
       end
     end
@@ -101,6 +116,22 @@ module IRuby
     end
 
     private
+
+    def close_sockets
+      ([*@sockets&.values, @hb_socket].compact).each do |socket|
+        @adapter.close_socket(socket)
+      end
+    end
+
+    def stop_heartbeat
+      return unless @heartbeat_thread&.alive?
+
+      @heartbeat_thread.join(1)
+      return unless @heartbeat_thread.alive?
+
+      @heartbeat_thread.kill
+      @heartbeat_thread.join
+    end
 
     def check_socket_type(socket_type)
       case socket_type

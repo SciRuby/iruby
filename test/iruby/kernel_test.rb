@@ -17,6 +17,7 @@ module IRubyTest
 
       def teardown
         IRuby::Kernel.events.unregister(:initialized, @callback)
+        super
       end
 
       def test_iruby_initialized_event

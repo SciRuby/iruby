@@ -20,9 +20,12 @@ module IRuby
 
         @send_callback = nil
         @recv_callback = nil
+        @closed_sockets = []
+        @closed = false
       end
 
       attr_accessor :send_callback, :recv_callback
+      attr_reader :closed_sockets, :closed
 
       def send(sock, data)
         unless @send_callback.nil?
@@ -37,6 +40,15 @@ module IRuby
       end
 
       def heartbeat_loop(sock)
+        sleep 0.01 until @closed
+      end
+
+      def close_socket(sock)
+        @closed_sockets << sock
+      end
+
+      def close
+        @closed = true
       end
 
       private
