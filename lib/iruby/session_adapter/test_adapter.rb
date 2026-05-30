@@ -1,4 +1,4 @@
-require 'iruby/session/mixin'
+require 'iruby/session_serializer'
 
 module IRuby
   module SessionAdapter
