@@ -1,5 +1,5 @@
 require 'iruby/session_adapter'
-require 'iruby/session/mixin'
+require 'iruby/session_serializer'
 
 require 'securerandom'
 require 'time'
