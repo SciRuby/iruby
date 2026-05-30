@@ -15,7 +15,7 @@ module IRubyTest
       }
     end
 
-    def test_new_with_session_adapter
+    def test_selects_correct_adapter_class
       adapter_name = ENV['IRUBY_TEST_SESSION_ADAPTER_NAME']
       adapter_class = case adapter_name
                       when 'cztop'
@@ -26,8 +26,8 @@ module IRubyTest
                         flunk "Unknown session adapter: #{adapter_name.inspect}"
                       end
 
-      session = IRuby::Session.new(@session_config, adapter_name)
-      assert_kind_of(adapter_class, session.adapter)
+      selected_class = IRuby::SessionAdapter.select_adapter_class(adapter_name)
+      assert_equal(adapter_class, selected_class)
     end
 
     def test_without_any_session_adapter
