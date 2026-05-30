@@ -86,7 +86,7 @@ jobs:
                    python3-pip \
                    python3-setuptools
           sudo pip3 install wheel
-          sudo pip3 install -r ci/requirements.txt
+          sudo pip3 install jupyter-console
 
       - run: bundle install --jobs 4 --retry 3
 
