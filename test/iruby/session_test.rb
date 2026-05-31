@@ -48,6 +48,8 @@ module IRubyTest
       session.close
 
       assert(adapter.closed)
+      assert(adapter.heartbeat_started)
+      assert(adapter.heartbeat_finished)
       assert_equal([
                      :PUB,
                      :REP,
