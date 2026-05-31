@@ -67,7 +67,7 @@ module IRuby
       @hb_socket, @hb_port = @adapter.make_rep_socket(protocol, host, hb_port)
       @heartbeat_thread = Thread.start do
         begin
-          # NOTE: this loop is copied from CZTop's old session code
+          # Adapters should return when cleanup closes the heartbeat socket/context.
           @adapter.heartbeat_loop(@hb_socket)
         rescue Exception => e
           IRuby.logger.fatal "Kernel heartbeat died: #{e.message}\n#{e.backtrace.join("\n")}" unless @closed
