@@ -26,42 +26,12 @@ module IRuby
       end
 
       def heartbeat_loop(sock)
-        poller = ZMQ::Poller.new
-        poller.register_readable(sock)
+        # Avoid ZMQ::Device in #357; call libzmq's proxy directly.
+        rc = LibZMQ.zmq_proxy(sock.socket, sock.socket, nil)
+        errno = ZMQ::Util.errno
+        return if rc == -1 && (zmq_errno?(:ETERM, errno) || zmq_errno?(:EINTR, errno))
 
-        loop do
-          break unless sock.socket
-
-          rc = poller.poll
-          if rc == -1
-            errno = ZMQ::Util.errno
-            next if zmq_errno?(:EINTR, errno)
-            break if heartbeat_closed_errno?(errno)
-
-            ZMQ::Util.error_check('zmq_poll', rc)
-          end
-
-          poller.readables.each do |readable|
-            message = []
-            rc = readable.recv_strings(message, ZMQ::DONTWAIT)
-            if rc == -1
-              errno = ZMQ::Util.errno
-              next if zmq_errno?(:EAGAIN, errno) || zmq_errno?(:EINTR, errno)
-              return if heartbeat_closed_errno?(errno)
-
-              ZMQ::Util.error_check('zmq_msg_recv', rc)
-            end
-
-            rc = readable.send_strings(message)
-            if rc == -1
-              errno = ZMQ::Util.errno
-              next if zmq_errno?(:EINTR, errno)
-              return if heartbeat_closed_errno?(errno)
-
-              ZMQ::Util.error_check('zmq_msg_send', rc)
-            end
-          end
-        end
+        ZMQ::Util.error_check('zmq_proxy', rc)
       end
 
       def shutdown_heartbeat(sock)
@@ -98,10 +68,6 @@ module IRuby
 
       def zmq_context
         @zmq_context ||= ZMQ::Context.new
-      end
-
-      def heartbeat_closed_errno?(errno)
-        zmq_errno?(:ETERM, errno) || zmq_errno?(:ENOTSOCK, errno)
       end
 
       def zmq_errno?(name, errno)
