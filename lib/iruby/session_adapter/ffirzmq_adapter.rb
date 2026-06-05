@@ -37,9 +37,8 @@ module IRuby
       def shutdown_heartbeat(sock)
         if @zmq_context&.context && LibZMQ.respond_to?(:zmq_ctx_shutdown)
           LibZMQ.zmq_ctx_shutdown(@zmq_context.context)
-        else
-          close_socket(sock)
         end
+        close_socket(sock)
       end
 
       def close

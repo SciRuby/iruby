@@ -123,7 +123,7 @@ module IRuby
     private
 
     def close_sockets
-      ([*@sockets&.values, @hb_socket].compact).each do |socket|
+      @sockets&.values&.each do |socket|
         @adapter.close_socket(socket)
       end
     end
