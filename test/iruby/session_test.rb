@@ -30,6 +30,16 @@ module IRubyTest
       assert_equal(adapter_class, selected_class)
     end
 
+    def test_new_with_session_adapter_closes_heartbeat
+      adapter_name = ENV['IRUBY_TEST_SESSION_ADAPTER_NAME']
+      session = IRuby::Session.new(@session_config, adapter_name)
+
+      session.close
+      refute(session.instance_variable_get(:@heartbeat_thread).alive?)
+    ensure
+      session&.close
+    end
+
     def test_without_any_session_adapter
       assert_rr do
         stub(IRuby::SessionAdapter::CztopAdapter).available? { false }

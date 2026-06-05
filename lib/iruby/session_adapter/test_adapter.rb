@@ -48,7 +48,12 @@ module IRuby
       end
 
       def close_socket(sock)
-        @closed_sockets << sock
+        @closed_sockets << sock unless @closed_sockets.any? { |closed| closed.equal?(sock) }
+      end
+
+      def shutdown_heartbeat(sock)
+        @closed = true
+        close_socket(sock)
       end
 
       def close
