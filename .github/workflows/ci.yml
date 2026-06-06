@@ -35,6 +35,15 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
 
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-name: iruby-ci
+          create-args: >-
+            python=3.12
+            jupyter_console
+          cache-environment: true
+          cache-downloads: true
+
       - run: rake build
 
       - name: Install ffi (if Ruby 2.7)
@@ -81,23 +90,18 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y --no-install-recommends \
-                   libczmq-dev \
-                   python3 \
-                   python3-pip \
-                   python3-setuptools
-          sudo pip3 install wheel
-          sudo pip3 install jupyter-console
+                   libczmq-dev
 
       - run: bundle install --jobs 4 --retry 3
 
       - name: Run tests
         env:
-          PYTHON: python3
+          PYTHON: python
           ADAPTERS: cztop ffi-rzmq
         run: |
           for adapter in $ADAPTERS; do
             export IRUBY_TEST_SESSION_ADAPTER_NAME=$adapter
-            bundle exec rake test TESTOPTS="-v"
+            micromamba run -n iruby-ci bundle exec rake test TESTOPTS="-v"
           done
 
   windows:

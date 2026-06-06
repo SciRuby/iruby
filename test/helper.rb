@@ -138,7 +138,7 @@ module IRubyTest
     end
 
     def apple_only
-      omit('apple only test') unless windows?
+      omit('apple only test') unless apple?
     end
 
     def unix_only
