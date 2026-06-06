@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'logger'
   s.add_dependency 'mime-types', '>= 3.3.1'
 
-  s.add_development_dependency 'pycall', '>= 1.2.1'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'test-unit-rr'
