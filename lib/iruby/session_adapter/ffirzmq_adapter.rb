@@ -26,7 +26,19 @@ module IRuby
       end
 
       def heartbeat_loop(sock)
-        @heartbeat_device = ZMQ::Device.new(sock, sock)
+        # Avoid ZMQ::Device in #357; call libzmq's proxy directly.
+        rc = LibZMQ.zmq_proxy(sock.socket, sock.socket, nil)
+        errno = ZMQ::Util.errno
+        return if rc == -1 && (zmq_errno?(:ETERM, errno) || zmq_errno?(:EINTR, errno))
+
+        ZMQ::Util.error_check('zmq_proxy', rc)
+      end
+
+      def shutdown_heartbeat(sock)
+        if @zmq_context&.context && LibZMQ.respond_to?(:zmq_ctx_shutdown)
+          LibZMQ.zmq_ctx_shutdown(@zmq_context.context)
+        end
+        close_socket(sock)
       end
 
       def close
@@ -36,24 +48,29 @@ module IRuby
 
       private
 
-      def make_socket(type, protocol, host, port)
-        case type
+      def make_socket(type_symbol, protocol, host, port)
+        case type_symbol
         when :ROUTER, :PUB, :REP
-          type = ZMQ.const_get(type)
+          type = ZMQ.const_get(type_symbol)
         else
-          if ZMQ.const_defined?(type)
-            raise ArgumentError, "Unsupported ZMQ socket type: #{type}"
+          if ZMQ.const_defined?(type_symbol)
+            raise ArgumentError, "Unsupported ZMQ socket type: #{type_symbol}"
           else
-            raise ArgumentError, "Invalid ZMQ socket type: #{type}"
+            raise ArgumentError, "Invalid ZMQ socket type: #{type_symbol}"
           end
         end
         zmq_context.socket(type).tap do |sock|
+          sock.setsockopt(ZMQ::LINGER, 0) if type_symbol == :REP
           sock.bind("#{protocol}://#{host}:#{port}")
         end
       end
 
       def zmq_context
         @zmq_context ||= ZMQ::Context.new
+      end
+
+      def zmq_errno?(name, errno)
+        ZMQ.const_defined?(name) && ZMQ.const_get(name) == errno
       end
     end
   end

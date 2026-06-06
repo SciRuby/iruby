@@ -30,12 +30,16 @@ module IRuby
 
       @closed = true
       begin
-        close_sockets
+        @adapter.shutdown_heartbeat(@hb_socket) if @hb_socket
       ensure
         begin
-          @adapter.close
-        ensure
           stop_heartbeat
+        ensure
+          begin
+            close_sockets
+          ensure
+            @adapter.close
+          end
         end
       end
     end
@@ -119,7 +123,7 @@ module IRuby
     private
 
     def close_sockets
-      ([*@sockets&.values, @hb_socket].compact).each do |socket|
+      @sockets&.values&.each do |socket|
         @adapter.close_socket(socket)
       end
     end

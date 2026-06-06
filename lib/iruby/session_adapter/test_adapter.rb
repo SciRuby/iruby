@@ -51,6 +51,11 @@ module IRuby
         @closed_sockets << sock
       end
 
+      def shutdown_heartbeat(sock)
+        @closed = true
+        close_socket(sock)
+      end
+
       def close
         @closed = true
       end
