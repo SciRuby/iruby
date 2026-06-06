@@ -96,7 +96,6 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHON: python
           ADAPTERS: cztop ffi-rzmq
         run: |
           for adapter in $ADAPTERS; do
