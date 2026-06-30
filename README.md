@@ -6,15 +6,6 @@
 
 IRuby is a Ruby kernel for [Jupyter project](https://jupyter.org/).
 
-## Try IRuby
-
-You can try IRuby with a sample notebook on Binder (the same link as the banner placed above):
-
-<https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb>
-
-The following URL launches JupyterLab directly on Binder.
-
-<https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab>
 
 ## Installation
 
@@ -35,8 +26,8 @@ The following dependencies are optional.
 
 See the official document to know how to install Jupyter Notebook and/or JupyterLab.
 
-- <https://jupyter.readthedocs.io/en/latest/install/notebook-classic.html>
-- <https://jupyter.readthedocs.io/en/latest/install.html>
+- <https://docs.jupyter.org/en/latest/install/notebook-classic.html>
+- <https://docs.jupyter.org/en/latest/install.html>
 
 ### Ubuntu
 
@@ -166,6 +157,12 @@ IRuby::Kernel.instance.switch_backend!(:pry)
 Take a look at the [example notebook](https://nbviewer.jupyter.org/urls/raw.github.com/SciRuby/sciruby-notebooks/master/getting_started.ipynb)
 and the [collection of notebooks](https://github.com/SciRuby/sciruby-notebooks/) which includes a Dockerfile to create a containerized installation of iruby
 and other scientific gems.
+
+## Try IRuby
+
+- [Try a sample notebook on Binder](https://mybinder.org/v2/gh/RubyData/binder/master?filepath=ruby-data.ipynb)
+
+- [Launch JupyterLab on Binder](https://mybinder.org/v2/gh/RubyData/binder/master?filepath=../lab)
 
 ## Contributing
 

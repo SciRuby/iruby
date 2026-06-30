@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.authors       = ['Daniel Mendler', 'The SciRuby developers']
   s.email         = ['mail@daniel-mendler.de']
   s.summary       = 'Ruby Kernel for Jupyter'
-  s.description   = 'A Ruby kernel for Jupyter environment. Try it at try.jupyter.org.'
+  s.description   = 'A Ruby kernel for Jupyter environment.'
   s.homepage      = 'https://github.com/SciRuby/iruby'
   s.license       = 'MIT'
 
