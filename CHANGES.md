@@ -1,3 +1,14 @@
+# 0.8.3 (2026-06-30)
+
+* Remove MultiJson dependency and replace with JSON by @kojix2 in https://github.com/SciRuby/iruby/pull/373
+* Fix undefined var in FfirzmqAdapter by @kojix2 in https://github.com/SciRuby/iruby/pull/377
+* Avoid conflict with Ruby's numbered parameters by @zalt50 in https://github.com/SciRuby/iruby/pull/380
+* Remove legacy IRUBY_OLD_SESSION session implementations by @kojix2 in https://github.com/SciRuby/iruby/pull/384
+* Add explicit session cleanup by @kojix2 in https://github.com/SciRuby/iruby/pull/388
+* Use raw zmq_proxy for ffi-rzmq heartbeat by @kojix2 in https://github.com/SciRuby/iruby/pull/391
+* Remove obsolete PyCall dependency by @kojix2 in https://github.com/SciRuby/iruby/pull/393
+* Add Ruby 4.0 to CI workflow matrix by @kojix2 in https://github.com/SciRuby/iruby/pull/394
+
 # 0.8.2 (2025-04-10)
 
 * Update CI to refresh apt packages before installing IRuby gem by @kojix2 in https://github.com/SciRuby/iruby/pull/367
